@@ -1,0 +1,33 @@
+{
+	"consumerID": "TestconsumerID",
+	"requestForm": {
+		"requesterSystem": {
+			"systemName": "client1",
+			"address": "130.240.5.68",
+			"port": 8468,
+			"authenticationInfo": "null"
+		},
+		"requestedService": {
+			"serviceDefinition": "IndoorTemperature_ProviderExample",
+			"interfaces": ["REST-JSON-SENML"],
+			"serviceMetadata":{
+				"security" : "token"
+			}
+		},
+		"orchestrationFlags": {
+			"overrideStore" : true,
+			"matchmaking" : true,
+			"metadataSearch" : false,
+			"pingProviders" : false,
+			"onlyPreferred" : true,
+			"externalServiceRequest" : false
+			},
+		"preferredProviders": [{
+			"providerSystem":{
+				"systemName": "SecureTemperatureSensor",
+				"address": "130.240.5.68",
+				"port":"8469"
+			}
+		}]
+	}
+}
