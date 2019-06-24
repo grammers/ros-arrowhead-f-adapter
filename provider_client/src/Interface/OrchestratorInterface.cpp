@@ -1,14 +1,9 @@
 #include "OrchestratorInterface.hpp"
+#include <iostream>
 
 OrchestratorInterface::OrchestratorInterface( )
 {
 
-}
-
-
-OrchestratorInterface::OrchestratorInterface( string ini_file )
-{
-	init_OrchestratorInterface(ini_file);
 }
 
 OrchestratorInterface::~OrchestratorInterface()
@@ -33,41 +28,29 @@ size_t OrchestratorInterface::Callback_OrchestrationResponse(char *ptr, size_t s
 	return size;
 }
 
-bool OrchestratorInterface::init_OrchestratorInterface( string ini_file )
+bool OrchestratorInterface::init_OrchestratorInterface()
 {
-	pini = Load_IniFile( (char *)ini_file.c_str() );
-	if (!pini) {
-		printf("Error: Cannot load OrchestratorInterface.ini\n");
-		return false;
-	}
+	if(CLIENT_ADDRESS.size() != 0){
+	    URI = "http://" + CLIENT_ADDRESS + ":" + to_string(CLIENT_PORT);
 
-	OR_BASE_URI = iniparser_getstring(pini, "Server:or_base_uri", (char *)"http://arrowhead.tmit.bme.hu:8440/orchestrator/orchestration");
-	OR_BASE_URI_HTTPS = iniparser_getstring(pini, "Server:or_base_uri_https", (char *)"https://arrowhead.tmit.bme.hu:8441/orchestrator/orchestration");
-	ADDRESS = iniparser_getstring(pini, "Server:address", (char *)"10.0.0.11");
-	ADDRESS6 = iniparser_getstring(pini, "Server:address6", (char *)"[::1]");
-	PORT = iniparser_getint(pini, "Server:port", 8453);
-
-	if(ADDRESS.size() != 0){
-	    URI = "http://" + ADDRESS + ":" + to_string(PORT);
-
-	    if ( MakeServer(PORT) ) {
-		printf("Error: Unable to start HTTP Server (%s:%d)!\n", ADDRESS.c_str(), PORT);
+	    if ( MakeServer(CLIENT_PORT) ) {
+		printf("Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS.c_str(), CLIENT_PORT);
 		return false;
 	    }
 
-	    printf("\nOrchestratorInterface started - %s:%d\n", ADDRESS.c_str(), PORT);
+	    printf("\nOrchestratorInterface started - %s:%d\n", CLIENT_ADDRESS.c_str(), CLIENT_PORT);
 
 	}
 	else{
 	    printf("Warning: Could not parse IPv4 address from config, trying to use IPv6!\n");
-	    URI = "http://" + ADDRESS6 + ":" + to_string(PORT);
+	    URI = "http://" + CLIENT_ADDRESS6 + ":" + to_string(CLIENT_PORT);
 
-	    if ( MakeServer(PORT) ) {
-	    printf("Error: Unable to start HTTP Server (%s:%d)!\n", ADDRESS6.c_str(), PORT);
+	    if ( MakeServer(CLIENT_PORT) ) {
+	    printf("Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS6.c_str(), CLIENT_PORT);
 	    return false;
 	    }
 
-	    printf("\nOrchestratorInterface started - %s:%d\n", ADDRESS6.c_str(), PORT);
+	    printf("\nOrchestratorInterface started - %s:%d\n", CLIENT_ADDRESS6.c_str(), CLIENT_PORT);
 	}
 
 	return true;
@@ -104,7 +87,7 @@ int OrchestratorInterface::Unload_IniFile()
 
 int OrchestratorInterface::sendOrchestrationRequest(string requestForm, bool _bSecureArrowheadInterface)
 {
-     if(_bSecureArrowheadInterface)
+	if(_bSecureArrowheadInterface)
           return SendHttpsRequest(requestForm, OR_BASE_URI_HTTPS, "POST");
 	else
           return SendRequest(requestForm, OR_BASE_URI, "POST");

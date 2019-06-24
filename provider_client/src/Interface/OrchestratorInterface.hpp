@@ -9,6 +9,7 @@ using namespace std;
 
 #include "Http_Handler.hpp"
 #include "Https_Handler.hpp"
+#include "../const_global.hpp"
 
 #ifdef __linux__
 #include "ini/iniparser.h"
@@ -23,11 +24,6 @@ class OrchestratorInterface : Http_Handler, Https_Handler {
 private:
 
 	dictionary  *pini = NULL;
-	string OR_BASE_URI;
-	string OR_BASE_URI_HTTPS;
-	string ADDRESS;
-	string ADDRESS6;
-	unsigned short PORT;
 	string URI;
 
 	dictionary *Load_IniFile(char *fname);
@@ -36,11 +32,10 @@ private:
 public:
 	string sConsumerID;
 
-	OrchestratorInterface(string ini_file);
 	OrchestratorInterface();
 	~OrchestratorInterface();
 
-	bool init_OrchestratorInterface(string ini_file);
+	bool init_OrchestratorInterface();
 	int deinit();
 
 	int sendOrchestrationRequest(string rResult, bool _bSecureArrowheadInterface);

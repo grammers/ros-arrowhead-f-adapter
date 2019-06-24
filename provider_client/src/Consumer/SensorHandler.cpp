@@ -1,5 +1,3 @@
-
-
 #include "SensorHandler.h"
 #include <map>
 #include <mutex>
@@ -12,16 +10,15 @@
 #include <vector>
 #include "StringManipulation.hpp"
 #include "../Security/RSASecurity.h"
-#include "data.cpp"
 #include <json-c/json.h>
 #include <string>
 
 SensorHandler::SensorHandler(){
-     bSecureProviderInterface = false;
+     //bSecureProviderInterface = false;
 
-	if (!init_OrchestratorInterface("/home/grammers/catkin_ws/src/ros-arrowhead-f-adapter/provider_client/OrchestratorInterface.ini")) {
-		printf("Error: Unable to start Orchestrator Interface!\n");
-	}
+	//if (!init_OrchestratorInterface("/home/grammers/catkin_ws/src/ros-arrowhead-f-adapter/provider_client/OrchestratorInterface.ini")) {
+	//	printf("Error: Unable to start Orchestrator Interface!\n");
+	//}
 }
 
 SensorHandler::~SensorHandler(void){
@@ -142,8 +139,8 @@ size_t SensorHandler::Callback_OrchestrationResponse(char *ptr, size_t size) {
 	uPort      = json_object_get_int(jPort);
 	sInterface = string(json_object_get_string(jIntf0));
      sURI       = string(json_object_get_string(jUri));
-
-     if(bSecureProviderInterface){
+     
+	 if(bSecureProviderInterface){
           if(!json_object_object_get_ex(jResponse,  "authorizationToken", &jToken))      {printf("Error: could not find authorizationToken\n"); return 1;}
           if(!json_object_object_get_ex(jResponse,  "signature",          &jSignature))  {printf("Error: could not find signature\n");          return 1;}
 

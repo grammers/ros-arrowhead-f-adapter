@@ -6,6 +6,7 @@
 #include <mutex>
 #include "../Interface/OrchestratorInterface.hpp"
 #include "ConsumedService.h"
+#include "../const_global.hpp"
 
 #ifdef __linux__
 
@@ -27,7 +28,6 @@ public:
 	SensorHandler();
 	~SensorHandler();
 	double temp;
-	bool bSecureProviderInterface;
 
 	void processConsumer(std::string consumerID, bool _bSecureArrowheadInterface);
 

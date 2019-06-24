@@ -22,9 +22,8 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package()
 
 configure_file (
-	src/Consumer/ConsumedService.h
+	src/Consumer/ConsumedService.h 
 	src/Consumer/SensorHandler.h
-	#src/temperature.h
 )
 
 
@@ -45,7 +44,6 @@ add_executable(client
 	src/Interface/ini/iniparser.c
 	src/Security/base64.cpp
 	src/Security/RSASecurity.cpp
-	consumedServices.json
 )
 set_source_files_properties(src/Interface/ini/iniparser.c PROPERTIES LANGUAGE CXX)
 set_source_files_properties(src/Interface/ini/dictionary.c PROPERTIES LANGUAGE CXX)

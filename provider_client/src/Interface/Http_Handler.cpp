@@ -3,7 +3,7 @@
 #include <cstring>
 
 #include <vector>
-#include <string>
+//#include <string>
 
 size_t Http_Handler::httpResponseCallback(char *ptr, size_t size)
 {
@@ -48,7 +48,6 @@ int Http_Handler::SendRequest(string pdata, string paddr, string pmethod)
 
 		// Perform the request, res will get the return code
 		res = curl_easy_perform(curl);
-
 		if(res != CURLE_OK)
 			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 
