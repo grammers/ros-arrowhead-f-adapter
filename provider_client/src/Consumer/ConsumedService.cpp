@@ -3,8 +3,6 @@
 #include <fstream>
 #include <iostream>
 ConsumedService::ConsumedService() {
-	//config();
-	//printTable();
 }
 
 ConsumedService::~ConsumedService() {
@@ -40,15 +38,7 @@ bool ConsumedService::getRequestForm(std::string consumerID, std::string &rReque
 					"\"address\": \""+PROVIDER_ADDRESS+"\", "
 					"\"port\": \""+std::to_string(PROVIDER_PORT)+"\" } } ] }";
 
-		std::cout<<"is thise corect format? "<<rRequestForm<<std::endl;
 		return true;
 	}
-/*	for (auto it = table.begin(); it != table.end(); ++it) {
-		if (it->first == condumerID) {
-			rRequestForm = it->second;
-			return true;
-		}
-	}
-*/
 	return false;
 }

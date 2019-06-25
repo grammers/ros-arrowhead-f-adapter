@@ -19,8 +19,5 @@ public:
 	ConsumedService();
 	~ConsumedService();
 	
-	void config();
-	void insertNewRequestForm(std::string s);
-	void printTable();
 	bool getRequestForm(std::string consumerID, std::string &rRequestForm);
 };

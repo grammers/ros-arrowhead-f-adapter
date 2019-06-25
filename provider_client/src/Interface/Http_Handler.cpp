@@ -49,7 +49,7 @@ int Http_Handler::SendRequest(string pdata, string paddr, string pmethod)
 		// Perform the request, res will get the return code
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK)
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+			fprintf(stderr, "curl_easy_perform() failed (in http send): %s\n", curl_easy_strerror(res));
 
           curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 
