@@ -8,7 +8,7 @@ private:
 // todo:
 // modify these parameters
      std::string customURL         = "130.240.5.68";
-     std::string systemName        = "SecureTemperatureSensor";
+     std::string systemName        = "InsecureTemperatureSensor";
      std::string serviceDefinition = "IndoorTemperature_ProviderExample";
      std::string serviceInterface  = "REST-JSON-SENML";
      std::string privateKeyPath    = "keys/tempsensor.testcloud1.private.key";

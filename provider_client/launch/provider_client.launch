@@ -12,7 +12,7 @@
 		<param name="CLIENT_ADDRESS" value="130.240.5.68"/>
 		<param name="CLIENT_ADDRESS6" value="[fe80::1a57:58d9:c43e:6319]"/>
 		<param name="CONSUMER_ID" value="TestconsumerID"/>
-		<param name="CLIENT_SYSTEM_NAME" value="client1"/>
+		<param name="CLIENT_SYSTEM_NAME" value="client_ros_insecure"/>
 		<param name="AUTHENTICATION_INFO" value="null"/>
 		<param name="SERVICE_DEFINITION" value="IndoorTemperature_ProviderExample"/>
 		<param name="INTERFACES" value="REST-JSON-SENML"/>
@@ -23,7 +23,7 @@
 		<param name="PING_PROVIDERS" value="false"/>
 		<param name="ONLY_PREFERRED" value="true"/>
 		<param name="EXTERNAL_SERVICE_REQUEST" value="false"/>
-		<param name="PROVIDER_SYSTEM_NAME" value="SecureTemperatureSensor"/>
+		<param name="PROVIDER_SYSTEM_NAME" value="InsecureTemperatureSensor"/>
 		<param name="PROVIDER_ADDRESS" value="130.240.5.68"/>
 		<param name="PROVIDER_PORT" value="8469"/>
 	</node>
