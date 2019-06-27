@@ -14,11 +14,8 @@
 #include <string>
 
 SensorHandler::SensorHandler(){
-     //bSecureProviderInterface = false;
-
-	//if (!init_OrchestratorInterface("/home/grammers/catkin_ws/src/ros-arrowhead-f-adapter/provider_client/OrchestratorInterface.ini")) {
-	//	printf("Error: Unable to start Orchestrator Interface!\n");
-	//}
+	
+	Converter oConverter;
 }
 
 SensorHandler::~SensorHandler(void){
@@ -48,6 +45,8 @@ void SensorHandler::processConsumer(std::string pJsonSenML, bool _bSecureArrowhe
           printf("Error: Request Form is missing for %s!\n", consumerID.c_str());
           return;
      }
+
+	printf("\nrequestForm: %s\n", requestForm.c_str());
 
      printf("Sending Orchestration Request: (%s)\n", _bSecureArrowheadInterface ? "Secure Arrowhead Interface" : "Insecure Arrowhead Interface");
 
@@ -166,7 +165,7 @@ inline size_t providerHttpResponseHandler(char *ptr, size_t size, size_t nmemb, 
 
 void SensorHandler::sendRequestToProvider(std::string _sProviderURI){
 
-     printf("\nsendHttpRequestToProvider\n");
+     printf("\nsendHttpRequestToProvider: %s\n", _sProviderURI.c_str());
 
      int http_code = 0;
      CURLcode res;
@@ -273,25 +272,7 @@ void SensorHandler::sendHttpsRequestToProvider(std::string _sProviderURI){
 
 size_t SensorHandler::providerHttpResponseCallback(char *ptr, size_t size){
 	printf("\nProvider Response:\n%s\n", ptr);
-
-// parsuing theperature from json sneml respons	
-	std::string str(ptr);
-	struct json_object *obj;
-	obj = json_tokener_parse(str.c_str()); //extrat a json objekt
-	
-	// relevant data is in a nested array
-	struct json_object *e;
-	json_object_object_get_ex(obj, "e", &e);
-
-	// get intresting data from json array object
-	// the array has lenth 1 but contains a json objekt
-	struct json_object *v;
-	json_object_object_get_ex(
-		json_object_array_get_idx(e,0), "v", &v);
-	temp  = json_object_get_double(v);	
-//	printf("v = %f\n", temp);
-
-
+	oConverter.parce(ptr);
 	deinit();
 	return size;
 }

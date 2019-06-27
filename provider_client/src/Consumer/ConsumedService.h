@@ -13,7 +13,6 @@ private:
 //	std::string filePath = std::string("/home/grammers/catkin_ws/src/ros-arrowhead-f-adapter/provider_client/consumedServices.json");
 //	std::string filePath = std::string("../../consumedServices.json");
 	//std::string filePath = std::string(@JSON@);
-	std::map<std::string, std::string> table; //consumerID + requestForm pair
 	
 public:
 	ConsumedService();

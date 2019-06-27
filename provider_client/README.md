@@ -87,7 +87,6 @@ rostopic echo /client_demo
 
 
 ## TODO
-create parser function  
 comment  
 create demo guide  
 fix HTTP  

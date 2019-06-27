@@ -3,6 +3,7 @@
 #include "std_msgs/Float32.h"
 #include <sstream>
 #include "const_global.hpp"
+#include "messages.hpp"
 
 #pragma warning(disable:4996)
 #include "Consumer/SensorHandler.h"
@@ -113,6 +114,7 @@ int main(int argc, char **argv)
 		debugPrint();
 
 
+	Converter oConverter;
 	//AH setup
 	SensorHandler oSensorHandler;
 	//oSensorHandler.bSecureProviderInterface = bSecureProviderInterface;
@@ -125,7 +127,6 @@ int main(int argc, char **argv)
 
 	// set upp comunication variabels
 	provider_client::clientExample srv;
-	std_msgs::Float32 val;
 
 	// loops call to provider
 	while(ros::ok())
@@ -136,10 +137,11 @@ int main(int argc, char **argv)
 			consumerMessageExample, bSecureArrowheadInterface);
 
 
-		//set upp to publich reseved data
-		val.data = oSensorHandler.temp;
 		// Publich data for debug
-		rescived_pub.publish(val);
+		//std_msgs::Float32 temp;
+		//temp.data = Converter::temperature;
+		//temp.data = 1;
+		rescived_pub.publish(oConverter.temperature);
 		
 		ros::spinOnce();
 		loop_rate.sleep();

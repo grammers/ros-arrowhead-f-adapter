@@ -7,6 +7,7 @@
 #include "../Interface/OrchestratorInterface.hpp"
 #include "ConsumedService.h"
 #include "../const_global.hpp"
+#include "../messages.hpp"
 
 #ifdef __linux__
 
@@ -27,7 +28,6 @@ class SensorHandler : OrchestratorInterface
 public:
 	SensorHandler();
 	~SensorHandler();
-	double temp;
 
 	void processConsumer(std::string consumerID, bool _bSecureArrowheadInterface);
 
@@ -40,4 +40,7 @@ public:
 
 	/*ConsumedServices*/
 	ConsumedService oConsumedService;
+
+private:
+	Converter oConverter;
 };

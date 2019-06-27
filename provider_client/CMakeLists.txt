@@ -35,6 +35,7 @@ include_directories(
 
 add_executable(client 
 	src/client.cpp
+	src/messages.cpp
 	src/Consumer/ConsumedService.cpp
 	src/Consumer/SensorHandler.cpp
 	src/Interface/Http_Handler.cpp
