@@ -235,9 +235,9 @@ It is called ''data'' and in of type Float32.
 ## IDD
 To implement your one ROS consumer can you copy these project and remove the example provider.
 Then you change the values in [launch/provider_client.launch](launch/provider_client.launch) to mach your system.
-You can all sowed change the projects name but remember to change it in [provider_client.launch](launch/provider_clinet.launch), in [CMakeLists.txt](CMakeList.txt) and in [package.xml](package.xml) ass well ass the name of the folder and launch file.
+You can all sowed change the projects name but remember to change it in [provider_client.launch](launch/provider_client.launch), in [CMakeLists.txt](CMakeLists.txt) and in [package.xml](package.xml) ass well ass the name of the folder and launch file.
 
-Then is it necessary (probably) to modify the [messages.cpp](src/messages.cpp) and [messages.hpp](messages.hpp) to match your resources messages.
+Then is it necessary (probably) to modify the [messages.cpp](src/messages.cpp) and [messages.hpp](src/messages.hpp) to match your resources messages.
 How ever be careful with changing names on the fill or the function.
 [SensorHandler](src/Consumer/SensorHandler.h) is including and using it.
 And finally is it only to extend the ROS system as if it where a regular ROS node ([learn how](http://wiki.ros.org/ROS/Tutorials)).
