@@ -4,8 +4,8 @@
 
 	<!-- client -->
 	<node pkg="provider_client" type="client" name="client">
-		<param name="bSecureProviderInterface" value="false"/>
-		<param name="bSecureArrowheadInterface" value="false"/>
+		<param name="SECURE_PROVIDER_INTERFACE" value="false"/>
+		<param name="SECURE_ARROWHEAD_INTERFACE" value="false"/>
 		<param name="OR_BASE_URI" value="http://localhost:8440/orchestrator/orchestration"/>
 		<param name="OR_BASE_URI_HTTPS" value="https://localhost:8441/orchestrator/orchestration"/>
 		<param name="CLIENT_PORT" value="8468"/>

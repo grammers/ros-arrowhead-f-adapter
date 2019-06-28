@@ -1,19 +1,23 @@
 #pragma once
 #include <string>
-
-#ifdef __linux__
-
-#include "include/curl/curl.h"
-#include "microhttpd.h"
-
-#elif _WIN32
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstring>
+#include <list>
+//#ifdef __linux__
+#include "ini/iniparser.h"
 extern "C" {
-#include "include\curl\curl.h"
-#include "include\mhttpd\microhttpd.h"
+#include "microhttpd.h"
+#include "include/curl/curl.h"
 }
+//#elif _WIN32
 
-#endif
+//extern "C" {
+//#include "include\curl\curl.h"
+//#include "include\mhttpd\microhttpd.h"
+//}
+
+//#endif
 
 using namespace std;
 

@@ -44,41 +44,41 @@ int main(int argc, char* argv[]){
 //"value" should be periodically updated
 //"sLinuxEpoch" should be periodically updated
 
-     std::string measuredValue; //JSON - SENML format
-     time_t linuxEpochTime = std::time(0);
-     std::string sLinuxEpoch = std::to_string((uint64_t)linuxEpochTime);
+	while (true) {
+    	std::string measuredValue; //JSON - SENML format
+     	time_t linuxEpochTime = std::time(0);
+     	std::string sLinuxEpoch = std::to_string((uint64_t)linuxEpochTime);
 
-     double value = 26.0;
+    	double value = 26.0;
 	
-	 while (true) {
-	value++;
+		value++;
 //convert double to string
-     std::ostringstream streamObj;
-     streamObj << std::fixed;
-     streamObj << std::setprecision(1);
-     streamObj << value;
-     std::string sValue = streamObj.str();
+     	std::ostringstream streamObj;
+     	streamObj << std::fixed;
+     	streamObj << std::setprecision(1);
+     	streamObj << value;
+     	std::string sValue = streamObj.str();
 
-     measuredValue =
-          "{"
-               "\"e\":[{"
-                    "\"n\": \"this_is_the_sensor_id\","
+     	measuredValue =
+        	"{"
+               	"\"e\":[{"
+               		"\"n\": \"this_is_the_sensor_id\","
                     "\"v\":" + sValue +","
                     "\"t\": \"" + sLinuxEpoch + "\""
                     "}],"
-               "\"bn\": \"100\","
-               "\"bu\": \"Celsius\""
-          "}";
+               	"\"bn\": \"100\","
+               	"\"bu\": \"Celsius\""
+          	"}";
 
 //do not modify below this
 
-     oSensorHandler.processProvider(measuredValue, bSecureProviderInterface, bSecureArrowheadInterface);
+     	oSensorHandler.processProvider(measuredValue, bSecureProviderInterface, bSecureArrowheadInterface);
 
-	    #ifdef __linux__
-               sleep(10);
-          #elif _WIN32
-               Sleep(1000);
-          #endif
+		#ifdef __linux__
+        	sleep(10);
+        #elif _WIN32
+            Sleep(1000);
+        #endif
 	}
 
 	return 0;

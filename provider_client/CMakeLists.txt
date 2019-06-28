@@ -2,13 +2,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(provider_client)
 
-file(GLOB_RECURSE *.json)
-
 ## Find catkin and any catkin packages
 find_package(catkin REQUIRED COMPONENTS 
 	roscpp 
 	std_msgs
 	message_generation
+	rostest
 )
 
 ## Declare ROS messages and services
@@ -58,5 +57,9 @@ target_link_libraries(client
 	json-c
 )
 
+catkin_add_gtest(provider_client-test test/htest.cpp)
+if(TARGET provider_client-test)
+		target_link_libraries(provider_client-test ${catkin_LIBRARIES})
+endif()
 
 # %EndTag(FULLTEXT)%

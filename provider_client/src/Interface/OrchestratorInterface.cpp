@@ -34,7 +34,7 @@ bool OrchestratorInterface::init_OrchestratorInterface()
 	    URI = "http://" + CLIENT_ADDRESS + ":" + to_string(CLIENT_PORT);
 
 	    if ( MakeServer(CLIENT_PORT) ) {
-		printf("Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS.c_str(), CLIENT_PORT);
+		fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS.c_str(), CLIENT_PORT);
 		return false;
 	    }
 
@@ -46,7 +46,7 @@ bool OrchestratorInterface::init_OrchestratorInterface()
 	    URI = "http://" + CLIENT_ADDRESS6 + ":" + to_string(CLIENT_PORT);
 
 	    if ( MakeServer(CLIENT_PORT) ) {
-	    printf("Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS6.c_str(), CLIENT_PORT);
+	    fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS6.c_str(), CLIENT_PORT);
 	    return false;
 	    }
 
@@ -85,9 +85,9 @@ int OrchestratorInterface::Unload_IniFile()
 	return 1;
 }
 
-int OrchestratorInterface::sendOrchestrationRequest(string requestForm, bool _bSecureArrowheadInterface)
+int OrchestratorInterface::sendOrchestrationRequest(string requestForm)
 {
-	if(_bSecureArrowheadInterface)
+	if(SECURE_ARROWHEAD_INTERFACE)
           return SendHttpsRequest(requestForm, OR_BASE_URI_HTTPS, "POST");
 	else
           return SendRequest(requestForm, OR_BASE_URI, "POST");

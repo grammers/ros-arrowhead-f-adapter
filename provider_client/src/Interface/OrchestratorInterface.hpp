@@ -38,7 +38,7 @@ public:
 	bool init_OrchestratorInterface();
 	int deinit();
 
-	int sendOrchestrationRequest(string rResult, bool _bSecureArrowheadInterface);
+	int sendOrchestrationRequest(string rResult);
 
 	size_t httpResponseCallback(char *ptr, size_t size);
 	size_t httpsResponseCallback(char *ptr, size_t size);

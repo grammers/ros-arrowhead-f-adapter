@@ -1,17 +1,4 @@
 #include "SensorHandler.h"
-#include <map>
-#include <mutex>
-#include <iostream>
-#include <fstream>
-#include <stdio.h>
-#include <thread>
-#include <algorithm>
-#include <time.h>
-#include <vector>
-#include "StringManipulation.hpp"
-#include "../Security/RSASecurity.h"
-#include <json-c/json.h>
-#include <string>
 
 SensorHandler::SensorHandler(){
 	
@@ -22,17 +9,17 @@ SensorHandler::~SensorHandler(void){
 
 }
 
-void SensorHandler::processConsumer(std::string pJsonSenML, bool _bSecureArrowheadInterface) {
+void SensorHandler::processConsumer(std::string pJsonSenML) {
 	json_object *obj = json_tokener_parse(pJsonSenML.c_str());
 
 	if(obj == NULL){
-	    printf("Error: Could not parse payload: %s\n", pJsonSenML.c_str());
+	    fprintf(stderr, "Error: Could not parse payload: %s\n", pJsonSenML.c_str());
 	    return;
 	}
 
 	json_object *jBN;
 	if(!json_object_object_get_ex(obj, "bn", &jBN)){
-	    printf("Error: received json does not contain bn field!\n");
+	    fprintf(stderr, "Error: received json does not contain bn field!\n");
 	    return;
 	}
 
@@ -42,15 +29,15 @@ void SensorHandler::processConsumer(std::string pJsonSenML, bool _bSecureArrowhe
 
      std::string requestForm;
      if(!oConsumedService.getRequestForm(consumerID, requestForm)){
-          printf("Error: Request Form is missing for %s!\n", consumerID.c_str());
+          fprintf(stderr, "Error: Request Form is missing for %s!\n", consumerID.c_str());
           return;
      }
 
 	printf("\nrequestForm: %s\n", requestForm.c_str());
 
-     printf("Sending Orchestration Request: (%s)\n", _bSecureArrowheadInterface ? "Secure Arrowhead Interface" : "Insecure Arrowhead Interface");
+     printf("Sending Orchestration Request: (%s)\n", SECURE_ARROWHEAD_INTERFACE ? "Secure Arrowhead Interface" : "Insecure Arrowhead Interface");
 
-     int returnValue = sendOrchestrationRequest(requestForm, _bSecureArrowheadInterface);
+     int returnValue = sendOrchestrationRequest(requestForm);
 }
 
 
@@ -94,13 +81,13 @@ size_t SensorHandler::Callback_OrchestrationResponse(char *ptr, size_t size) {
 
      struct json_object *obj = json_tokener_parse(ptr);
      if(obj == NULL){
-          printf("Error: could not parse orchestration response\n");
+          fprintf(stderr, "Error: could not parse orchestration response\n");
           return 1;
      }
 
      struct json_object *jResponseArray;
      if(!json_object_object_get_ex(obj, "response", &jResponseArray)){
-          printf("Error: could not parse response\n");
+          fprintf(stderr, "Error: could not parse response\n");
           return 1;
      }
 
@@ -108,7 +95,7 @@ size_t SensorHandler::Callback_OrchestrationResponse(char *ptr, size_t size) {
      struct json_object *jProv2;
 
      if(!json_object_object_get_ex(jResponse, "provider", &jProv2)){
-          printf("Error: could not parse provider section\n");
+          fprintf(stderr, "Error: could not parse provider section\n");
           return 1;
      }
 
@@ -121,16 +108,16 @@ size_t SensorHandler::Callback_OrchestrationResponse(char *ptr, size_t size) {
      struct json_object *jToken;
      struct json_object *jSignature;
 
-     if(!json_object_object_get_ex(jProv2,    "address",    &jAddr))    {printf("Error: could not find address\n");    return 1;}
-     if(!json_object_object_get_ex(jProv2,    "port",       &jPort))    {printf("Error: could not find port\n");       return 1;}
-     if(!json_object_object_get_ex(jResponse, "service",    &jService)) {printf("Error: could not find service\n");    return 1;}
-     if(!json_object_object_get_ex(jService,  "interfaces", &jIntf))    {printf("Error: could not find interface\n");  return 1;}
-     if(!json_object_object_get_ex(jResponse,  "serviceURI", &jUri))     {printf("Error: could not find serviceURI\n"); return 1;}
+     if(!json_object_object_get_ex(jProv2,    "address",    &jAddr))    {fprintf(stderr, "Error: could not find address\n");    return 1;}
+     if(!json_object_object_get_ex(jProv2,    "port",       &jPort))    {fprintf(stderr, "Error: could not find port\n");       return 1;}
+     if(!json_object_object_get_ex(jResponse, "service",    &jService)) {fprintf(stderr, "Error: could not find service\n");    return 1;}
+     if(!json_object_object_get_ex(jService,  "interfaces", &jIntf))    {fprintf(stderr, "Error: could not find interface\n");  return 1;}
+     if(!json_object_object_get_ex(jResponse,  "serviceURI", &jUri))     {fprintf(stderr, "Error: could not find serviceURI\n"); return 1;}
 
      jIntf0 = json_object_array_get_idx(jIntf, 0);
 
      if(jIntf0 == NULL){
-          printf("Error: could not find interface\n");
+          fprintf(stderr, "Error: could not find interface\n");
           return 1;
      }
 
@@ -138,10 +125,16 @@ size_t SensorHandler::Callback_OrchestrationResponse(char *ptr, size_t size) {
 	uPort      = json_object_get_int(jPort);
 	sInterface = string(json_object_get_string(jIntf0));
      sURI       = string(json_object_get_string(jUri));
-     
-	 if(bSecureProviderInterface){
-          if(!json_object_object_get_ex(jResponse,  "authorizationToken", &jToken))      {printf("Error: could not find authorizationToken\n"); return 1;}
-          if(!json_object_object_get_ex(jResponse,  "signature",          &jSignature))  {printf("Error: could not find signature\n");          return 1;}
+
+	 if(SECURE_PROVIDER_INTERFACE){
+     	if(!json_object_object_get_ex(jResponse,  "authorizationToken", &jToken)){
+			fprintf(stderr, "Error: could not find authorizationToken\n");
+			return 1;
+		}
+		if(!json_object_object_get_ex(jResponse,  "signature",          &jSignature)){
+			fprintf(stderr, "Error: could not find signature\n");
+			return 1;
+		}
 
           token     = string(json_object_get_string(jToken));
           signature = string(json_object_get_string(jSignature));

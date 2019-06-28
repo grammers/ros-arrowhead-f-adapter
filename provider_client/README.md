@@ -87,6 +87,7 @@ rostopic echo /client_demo
 
 
 ## TODO
+implemante json formating for internal messgesin in setup
 comment  
 create demo guide  
 fix HTTP  

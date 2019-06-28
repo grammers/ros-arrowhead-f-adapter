@@ -1,7 +1,5 @@
-
 #include "ConsumedService.h"
-#include <fstream>
-#include <iostream>
+
 ConsumedService::ConsumedService() {
 }
 

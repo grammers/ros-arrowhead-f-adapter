@@ -1,14 +1,21 @@
 #include "messages.hpp"
-//#include "std_msgs::Float32.h"
 
 std_msgs::Float32 Converter::temperature;
-//Converter::Converter(float init_temp){
-//	temperature.data = init_temp;
-//}
+
 Converter::Converter(){
 }
 Converter::~Converter(){
 }
+
+// the recived msgs:
+// 	{
+// 		"e":[{
+// 			"n": "this_is_the_sensor_id",
+// 			"v":39.0,
+// 			"t": "1561633848"}],
+// 		"bn": "100",
+// 		"bu": "Celsius"
+// 	}
 
 void Converter::parce(char *ptr){
 	// parsuing theperature from json sneml respons	
@@ -26,6 +33,4 @@ void Converter::parce(char *ptr){
 	json_object_object_get_ex(
 	json_object_array_get_idx(e,0), "v", &v);
 	temperature.data  = json_object_get_double(v);	
-	//double temp  = json_object_get_double(v);
-	//temperature = 1.1;
 }
