@@ -11,9 +11,9 @@ public:
 	Converter();
 	~Converter();
 
-	// the message reseved reseved in ROS msgs format
+	// the message reserved in ROS msgs format
 	static std_msgs::Float32 temperature;
 
-	// parce retunring msgs ("pte") from provider to ROS msgs
+	// parse returning msgs ("pte") from provider to ROS msgs
 	void parce(char* ptr);
 };

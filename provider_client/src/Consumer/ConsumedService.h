@@ -8,6 +8,6 @@ public:
 	ConsumedService();
 	~ConsumedService();
 
-	// bild and construkt the request msgs to sent to arrow head to set up system
+	// Construct the request msgs that are set so be send to arrowhead for system set up
 	bool getRequestForm(std::string consumerID, std::string &rRequestForm);
 };

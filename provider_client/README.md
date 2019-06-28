@@ -71,7 +71,7 @@ and to run the client open a new terminal and run:
 roslaunch provider_client provider_client.launch
 ```
 
-## Debuging and veuing
+## Debugging and viewing
 To debug and following what’s happening can the following be to help.
 
 View prints form ros node

@@ -1,14 +1,14 @@
 #pragma once
 #include <iostream>
 
-// globale wariabels for system set upp
+// global variables for system set up
 // DO NOT change these in runtime.
-// they are suposed to be const but ROS param intake funktion do not alwe it.
+// they are supposed to be constant but ROS pram intake function do not allow it.
 
-// secuety
+// security
 extern bool SECURE_PROVIDER_INTERFACE;
 extern bool SECURE_ARROWHEAD_INTERFACE;
-// Orchastrator
+// Orchestrator
 extern bool OVERRIDE_STORE;
 extern bool MATCHMAKING;
 extern bool METADATA_SEARCH;

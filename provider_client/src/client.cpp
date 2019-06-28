@@ -6,13 +6,13 @@
 #pragma warning(disable:4996)
 #include "Consumer/SensorHandler.h"
 
-// Convet boolean ("x") to string "true"/"false"
-// requierd to print booleans ass string
+// Convert boolean ("x") to string "true"/"false"
+// required to print booleans ass string
 #define b2s(x) ((x)?"true":"false") 
 
-// arrowhead system seting
-// do not temper wiht these in code (unles you know wot you are doing)
-// is suposed to be defined as const, but that do not comple.
+// arrowhead system setting
+// do not temper with these in code (unless you know wot you are doing)
+// is supposed to be defined as constant, but that do not compile.
 bool SECURE_PROVIDER_INTERFACE;
 bool SECURE_ARROWHEAD_INTERFACE;
 std::string OR_BASE_URI;
@@ -36,18 +36,18 @@ std::string PROVIDER_SYSTEM_NAME;
 std::string PROVIDER_ADDRESS;
 int PROVIDER_PORT;
 
-// to check sow it setings parameters has registerd
+// to check sow the settings parameters have registered
 void debugPrint(){
 	printf("\n");
-	printf("bSecutePrivuderIntrerface: %s\n", b2s(SECURE_PROVIDER_INTERFACE));
-	printf("cureArrowheadInterface: %s\n", b2s(SECURE_ARROWHEAD_INTERFACE));
-	printf("or_base_uri: %s\n", OR_BASE_URI.c_str());
-	printf("or_base_uri_https: %s\n", OR_BASE_URI_HTTPS.c_str());
-	printf("client_port: %i\n", CLIENT_PORT);
-	printf("client_address: %s\n", CLIENT_ADDRESS.c_str());
-	printf("client_address6: %s\n", CLIENT_ADDRESS6.c_str());
-	printf("consumer_id: %s\n", CONSUMER_ID.c_str());
-	printf("client_system_name: %s\n", CLIENT_SYSTEM_NAME.c_str());
+	printf("SECURE_PROVIDER_INTERFACE: %s\n", b2s(SECURE_PROVIDER_INTERFACE));
+	printf("SECURE_ARROWHEAD_INTERFACE: %s\n", b2s(SECURE_ARROWHEAD_INTERFACE));
+	printf("OR_BASE_URI: %s\n", OR_BASE_URI.c_str());
+	printf("OR_BASE_URI_HTTPS: %s\n", OR_BASE_URI_HTTPS.c_str());
+	printf("CLIENT_PORT: %i\n", CLIENT_PORT);
+	printf("CLIENT_ADDRESS: %s\n", CLIENT_ADDRESS.c_str());
+	printf("CLIENT_ADDRESS: %s\n", CLIENT_ADDRESS6.c_str());
+	printf("CONSUMER_ID: %s\n", CONSUMER_ID.c_str());
+	printf("CLIENT_SYSTEM_NAME: %s\n", CLIENT_SYSTEM_NAME.c_str());
 	printf("AUTHENTICATION_INFO: %s\n", AUTHENTICATION_INFO.c_str());
 	printf("SERVICE_DEFINITION: %s\n", SERVICE_DEFINITION.c_str());
 	printf("INTERFACES: %s\n", INTERFACES.c_str());
@@ -55,12 +55,12 @@ void debugPrint(){
 	printf("OVERRIDE_STORE: %s\n", b2s(OVERRIDE_STORE));
 	printf("MATCHMAKING: %s\n", b2s(MATCHMAKING));
 	printf("METADATA_SEARCH: %s\n", b2s(METADATA_SEARCH));
-	printf("PING_PRVIDERS: %s\n", b2s(PING_PROVIDERS));
+	printf("PING_PROVIDER: %s\n", b2s(PING_PROVIDERS));
 	printf("ONLY_PREFERRED: %s\n", b2s(ONLY_PREFERRED));
 	printf("EXTERNAL_SERVICE_REQUEST: %s\n", b2s(EXTERNAL_SERVICE_REQUEST));
 	printf("PROVIDER_SYSTEM_NAME: %s\n", PROVIDER_SYSTEM_NAME.c_str());
 	printf("PROVIDER_ADDRESS: %s\n", PROVIDER_ADDRESS.c_str());
-	printf("PROVIDER_PROT: %i\n", PROVIDER_PORT);
+	printf("PROVIDER_PORT: %i\n", PROVIDER_PORT);
 }
 
 int main(int argc, char **argv)
@@ -69,11 +69,11 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "client_example");
 	ros::NodeHandle n;
 
-	// declar a publisher used for debugin and observation
+	// declare a publisher used for debugging and observation
 	// set megs type to std_msgs::Float32, publish on topic "client_demo" and use buffer of size 10
 	ros::Publisher rescived_pub = n.advertise<std_msgs::Float32>("client_demo", 10);
 
-	//params
+	//prams
 	ros::NodeHandle nh("~");
 	nh.param<bool>("SECURE_PROVIDER_INTERFACE", SECURE_PROVIDER_INTERFACE , false);
 	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", SECURE_ARROWHEAD_INTERFACE , false);
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 	if(debug)
 		debugPrint();
 
-	// class that conver json msgs form arrowhead to ros msgs
+	// class that convert json msgs form arrowhead to ros msgs
 	Converter oConverter;
 
 	//AH setup
@@ -112,8 +112,8 @@ int main(int argc, char **argv)
 	std::string consumerMessageExample = 
 		(std::string)"{\"bn\":\"TestconsumerID\"\n}";
 
-	// set a frequens for request in Hz
-	// warning it in not exact no garantes on aktual frequens
+	// set a frequency for request in Hz
+	// warning: it in not exact no grantees on actual frequency
 	ros::Rate loop_rate(0.3);
 
 
@@ -125,10 +125,10 @@ int main(int argc, char **argv)
     	oSensorHandler.processConsumer(consumerMessageExample);
 
 
-		// Publich data for debug
+		// Publish data for debug
 		rescived_pub.publish(oConverter.temperature);
 		
-		// sleep entil it is time for next request
+		// sleep until it is time for next request
 		ros::spinOnce();
 		loop_rate.sleep();
 	}

@@ -25,6 +25,6 @@ public:
 	ConsumedService oConsumedService;
 
 private:
-	// convert and stor respons in these class
+	// convert and store response in these class
 	Converter oConverter;
 };

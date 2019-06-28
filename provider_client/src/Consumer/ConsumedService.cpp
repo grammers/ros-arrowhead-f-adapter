@@ -11,7 +11,7 @@ bool ConsumedService::getRequestForm(std::string consumerID, std::string &rReque
 	if (CONSUMER_ID == consumerID){
 		//TODO change these to a actual json implementation
 		// change return path to handle json
-		// caskade thrue sensorHandler, OrchestraIntreface, http...
+		// cascade throe sensorHandler, OrchestraIntreface, http...
 		rRequestForm = 
 				"{ \"requesterSystem\": { "
 					"\"systemName\": \""+CLIENT_SYSTEM_NAME+"\", "
