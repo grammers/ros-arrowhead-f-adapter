@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<launch>
+	
+	<!-- service -->
+	<node pkg="service_consumer" type="service" name="service">
+		<param name="SR_BASE_URI" value="http://localhost:8442/serviceregistry/"/>
+		<param name="SR_BASE_URI_HTTPS" value="https://0.0.0.0:8443/serviceregistry/"/>
+		<param name="PROVIDER_ADDRESS" value="130.240.5.68"/>
+		<param name="PROVIDER_ADDRESS6" value="[fe80::45a5:38c:f4d4:8ede]"/>
+		<param name="CUSTOM_URL" value="130.240.5.68"/>
+		<param name="PROVIDER_SYSTEM_NAME" value="service_ros_example_insecure"/>
+		<param name="SERVICE_DEFINITION" value="example_temperature"/>
+		<param name="INTERFACE" value="REST-JSON-SENML"/>
+		<param name="PRIVATE_KEY_PATH" value="keys/tempsensor.testcloud1.private.key"/>
+		<param name="PUBLIC_KEY_PATH" value="keys/tempsensor.testcloud1.publickey.pem"/>
+		<param name="PROVIDER_PORT" value="8476"/>
+		<param name="SECURE_ARROWHEAD_INTERFACE" value="false"/>
+		<param name="SECURE_PROVIDER_INTERFACE" value="false"/>
+	</node>
+
+
+</launch>
+
