@@ -2,9 +2,11 @@
 #pragma warning(disable:4996)
 
 #include "ros/ros.h"
-#include "std_msgs/Float32.h"
+#include "sensor_msgs/Temperature.h"
+#include "messages.hpp"
 #include "Provider/SensorHandler.h"
 #include "global_const.hpp"
+
 #include <sstream>
 #include <string>
 #include <stdio.h>
@@ -20,11 +22,12 @@
 #endif
 
 // the messages that are sent
-std::string measuredValue; //JSON - SENML format
+Converter convert("Sensor_id", "Celsius", "100");
+SensorHandler oSensorHandler;
 
 // global constants
 // do not temper whit these in code (unless you know wot you are doing)
-// it is supposed to be defined as constants, but that is no compilebol
+// it is supposed to be defined as constants, but that is no compilable
 std::string SR_BASE_URI;
 std::string SR_BASE_URI_HTTPS;
 std::string PROVIDER_ADDRESS;
@@ -40,7 +43,7 @@ bool SECURE_ARROWHEAD_INTERFACE;
 bool SECURE_PROVIDER_INTERFACE;
 
 void debug_print(){
-	printf("\nDebug print for set params\n");
+	printf("\nDebug print for set prams\n");
 	printf("SR_BASE_URI: %s\n", SR_BASE_URI.c_str());
 	printf("SR_BASE_URI_HTTPS: %s\n", SR_BASE_URI_HTTPS.c_str());
 	printf("PROVIDER_ADDRESS: %s\n", PROVIDER_ADDRESS.c_str());
@@ -58,42 +61,11 @@ void debug_print(){
 
 const std::string version = "4.0";
 
-void init(){
 
-     measuredValue =
-          "{"
-               "\"e\":[{"
-                    "\"n\": \"this_is_the_sensor_id\","
-                    "\"v\":404.0,"
-                    "\"t\": \"0\""
-                    "}],"
-               "\"bn\": \"100\","
-               "\"bu\": \"Celsius\""
-          "}";
-	return;
-}
-
-void getTempCallback(const std_msgs::Float32::ConstPtr& msg){
-     time_t linuxEpochTime = std::time(0);
-     std::string sLinuxEpoch = std::to_string((uint64_t)linuxEpochTime);
-
-//convert double to string
-     std::ostringstream streamObj;
-     streamObj << std::fixed;
-     streamObj << std::setprecision(1);
-     streamObj << msg->data;
-     std::string sValue = streamObj.str();
-
-     measuredValue =
-          "{"
-               "\"e\":[{"
-                    "\"n\": \"this_is_the_sensor_id\","
-                    "\"v\":" + sValue +","
-                    "\"t\": \"" + sLinuxEpoch + "\""
-                    "}],"
-               "\"bn\": \"100\","
-               "\"bu\": \"Celsius\""
-          "}";
+void getTempCallback(const sensor_msgs::Temperature::ConstPtr& msg){
+    time_t linuxEpochTime = std::time(0);
+	convert.set(msg->temperature, msg->header.seq);
+    oSensorHandler.processProvider(convert.getJsonMsgs());
 	return;
 }
 
@@ -101,9 +73,9 @@ int main(int argc, char* argv[]){
 	ros::init(argc, argv, "service_example");
 	ros::NodeHandle n;
 
-	ros::Subscriber temperature_sub = n.subscribe<std_msgs::Float32>("client_example", 10,  getTempCallback);
+	ros::Subscriber temperature_sub = n.subscribe<sensor_msgs::Temperature>("temperature_example", 10,  getTempCallback);
 
-	// params
+	// prams
 	ros::NodeHandle nh("~");
 	nh.param<std::string>("SR_BASE_URI", SR_BASE_URI, "http://arrowhead.tmit.bme.hu:8442/serviceregistry/");
 	nh.param<std::string>("SR_BASE_URI_HTTPS", SR_BASE_URI_HTTPS, "https://arrowhead.tmit.bme.hu:8443/serviceregistry/");
@@ -125,22 +97,18 @@ int main(int argc, char* argv[]){
 	
 	
 	printf("\n=============================\nProvider Example - v%s\n=============================\n", version.c_str());
-
-	SensorHandler oSensorHandler;
-	init();
+	oSensorHandler.initSensorHandler();
+	convert.set(404, 1);
 //SenML format
 //todo:
 //generate own measured value into "measuredValue"
 //"value" should be periodically updated
 //"sLinuxEpoch" should be periodically updated
 
-	ros::Rate loop_rate(1);
-
 
 	 while (ros::ok()) {
-    	oSensorHandler.processProvider(measuredValue);
+    	oSensorHandler.processProvider(convert.getJsonMsgs());
 		ros::spin();
-		//loop_rate.sleep();
 	}
 
 	return 0;

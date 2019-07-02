@@ -12,14 +12,17 @@
 
 
 SensorHandler::SensorHandler(){
+}
+
+SensorHandler::~SensorHandler(void){
+}
+
+void SensorHandler::initSensorHandler(){
 	if (!init_ApplicationServiceInterface()){
 		fprintf(stderr, "unable to init applictionServiceInterface");
 	}
 	sensorIsRegistered = false;
-}
-
-SensorHandler::~SensorHandler(void){
-
+	return;
 }
 
 void SensorHandler::processProvider(std::string pJsonSenML) {
@@ -60,7 +63,7 @@ void SensorHandler::processProvider(std::string pJsonSenML) {
 		printf("Provider Registration is successful!\n");
 	}
 	else {
-		printf("Provider Registration is unsuccessful!\n");
+		fprintf(stderr,"Provider Registration is unsuccessful!\n");
 	}
 }
 
@@ -121,10 +124,12 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
 
           ah_dta_ext.sAuthenticationInfo = pubkeyContent;
 	}
-
+/*
      for(std::map<std::string,std::string>::iterator it = oProvidedService.metadata.begin(); it != oProvidedService.metadata.end(); ++it )
           ah_dta_ext.vService_Meta.insert(std::pair<string,string>(it->first, it->second));
-
+*/
+    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("unit", "Celsius"));
+    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("security", "token"));
 	int returnValue = registerToServiceRegistry(ah_dta_ext);
 
 	printf("%s Post sent (SenML baseName = %s)\n", SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", baseName.c_str());
@@ -182,10 +187,12 @@ bool SensorHandler::deregisterSensor(std::string _baseName){
 		return false;
 	}
 */
-
+/*
      for(std::map<std::string,std::string>::iterator it = oProvidedService.metadata.begin(); it != oProvidedService.metadata.end(); ++it )
           ah_dta_ext.vService_Meta.insert(std::pair<string,string>(it->first, it->second));
-
+*/
+    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("unit", "Celsius"));
+    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("security", "token"));
 /*
      if (!oProvidedService.getCustomURL(customURL)) {
 		printf("Error: Cannot find customURL\n");
@@ -304,6 +311,7 @@ int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, string *pResponse, 
 
 //check s - format: interface.serviceDefinition
 //
+/*
      std::string serviceInterface;
      if(!oProvidedService.getServiceInterface(serviceInterface)){
           printf("Error: Could not get Provider's Service Interface\n");
@@ -323,7 +331,7 @@ int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, string *pResponse, 
      else{
           printf("service identification is successful\n");
      }
-
+*/
 //check c - consumer certification common name
 //
 //Example:

@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 #add_service_files(FILES Example.srv)
 
 ## Generate added messages and services
-generate_messages(DEPENDENCIES std_msgs)
+#	generate_messages(DEPENDENCIES std_msgs)
 
 ## Declare a catkin package
 catkin_package()
@@ -33,7 +33,6 @@ include_directories(
 add_executable(service 
 	src/service.cpp
 	src/messages.cpp
-	src/Provider/ProvidedService.cpp
 	src/Provider/SensorHandler.cpp
 	src/Interface/Http_Handler.cpp
 	src/Interface/Https_Handler.cpp

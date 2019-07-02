@@ -6,7 +6,7 @@
 #include <mutex>
 #include "../Interface/ApplicationServiceInterface.hpp"
 #include "../global_const.hpp"
-#include "ProvidedService.h"
+//#include "ProvidedService.h"
 
 class SensorHandler : ApplicationServiceInterface
 {
@@ -14,6 +14,7 @@ public:
 	SensorHandler();
 	~SensorHandler();
 
+	void initSensorHandler();
 	void processProvider(std::string pJsonSenML);
 
 	//Overload - ApplicationServiceInterface callback
@@ -29,7 +30,7 @@ public:
      std::string meta_unit;
 
 	/*ProvidedServices*/
-	ProvidedService oProvidedService;
+	//ProvidedService oProvidedService;
 
 	/*Sensor registration, deregistration --- ApplicationService functions*/
 	bool registerSensor(std::string _jsonSenML);
