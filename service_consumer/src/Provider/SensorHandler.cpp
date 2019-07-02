@@ -18,7 +18,8 @@ SensorHandler::~SensorHandler(void){
 }
 
 void SensorHandler::initSensorHandler(){
-	if (!init_ApplicationServiceInterface()){
+	
+	if (!init_ApplicationServiceInterface(config)){
 		fprintf(stderr, "unable to init applictionServiceInterface");
 	}
 	sensorIsRegistered = false;
@@ -75,46 +76,14 @@ void SensorHandler::processProvider(std::string pJsonSenML) {
 --
 */
 bool SensorHandler::registerSensor(std::string _jsonSenML){
-	printf("\nREGISTRATION (%s, %s)\n\n", SECURE_PROVIDER_INTERFACE ? "Secure Provider" : "Insecure Provider", SECURE_ARROWHEAD_INTERFACE ? "Secure AHInterface" : "Insecure AHInterface");
+	printf("\nREGISTRATION (%s, %s)\n\n", config.SECURE_PROVIDER_INTERFACE ? "Secure Provider" : "Insecure Provider", config.SECURE_ARROWHEAD_INTERFACE ? "Secure AHInterface" : "Insecure AHInterface");
 
-	Arrowhead_Data_ext ah_dta_ext;
-/*
-	if (!oProvidedService.getSystemName(ah_dta_ext.sSystemName)) {
-		fprintf(stderr, "Error: Cannot find SystemName\n");
-		return false;
-	}
-
-	if(!oProvidedService.getServiceDefinition(ah_dta_ext.sServiceDefinition)) {
-		fprintf(stderr, "Error: Cannot find ServiceDefinition\n");
-		return false;
-	}
-
-	if (!oProvidedService.getServiceInterface(ah_dta_ext.sserviceInterface)) {
-		fprintf(stderr, "Error: Cannot find ServiceInterface\n");
-		return false;
-	}
-
-	if (SECURE_PROVIDER_INTERFACE && !oProvidedService.getPrivateKeyPath(privateKeyPath)) {
-		fprintf(stderr, "Error: Cannot find privateKeyPath for secure sensor: %s\n", baseName.c_str());
-		return false;
-	}
-
-	if (SECURE_PROVIDER_INTERFACE && !oProvidedService.getPublicKeyPath(publicKeyPath)) {
-		fprintf(stderr, "Error: Cannot find publicKeyPath for secure sensor: %s\n", baseName.c_str());
-		return false;
-	}
-
-	oProvidedService.getCustomURL(customURL);
-     ah_dta_ext.sServiceURI = customURL;
-*/
-	ah_dta_ext.sServiceURI = CUSTOM_URL;
-	ah_dta_ext.sSystemName = PROVIDER_SYSTEM_NAME;
-	ah_dta_ext.sServiceDefinition = SERVICE_DEFINITION;
-	ah_dta_ext.sserviceInterface = INTERFACE;
 	
-
-	if(SECURE_PROVIDER_INTERFACE){
-		std::ifstream ifs(PUBLIC_KEY_PATH.c_str());
+	///////////
+	// HTTPS //
+	///////////
+	if(config.SECURE_PROVIDER_INTERFACE){
+		std::ifstream ifs(config.PUBLIC_KEY_PATH.c_str());
 		std::string pubkeyContent( (std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()) );
 
 		pubkeyContent.erase(0, pubkeyContent.find("\n") + 1);
@@ -122,18 +91,18 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
 
           pubkeyContent.erase(std::remove(pubkeyContent.begin(), pubkeyContent.end(), '\n'), pubkeyContent.end());
 
-          ah_dta_ext.sAuthenticationInfo = pubkeyContent;
+          config.AUTHENTICATION_INFO = pubkeyContent;
 	}
-/*
-     for(std::map<std::string,std::string>::iterator it = oProvidedService.metadata.begin(); it != oProvidedService.metadata.end(); ++it )
-          ah_dta_ext.vService_Meta.insert(std::pair<string,string>(it->first, it->second));
-*/
-    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("unit", "Celsius"));
-    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("security", "token"));
-	int returnValue = registerToServiceRegistry(ah_dta_ext);
+    /////////
+	// end //
+	/////////
+	
+	config.SERVICE_META.insert(std::pair<string,string>("unit", "Celsius"));
+    config.SERVICE_META.insert(std::pair<string,string>("security", "token"));
+	int returnValue = registerToServiceRegistry(config);
 
-	printf("%s Post sent (SenML baseName = %s)\n", SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", baseName.c_str());
-	printf("%s Post return value: %d\n", SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", returnValue);
+	printf("%s Post sent (SenML baseName = %s)\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", baseName.c_str());
+	printf("%s Post return value: %d\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", returnValue);
 
 	if (returnValue == 201 /*Created*/){
           sensorIsRegistered = true;
@@ -144,7 +113,7 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
           printf("Already registered?\n");
 		printf("Try re-registration\n");
 
-		returnValue = unregisterFromServiceRegistry(ah_dta_ext);
+		returnValue = unregisterFromServiceRegistry(config);
 
 		if (returnValue == 200 /*OK*/ || returnValue == 204 /*No Content*/) {
 			printf("Unregistration is successful\n");
@@ -154,7 +123,7 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
 			return false;
 		}
 
-		returnValue = registerToServiceRegistry(ah_dta_ext);
+		returnValue = registerToServiceRegistry(config);
 
 		if (returnValue == 201 /*Created*/) {
                sensorIsRegistered = true;
@@ -170,42 +139,37 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
 //Send HTTP PUT to ServiceRegistry
 bool SensorHandler::deregisterSensor(std::string _baseName){
 
-	Arrowhead_Data_ext ah_dta_ext;
+	Arrowhead_Data_ext config;
 /*
-	if (!oProvidedService.getSystemName(ah_dta_ext.sSystemName)) {
+	if (!oProvidedService.getSystemName(config.sSystemName)) {
 		printf("Error: Cannot find SystemName\n");
 		return false;
 	}
 
-	if (!oProvidedService.getServiceDefinition(ah_dta_ext.sServiceDefinition)) {
+	if (!oProvidedService.getServiceDefinition(config.sServiceDefinition)) {
 		printf("Error: Cannot find ServiceDefinition\n");
 		return false;
 	}
 
-	if (!oProvidedService.getServiceInterface(ah_dta_ext.sserviceInterface)) {
+	if (!oProvidedService.getServiceInterface(config.sserviceInterface)) {
 		printf("Error: Cannot find ServiceInterface\n");
 		return false;
 	}
 */
 /*
      for(std::map<std::string,std::string>::iterator it = oProvidedService.metadata.begin(); it != oProvidedService.metadata.end(); ++it )
-          ah_dta_ext.vService_Meta.insert(std::pair<string,string>(it->first, it->second));
+          config.SERVICE_META.insert(std::pair<string,string>(it->first, it->second));
 */
-    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("unit", "Celsius"));
-    ah_dta_ext.vService_Meta.insert(std::pair<string,string>("security", "token"));
+    config.SERVICE_META.insert(std::pair<string,string>("unit", "Celsius"));
+    config.SERVICE_META.insert(std::pair<string,string>("security", "token"));
 /*
      if (!oProvidedService.getCustomURL(customURL)) {
 		printf("Error: Cannot find customURL\n");
 		return false;
 	}
 */
-    ah_dta_ext.sServiceURI = CUSTOM_URL;
-	ah_dta_ext.sSystemName = PROVIDER_SYSTEM_NAME;
-	ah_dta_ext.sServiceDefinition = SERVICE_DEFINITION;
-	ah_dta_ext.sserviceInterface = INTERFACE;
 	
-	
-	int returnValue = unregisterFromServiceRegistry(ah_dta_ext);
+	int returnValue = unregisterFromServiceRegistry(config);
 
 	if( returnValue == 200 /*OK*/ || returnValue == 204 /*No Content*/) {
 		return true;
@@ -223,7 +187,7 @@ int SensorHandler::Callback_Serve_HTTP_GET(const char *URL, string *pResponse){
      printf("\nHTTP GET request received\n");
 
      printf("Received URL: %s\n", URL);
-     std::string tmp = "/" + CUSTOM_URL;
+     std::string tmp = "/" + config.CUSTOM_URL;
 	if (strcmp(tmp.c_str(), URL) != 0) {
 		fprintf(stderr, "Error: Unknown URL: %s\n", URL);
 		return 1;
@@ -239,7 +203,7 @@ int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, string *pResponse, 
 	printf("\nHTTPs GET request received\n");
 
      printf("Received URL: %s\n", URL);
-     std::string tmp = "/" + CUSTOM_URL;
+     std::string tmp = "/" + config.CUSTOM_URL;
 	if (strcmp(tmp.c_str(), URL) != 0) {
 		printf("Error: Unknown URL: %s\n", URL);
 		return 1;
@@ -248,7 +212,7 @@ int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, string *pResponse, 
 //Set the own private key path for RSA algorithms
 
      RSASecurity oRSASecurity;
-	oRSASecurity.privateKeyPath = PRIVATE_KEY_PATH;
+	oRSASecurity.privateKeyPath = config.PRIVATE_KEY_PATH;
 
 	if(oRSASecurity.privateKeyPath.size() == 0){
 	    printf("Error: Unknown Provider Private Key File Path\n");

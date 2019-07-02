@@ -1,7 +1,5 @@
 #pragma once
 
-using namespace std;
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -23,16 +21,24 @@ using namespace std;
      }
 #endif
 
-using namespace std;
 
 typedef struct _Arrowhead_Data_ext
 {
-	string 				sServiceDefinition;
-	string 				sserviceInterface;
-	string				sSystemName;
-	string				sServiceURI;
-	map<string, string>		vService_Meta;
-	string				sAuthenticationInfo;
+	std::string PUBLIC_KEY_PATH;
+	std::string PRIVATE_KEY_PATH;
+	std::string SERVICE_DEFINITION;
+	std::string INTERFACE;
+	std::string	PROVIDER_SYSTEM_NAME;
+	std::string	CUSTOM_URL;
+	map<std::string, std::string> SERVICE_META;
+	std::string AUTHENTICATION_INFO;
+	std::string SR_BASE_URI;
+	std::string SR_BASE_URI_HTTPS;
+	std::string PROVIDER_ADDRESS;
+	std::string PROVIDER_ADDRESS6;
+	int PROVIDER_PORT;
+	bool SECURE_ARROWHEAD_INTERFACE;
+	bool SECURE_PROVIDER_INTERFACE;
 } Arrowhead_Data_ext;
 
 class ApplicationServiceInterface :
@@ -42,13 +48,8 @@ class ApplicationServiceInterface :
 private:
 	dictionary  *pini = NULL;
 
-//	string SR_BASE_URI;
-//	string SR_BASE_URI_HTTPS;
-//	string ADDRESS;
-//	string ADDRESS6;
-//	unsigned short PORT;
-	string URI;
-	string HTTPsURI;
+	std::string URI;
+	std::string HTTPsURI;
 
 	dictionary *Load_IniFile(char *fname);
 	int Unload_IniFile();
@@ -57,14 +58,15 @@ public:
 	ApplicationServiceInterface();
 	~ApplicationServiceInterface();
 
-	bool init_ApplicationServiceInterface();
+	bool init_ApplicationServiceInterface(Arrowhead_Data_ext &config);
 	int deinit( );
 	int registerToServiceRegistry(Arrowhead_Data_ext &stAH_data);
 	int unregisterFromServiceRegistry(Arrowhead_Data_ext &stAH_data);
 
-	int httpGETCallback(const char *Id, string *pData_str);
-	int httpsGETCallback(const char *Id, string *pData_str, string param_token, string param_signature, string clientDistName);
 
-	virtual int Callback_Serve_HTTP_GET(const char *Id, string *pData_str);
-	virtual int Callback_Serve_HTTPs_GET(const char *Id, string *pData_str, string param_token, string param_signature, string clientDistName);
+	int httpGETCallback(const char *Id, std::string *pData_str);
+	int httpsGETCallback(const char *Id, std::string *pData_str, std::string param_token, std::string param_signature, std::string clientDistName);
+
+	virtual int Callback_Serve_HTTP_GET(const char *Id, std::string *pData_str);
+	virtual int Callback_Serve_HTTPs_GET(const char *Id, std::string *pData_str, std::string param_token, std::string param_signature, std::string clientDistName);
 };

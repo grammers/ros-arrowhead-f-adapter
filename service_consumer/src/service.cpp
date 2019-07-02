@@ -5,7 +5,7 @@
 #include "sensor_msgs/Temperature.h"
 #include "messages.hpp"
 #include "Provider/SensorHandler.h"
-#include "global_const.hpp"
+//#include "global_const.hpp"
 
 #include <sstream>
 #include <string>
@@ -77,19 +77,19 @@ int main(int argc, char* argv[]){
 
 	// prams
 	ros::NodeHandle nh("~");
-	nh.param<std::string>("SR_BASE_URI", SR_BASE_URI, "http://arrowhead.tmit.bme.hu:8442/serviceregistry/");
-	nh.param<std::string>("SR_BASE_URI_HTTPS", SR_BASE_URI_HTTPS, "https://arrowhead.tmit.bme.hu:8443/serviceregistry/");
-	nh.param<std::string>("PROVIDER_ADDRESS", PROVIDER_ADDRESS, "10.0.0.40");
-	nh.param<std::string>("PROVIDER_ADDRESS6", PROVIDER_ADDRESS6, "[fe80::1a57:58d9:c43e:6319]");
-	nh.param<std::string>("CUSTOM_URL", CUSTOM_URL, "this_is_the_custom_url");
-	nh.param<std::string>("PROVIDER_SYSTEM_NAME", PROVIDER_SYSTEM_NAME, "SecureTemperatureSensor");
-	nh.param<std::string>("SERVICE_DEFINITION", SERVICE_DEFINITION, "IndoorTemperature_ProviderExample");
-	nh.param<std::string>("INTERFACE", INTERFACE, "JSON");
-	nh.param<std::string>("PRIVATE_KEY_PATH", PRIVATE_KEY_PATH, "keys/tempsensor.testcloud1.private.key");
-	nh.param<std::string>("PUBLIC_KEY_PATH", PUBLIC_KEY_PATH, "keys/tempsensor.testcloud1.publickey.pem");
-	nh.param<int>("PROVIDER_PORT", PROVIDER_PORT, 8452);
-	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", SECURE_ARROWHEAD_INTERFACE, false);
-	nh.param<bool>("SECURE_PROVIDER_INTERFACE", SECURE_PROVIDER_INTERFACE, false);
+	nh.param<std::string>("SR_BASE_URI", oSensorHandler.config.SR_BASE_URI, "http://arrowhead.tmit.bme.hu:8442/serviceregistry/");
+	nh.param<std::string>("SR_BASE_URI_HTTPS", oSensorHandler.config.SR_BASE_URI_HTTPS, "https://arrowhead.tmit.bme.hu:8443/serviceregistry/");
+	nh.param<std::string>("PROVIDER_ADDRESS", oSensorHandler.config.PROVIDER_ADDRESS, "10.0.0.40");
+	nh.param<std::string>("PROVIDER_ADDRESS6", oSensorHandler.config.PROVIDER_ADDRESS6, "[fe80::1a57:58d9:c43e:6319]");
+	nh.param<std::string>("CUSTOM_URL", oSensorHandler.config.CUSTOM_URL, "this_is_the_custom_url");
+	nh.param<std::string>("PROVIDER_SYSTEM_NAME", oSensorHandler.config.PROVIDER_SYSTEM_NAME, "SecureTemperatureSensor");
+	nh.param<std::string>("SERVICE_DEFINITION", oSensorHandler.config.SERVICE_DEFINITION, "IndoorTemperature_ProviderExample");
+	nh.param<std::string>("INTERFACE", oSensorHandler.config.INTERFACE, "JSON");
+	nh.param<std::string>("PRIVATE_KEY_PATH", oSensorHandler.config.PRIVATE_KEY_PATH, "keys/tempsensor.testcloud1.private.key");
+	nh.param<std::string>("PUBLIC_KEY_PATH", oSensorHandler.config.PUBLIC_KEY_PATH, "keys/tempsensor.testcloud1.publickey.pem");
+	nh.param<int>("PROVIDER_PORT", oSensorHandler.config.PROVIDER_PORT, 8452);
+	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", oSensorHandler.config.SECURE_ARROWHEAD_INTERFACE, false);
+	nh.param<bool>("SECURE_PROVIDER_INTERFACE", oSensorHandler.config.SECURE_PROVIDER_INTERFACE, false);
 	
 	bool debug = true;
 	if(debug)
@@ -98,7 +98,10 @@ int main(int argc, char* argv[]){
 	
 	printf("\n=============================\nProvider Example - v%s\n=============================\n", version.c_str());
 	oSensorHandler.initSensorHandler();
+
 	convert.set(404, 1);
+
+
 //SenML format
 //todo:
 //generate own measured value into "measuredValue"

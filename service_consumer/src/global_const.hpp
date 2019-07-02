@@ -1,6 +1,6 @@
 // global constants
 // can't be declared ass constants du to initalation prosses
-
+/*
 
 extern std::string SR_BASE_URI;
 extern std::string SR_BASE_URI_HTTPS;
@@ -17,3 +17,4 @@ extern int PROVIDER_PORT;
 
 extern bool SECURE_ARROWHEAD_INTERFACE;
 extern bool SECURE_PROVIDER_INTERFACE;
+*/

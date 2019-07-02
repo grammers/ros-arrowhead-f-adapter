@@ -5,7 +5,7 @@
 #include <map>
 #include <mutex>
 #include "../Interface/ApplicationServiceInterface.hpp"
-#include "../global_const.hpp"
+//#include "../global_const.hpp"
 //#include "ProvidedService.h"
 
 class SensorHandler : ApplicationServiceInterface
@@ -15,11 +15,14 @@ public:
 	~SensorHandler();
 
 	void initSensorHandler();
+
 	void processProvider(std::string pJsonSenML);
 
 	//Overload - ApplicationServiceInterface callback
 	int Callback_Serve_HTTP_GET(const char *Id, string *pStr);
 	int Callback_Serve_HTTPs_GET(const char *Id, string *pStr, string sToken, string sSignature, string clientDistName);
+
+	Arrowhead_Data_ext config;
 
      bool sensorIsRegistered;
 

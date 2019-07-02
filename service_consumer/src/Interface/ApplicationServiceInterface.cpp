@@ -36,22 +36,17 @@ int ApplicationServiceInterface::Callback_Serve_HTTPs_GET(const char *Id, string
 	return 1;
 }
 
-bool ApplicationServiceInterface::init_ApplicationServiceInterface()
+bool ApplicationServiceInterface::init_ApplicationServiceInterface(Arrowhead_Data_ext &config)
 {
 
-	//SR_BASE_URI       = iniparser_getstring(pini, "Server:sr_base_uri", (char *)"http://10.0.0.10:8442/serviceregistry/");
-	//SR_BASE_URI_HTTPS = iniparser_getstring(pini, "Server:sr_base_uri_https", (char *)"https://10.0.0.10:8443/serviceregistry/");
-	//PROVIDER_ADDRESS           = iniparser_getstring(pini, "Server:address", (char *)"10.0.0.11");
-	//PROVIDER_ADDRESS6          = iniparser_getstring(pini, "Server:address6", (char *)"[::1]");
-	//PROVIDER_PORT              = iniparser_getint(   pini, "Server:port", 8452);
 
-	if(PROVIDER_ADDRESS.size() != 0){
+	if(config.PROVIDER_ADDRESS.size() != 0){
 
-	    URI      = "http://"  + PROVIDER_ADDRESS + ":" + to_string(PROVIDER_PORT);
-	    HTTPsURI = "https://" + PROVIDER_ADDRESS6 + ":" + to_string(PROVIDER_PORT+1);
+	    URI      = "http://"  + config.PROVIDER_ADDRESS + ":" + to_string(config.PROVIDER_PORT);
+	    HTTPsURI = "https://" + config.PROVIDER_ADDRESS + ":" + to_string(config.PROVIDER_PORT+1);
 
-	    if( MakeServer(PROVIDER_PORT) ) {
-          fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", PROVIDER_ADDRESS.c_str(), PROVIDER_PORT);
+	    if( MakeServer(config.PROVIDER_PORT) ) {
+          fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", config.PROVIDER_ADDRESS.c_str(), config.PROVIDER_PORT);
           return false;
 	    }
 
@@ -60,29 +55,29 @@ bool ApplicationServiceInterface::init_ApplicationServiceInterface()
 //		return false;
 //	    }
 
-	    printf("\n(HTTP Server) started - %s:%d\n", PROVIDER_ADDRESS.c_str(), PROVIDER_PORT);
+	    printf("\n(HTTP Server) started - %s:%d\n", config.PROVIDER_ADDRESS.c_str(), config.PROVIDER_PORT);
 //	    printf("(HTTPs Server) started - %s:%d\n", PROVIDER_ADDRESS.c_str(), PROVIDER_PORT+1);
 	}
-	else{
+	else{ // ipv6
 	    printf("Warning: Could not parse IPv4 address from config, trying to use IPv6!\n");
 
-	    URI      = "http://"  + PROVIDER_ADDRESS6 + ":" + to_string(PROVIDER_PORT);
-	    HTTPsURI = "https://" + PROVIDER_ADDRESS6 + ":" + to_string(PROVIDER_PORT+1);
+	    URI      = "http://"  + config.PROVIDER_ADDRESS6 + ":" + to_string(config.PROVIDER_PORT);
+	    HTTPsURI = "https://" + config.PROVIDER_ADDRESS6 + ":" + to_string(config.PROVIDER_PORT+1);
 
 
-	    if( MakeServer(PROVIDER_PORT) ) {
-		printf("Error: Unable to start HTTP Server (%s:%d)!\n", PROVIDER_ADDRESS6.c_str(), PROVIDER_PORT);
+	    if( MakeServer(config.PROVIDER_PORT) ) {
+		printf("Error: Unable to start HTTP Server (%s:%d)!\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT);
 		return false;
 	    }
 
 
-	    if( MakeHttpsServer(PROVIDER_PORT+1) ) {
-		printf("Error: Unable to start HTTPs Server (%s:%d)!\n", PROVIDER_ADDRESS6.c_str(), PROVIDER_PORT+1);
+	    if( MakeHttpsServer(config.PROVIDER_PORT+1) ) {
+		printf("Error: Unable to start HTTPs Server (%s:%d)!\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT+1);
 		return false;
 	    }
 
-	    printf("\n(HTTP Server) started - %s:%d\n", PROVIDER_ADDRESS6.c_str(), PROVIDER_PORT);
-	    printf("\n(HTTPs Server) started - %s:%d\n", PROVIDER_ADDRESS6.c_str(), PROVIDER_PORT+1);
+	    printf("\n(HTTP Server) started - %s:%d\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT);
+	    printf("\n(HTTPs Server) started - %s:%d\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT+1);
 
 	}
 
@@ -119,7 +114,7 @@ int ApplicationServiceInterface::Unload_IniFile()
 	return 1;
 }
 
-inline const char *GetHttpPayload(Arrowhead_Data_ext &stAH_data)
+inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
 {
 
 //Expected content, example:
@@ -155,20 +150,20 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &stAH_data)
 *   ProvidedService section
 */
 
-    jstring = json_object_new_string(stAH_data.sServiceDefinition.c_str());
+    jstring = json_object_new_string(config.SERVICE_DEFINITION.c_str());
     json_object_object_add(providedService, "serviceDefinition", jstring);
 
     json_object *jarray = json_object_new_array();
-    jstring = json_object_new_string(stAH_data.sserviceInterface.c_str());
+    jstring = json_object_new_string(config.INTERFACE.c_str());
     json_object_array_add(jarray, jstring);
     json_object_object_add(providedService, "interfaces", jarray);
 
     json_object *serviceMetadata = json_object_new_object();
-    jstring = json_object_new_string(stAH_data.vService_Meta["unit"].c_str());
+    jstring = json_object_new_string(config.SERVICE_META["unit"].c_str());
     json_object_object_add(serviceMetadata, "unit", jstring);
 
-    if(stAH_data.sAuthenticationInfo.size() != 0){
-	jstring = json_object_new_string(stAH_data.vService_Meta["security"].c_str());
+    if(config.AUTHENTICATION_INFO.size() != 0){
+	jstring = json_object_new_string(config.SERVICE_META["security"].c_str());
 	json_object_object_add(serviceMetadata, "security", jstring);
     }
 
@@ -177,22 +172,22 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &stAH_data)
 /*
 *   Provider section
 */
-    jstring = json_object_new_string(stAH_data.sSystemName.c_str());
+    jstring = json_object_new_string(config.PROVIDER_SYSTEM_NAME.c_str());
     json_object_object_add(provider, "systemName", jstring);
 
-    jstring = json_object_new_string( PROVIDER_ADDRESS.size() != 0 ? PROVIDER_ADDRESS.c_str() : PROVIDER_ADDRESS6.c_str());
+    jstring = json_object_new_string( config.PROVIDER_ADDRESS.size() != 0 ? config.PROVIDER_ADDRESS.c_str() : config.PROVIDER_ADDRESS6.c_str());
     json_object_object_add(provider, "address", jstring);
 
-    if(stAH_data.sAuthenticationInfo.size() != 0){
+    if(config.AUTHENTICATION_INFO.size() != 0){
 
-	jstring = json_object_new_string(stAH_data.sAuthenticationInfo.c_str());
+	jstring = json_object_new_string(config.AUTHENTICATION_INFO.c_str());
 	json_object_object_add(provider, "authenticationInfo", jstring);
 
-	jint = json_object_new_int(PROVIDER_PORT+1);
+	jint = json_object_new_int(config.PROVIDER_PORT+1);
 	json_object_object_add(provider, "port", jint);
     }
     else{
-	jint = json_object_new_int(PROVIDER_PORT);
+	jint = json_object_new_int(config.PROVIDER_PORT);
 	json_object_object_add(provider, "port", jint);
     }
 
@@ -203,7 +198,7 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &stAH_data)
     json_object_object_add(jobj, "providedService", providedService);
     json_object_object_add(jobj, "provider", provider);
 
-    jstring = json_object_new_string(stAH_data.sServiceURI.c_str());
+    jstring = json_object_new_string(config.CUSTOM_URL.c_str());
     json_object_object_add(jobj, "serviceURI", jstring);
 
     jint = json_object_new_int(1);
@@ -216,18 +211,18 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &stAH_data)
 
 }
 
-int ApplicationServiceInterface::registerToServiceRegistry(Arrowhead_Data_ext &stAH_data)
+int ApplicationServiceInterface::registerToServiceRegistry(Arrowhead_Data_ext &config)
 {
-	if(SECURE_ARROWHEAD_INTERFACE)
-          return SendHttpsRequest(GetHttpPayload(stAH_data), SR_BASE_URI_HTTPS + "register", "POST");
+	if(config.SECURE_ARROWHEAD_INTERFACE)
+          return SendHttpsRequest(GetHttpPayload(config), config.SR_BASE_URI_HTTPS + "register", "POST");
      else
-          return SendRequest(GetHttpPayload(stAH_data), SR_BASE_URI + "register", "POST");
+          return SendRequest(GetHttpPayload(config), config.SR_BASE_URI + "register", "POST");
 }
 
-int ApplicationServiceInterface::unregisterFromServiceRegistry(Arrowhead_Data_ext &stAH_data)
+int ApplicationServiceInterface::unregisterFromServiceRegistry(	Arrowhead_Data_ext &config)
 {
-     if(SECURE_ARROWHEAD_INTERFACE)
-          return SendHttpsRequest(GetHttpPayload(stAH_data), SR_BASE_URI_HTTPS + "remove", "PUT");
+     if(config.SECURE_ARROWHEAD_INTERFACE)
+          return SendHttpsRequest(GetHttpPayload(config), config.SR_BASE_URI_HTTPS + "remove", "PUT");
      else
-          return SendRequest(GetHttpPayload(stAH_data), SR_BASE_URI + "remove", "PUT");
+          return SendRequest(GetHttpPayload(config), config.SR_BASE_URI + "remove", "PUT");
 }
