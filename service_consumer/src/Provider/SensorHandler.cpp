@@ -17,37 +17,38 @@ SensorHandler::SensorHandler(){
 SensorHandler::~SensorHandler(void){
 }
 
-void SensorHandler::initSensorHandler(){
+void SensorHandler::initSensorHandler(std::string baseName){
 	
 	if (!init_ApplicationServiceInterface(config)){
 		fprintf(stderr, "unable to init applictionServiceInterface");
 	}
+	SensorHandler::baseName = baseName;
 	sensorIsRegistered = false;
 	return;
 }
 
-void SensorHandler::processProvider(std::string pJsonSenML) {
+void SensorHandler::processProvider(json_object *pJsonSenML) {
 // todo:
 // Delete the following source code if not using json/SenML
 
-	json_object *obj = json_tokener_parse(pJsonSenML.c_str());
 
-	if(obj == NULL){
-	    fprintf(stderr, "Error: Could not parse SenML: %s\n", pJsonSenML.c_str());
+	if(pJsonSenML == NULL){
+	    fprintf(stderr, "Error: Could not parse SenML: %s\n", json_object_get_string(pJsonSenML));
 	    return;
 	}
 
      json_object *jBN;
-	if(!json_object_object_get_ex(obj, "bn", &jBN)){
+	if(!json_object_object_get_ex(pJsonSenML, "bn", &jBN)){
 	    fprintf(stderr, "Error: received json does not contain bn field!\n");
 	    return;
 	}
 
-	baseName = std::string(json_object_get_string(jBN));
+	std::string bn = std::string(json_object_get_string(jBN));
 
-
-//todo: check baseUnit and value... SenML must contain the measured value
-
+	if(bn != baseName){
+		fprintf(stderr, "baseNames don not match: %s != %s\n", bn.c_str(), baseName.c_str());
+		return;
+	}
 
 //do not modify below this
 	if (sensorIsRegistered) {
@@ -55,16 +56,6 @@ void SensorHandler::processProvider(std::string pJsonSenML) {
 		printf("New measurement received from: %s\n", baseName.c_str());
 		printf("LastValue updated.\n");
 		return;
-	}
-
-	printf("\nMeasured value received from: (Base Name: %s)\n", baseName.c_str());
-	printf("Provider is not registered yet!\n");
-
-	if (registerSensor(pJsonSenML)) {
-		printf("Provider Registration is successful!\n");
-	}
-	else {
-		fprintf(stderr,"Provider Registration is unsuccessful!\n");
 	}
 }
 
@@ -75,7 +66,7 @@ void SensorHandler::processProvider(std::string pJsonSenML) {
 -- Registration, deregistration
 --
 */
-bool SensorHandler::registerSensor(std::string _jsonSenML){
+bool SensorHandler::registerSensor(){
 	printf("\nREGISTRATION (%s, %s)\n\n", config.SECURE_PROVIDER_INTERFACE ? "Secure Provider" : "Insecure Provider", config.SECURE_ARROWHEAD_INTERFACE ? "Secure AHInterface" : "Insecure AHInterface");
 
 	
@@ -104,7 +95,6 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
 
 	if (returnValue == 201 /*Created*/){
           sensorIsRegistered = true;
-		lastMeasuredValue = _jsonSenML;
 		return true;
 	}
 	else{
@@ -125,10 +115,10 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
 
 		if (returnValue == 201 /*Created*/) {
                sensorIsRegistered = true;
-			lastMeasuredValue = _jsonSenML;
                return true;
 		}
 		else {
+			fprintf(stderr, "unsuccessful registration\n");
 			return false; //unsuccessful registration
 		}
 	}
@@ -189,8 +179,8 @@ int SensorHandler::Callback_Serve_HTTP_GET(const char *URL, string *pResponse){
 		return 1;
 	}
 
-     *pResponse = lastMeasuredValue;
-     printf("Response:\n%s\n\n", lastMeasuredValue.c_str());
+     *pResponse = json_object_get_string(lastMeasuredValue);
+     printf("Response:\n%s\n\n", pResponse);
 
 	return 1;
 }
@@ -317,8 +307,8 @@ int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, string *pResponse, 
           }
 	}
 
-     *pResponse = lastMeasuredValue;
-     printf("Response:\n%s\n\n", lastMeasuredValue.c_str());
+     *pResponse = json_object_get_string(lastMeasuredValue);
+     printf("Response:\n%s\n\n", pResponse);
 
 	return 1;
 }

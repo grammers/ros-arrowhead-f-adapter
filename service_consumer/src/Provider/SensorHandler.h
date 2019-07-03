@@ -14,9 +14,9 @@ public:
 	SensorHandler();
 	~SensorHandler();
 
-	void initSensorHandler();
+	void initSensorHandler(std::string baseName);
 
-	void processProvider(std::string pJsonSenML);
+	void processProvider(json_object *pJsonSenML);
 
 	//Overload - ApplicationServiceInterface callback
 	int Callback_Serve_HTTP_GET(const char *Id, string *pStr);
@@ -29,14 +29,14 @@ public:
      std::string baseName;
      std::string baseUnit;
 	double value;
-	std::string lastMeasuredValue;
-     std::string meta_unit;
+	json_object *lastMeasuredValue;
+    std::string meta_unit;
 
 	/*ProvidedServices*/
 	//ProvidedService oProvidedService;
 
 	/*Sensor registration, deregistration --- ApplicationService functions*/
-	bool registerSensor(std::string _jsonSenML);
+	bool registerSensor();
 	bool deregisterSensor(std::string _sensorURI);
 
 };

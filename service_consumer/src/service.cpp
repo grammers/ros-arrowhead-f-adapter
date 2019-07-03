@@ -62,9 +62,8 @@ int main(int argc, char* argv[]){
 	oSensorHandler.config.print();
 	
 	printf("\n=============================\nProvider Example - v%s\n=============================\n", version.c_str());
-	oSensorHandler.initSensorHandler();
+	oSensorHandler.initSensorHandler(oSensorHandler.config.PROVIDER_SYSTEM_NAME);
 	convert.init("sensor_id", oSensorHandler.config.UNIT, oSensorHandler.config.PROVIDER_SYSTEM_NAME);
-	convert.set(404, 1);
 
 
 //SenML format
@@ -74,8 +73,14 @@ int main(int argc, char* argv[]){
 //"sLinuxEpoch" should be periodically updated
 
 
-	 while (ros::ok()) {
-    	oSensorHandler.processProvider(convert.getJsonMsgs());
+   	oSensorHandler.registerSensor();
+	// to reserve msgs mast it be define first
+	// should not be don her. 
+	// But good for testing
+	convert.set(404, 1);
+    oSensorHandler.processProvider(convert.getJsonMsgs());
+	
+	while (ros::ok()) {
 		ros::spin();
 	}
 

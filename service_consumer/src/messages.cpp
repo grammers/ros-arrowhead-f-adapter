@@ -7,10 +7,10 @@ Converter::Converter(){
 Converter::~Converter(){
 }
 
-void Converter::init(std::string sid, std::string du, std::string id){
-	sensor_id = sid;
-	data_unit = du;
-	identety = id;
+void Converter::init(std::string sensor_id, std::string unit, std::string baseName){
+	Converter::sensor_id = sensor_id;
+	data_unit = unit;
+	identety = baseName;
 }
 
 
@@ -58,6 +58,6 @@ void Converter::set(double temp, int time){
 	return;
 }
 
-std::string Converter::getJsonMsgs(){
-	return json_object_get_string(obj);
+json_object* Converter::getJsonMsgs(){
+	return obj;
 }
