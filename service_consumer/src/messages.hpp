@@ -8,10 +8,10 @@
 class Converter {
 
 public:
-	Converter(std::string sid, std::string du, std::string id);
 	Converter();
 	~Converter();
 
+	void init(std::string sid, std::string du, std::string id);
 	// the message reserved in ROS msgs format
 	static std_msgs::Float32 temperature;
 	// parse returning msgs ("pte") from provider to ROS msgs

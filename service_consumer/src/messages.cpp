@@ -2,15 +2,17 @@
 
 std_msgs::Float32 Converter::temperature;
 
-Converter::Converter(std::string sid, std::string du, std::string id){
-	sensor_id = sid;
-	data_unit = du;
-	identety = id;
-}
 Converter::Converter(){
 }
 Converter::~Converter(){
 }
+
+void Converter::init(std::string sid, std::string du, std::string id){
+	sensor_id = sid;
+	data_unit = du;
+	identety = id;
+}
+
 
 // the received msgs:
 // 	{

@@ -5,7 +5,6 @@
 #include "sensor_msgs/Temperature.h"
 #include "messages.hpp"
 #include "Provider/SensorHandler.h"
-//#include "global_const.hpp"
 
 #include <sstream>
 #include <string>
@@ -22,42 +21,8 @@
 #endif
 
 // the messages that are sent
-Converter convert("Sensor_id", "Celsius", "100");
+Converter convert;
 SensorHandler oSensorHandler;
-
-// global constants
-// do not temper whit these in code (unless you know wot you are doing)
-// it is supposed to be defined as constants, but that is no compilable
-std::string SR_BASE_URI;
-std::string SR_BASE_URI_HTTPS;
-std::string PROVIDER_ADDRESS;
-std::string PROVIDER_ADDRESS6;
-std::string CUSTOM_URL;
-std::string PROVIDER_SYSTEM_NAME;
-std::string SERVICE_DEFINITION;
-std::string INTERFACE;
-std::string PRIVATE_KEY_PATH;
-std::string PUBLIC_KEY_PATH;
-int PROVIDER_PORT;
-bool SECURE_ARROWHEAD_INTERFACE;
-bool SECURE_PROVIDER_INTERFACE;
-
-void debug_print(){
-	printf("\nDebug print for set prams\n");
-	printf("SR_BASE_URI: %s\n", SR_BASE_URI.c_str());
-	printf("SR_BASE_URI_HTTPS: %s\n", SR_BASE_URI_HTTPS.c_str());
-	printf("PROVIDER_ADDRESS: %s\n", PROVIDER_ADDRESS.c_str());
-	printf("PROVIDER_ADDRESS6: %s\n", PROVIDER_ADDRESS6.c_str());
-	printf("CUSTOM_URL: %s\n", CUSTOM_URL.c_str());
-	printf("PROVIDER_SYSTEM_NAME: %s\n", PROVIDER_SYSTEM_NAME.c_str());
-	printf("SERVICE_DEFINITION: %s\n", SERVICE_DEFINITION.c_str());
-	printf("INTERFACE: %s\n", INTERFACE.c_str());
-	printf("PRIVATE_KEY_PATH: %s\n", PRIVATE_KEY_PATH.c_str());
-	printf("PUBLIC_KEY_PATH: %s\n", PUBLIC_KEY_PATH.c_str());
-	printf("PROVIDER_PORT: %i\n", PROVIDER_PORT);
-	printf("SECURE_ARROWHEAD_INTERFACE: %s\n", std::to_string(SECURE_ARROWHEAD_INTERFACE).c_str());
-	printf("SECURE_PROVIDER_INTERFACE: %s\n", std::to_string(SECURE_PROVIDER_INTERFACE).c_str());
-}
 
 const std::string version = "4.0";
 
@@ -87,18 +52,18 @@ int main(int argc, char* argv[]){
 	nh.param<std::string>("INTERFACE", oSensorHandler.config.INTERFACE, "JSON");
 	nh.param<std::string>("PRIVATE_KEY_PATH", oSensorHandler.config.PRIVATE_KEY_PATH, "keys/tempsensor.testcloud1.private.key");
 	nh.param<std::string>("PUBLIC_KEY_PATH", oSensorHandler.config.PUBLIC_KEY_PATH, "keys/tempsensor.testcloud1.publickey.pem");
+	nh.param<std::string>("UNIT", oSensorHandler.config.UNIT, "Celsius");
+	nh.param<std::string>("SECURITY", oSensorHandler.config.SECURITY, "token");
 	nh.param<int>("PROVIDER_PORT", oSensorHandler.config.PROVIDER_PORT, 8452);
 	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", oSensorHandler.config.SECURE_ARROWHEAD_INTERFACE, false);
 	nh.param<bool>("SECURE_PROVIDER_INTERFACE", oSensorHandler.config.SECURE_PROVIDER_INTERFACE, false);
 	
-	bool debug = true;
-	if(debug)
-		debug_print();
 	
+	oSensorHandler.config.print();
 	
 	printf("\n=============================\nProvider Example - v%s\n=============================\n", version.c_str());
 	oSensorHandler.initSensorHandler();
-
+	convert.init("sensor_id", oSensorHandler.config.UNIT, oSensorHandler.config.PROVIDER_SYSTEM_NAME);
 	convert.set(404, 1);
 
 

@@ -97,8 +97,6 @@ bool SensorHandler::registerSensor(std::string _jsonSenML){
 	// end //
 	/////////
 	
-	config.SERVICE_META.insert(std::pair<string,string>("unit", "Celsius"));
-    config.SERVICE_META.insert(std::pair<string,string>("security", "token"));
 	int returnValue = registerToServiceRegistry(config);
 
 	printf("%s Post sent (SenML baseName = %s)\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", baseName.c_str());
@@ -160,8 +158,6 @@ bool SensorHandler::deregisterSensor(std::string _baseName){
      for(std::map<std::string,std::string>::iterator it = oProvidedService.metadata.begin(); it != oProvidedService.metadata.end(); ++it )
           config.SERVICE_META.insert(std::pair<string,string>(it->first, it->second));
 */
-    config.SERVICE_META.insert(std::pair<string,string>("unit", "Celsius"));
-    config.SERVICE_META.insert(std::pair<string,string>("security", "token"));
 /*
      if (!oProvidedService.getCustomURL(customURL)) {
 		printf("Error: Cannot find customURL\n");

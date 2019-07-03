@@ -159,11 +159,11 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
     json_object_object_add(providedService, "interfaces", jarray);
 
     json_object *serviceMetadata = json_object_new_object();
-    jstring = json_object_new_string(config.SERVICE_META["unit"].c_str());
+    jstring = json_object_new_string(config.UNIT.c_str());
     json_object_object_add(serviceMetadata, "unit", jstring);
 
     if(config.AUTHENTICATION_INFO.size() != 0){
-	jstring = json_object_new_string(config.SERVICE_META["security"].c_str());
+	jstring = json_object_new_string(config.SECURITY.c_str());
 	json_object_object_add(serviceMetadata, "security", jstring);
     }
 

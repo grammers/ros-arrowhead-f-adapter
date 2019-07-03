@@ -11,7 +11,6 @@
 #include <json-c/json.h>
 #include "Http_Handler.hpp"
 #include "Https_Handler.hpp"
-#include "../global_const.hpp"
 
 #ifdef __linux__
      #include "ini/iniparser.h"
@@ -30,7 +29,8 @@ typedef struct _Arrowhead_Data_ext
 	std::string INTERFACE;
 	std::string	PROVIDER_SYSTEM_NAME;
 	std::string	CUSTOM_URL;
-	map<std::string, std::string> SERVICE_META;
+	std::string UNIT;
+	std::string SECURITY;
 	std::string AUTHENTICATION_INFO;
 	std::string SR_BASE_URI;
 	std::string SR_BASE_URI_HTTPS;
@@ -39,6 +39,26 @@ typedef struct _Arrowhead_Data_ext
 	int PROVIDER_PORT;
 	bool SECURE_ARROWHEAD_INTERFACE;
 	bool SECURE_PROVIDER_INTERFACE;
+
+	void print(){
+		printf("The set params");
+		printf("PUBLIC_KEY_PATH: %s\n", PUBLIC_KEY_PATH.c_str());
+		printf("PRIVATE_KEY_PATH: %s\n", PRIVATE_KEY_PATH.c_str());
+		printf("SERVICE_DEFINITION: %s\n", SERVICE_DEFINITION.c_str());
+		printf("INTERFACE: %s\n", INTERFACE.c_str());
+		printf("PROVIDER_SYSTEM_NAME: %s\n", PROVIDER_SYSTEM_NAME.c_str());
+		printf("CUSTOM_URL: %s\n", CUSTOM_URL.c_str());
+		printf("UNIT : %s\n", UNIT.c_str());
+		printf("SECURITY: %s\n", SECURITY.c_str());
+		printf("AUTHENTICATION_INFO: %s\n", AUTHENTICATION_INFO.c_str());
+		printf("SR_BASE_URI: %s\n", SR_BASE_URI.c_str());
+		printf("SR_BASE_URI_HTTPS: %s\n", SR_BASE_URI_HTTPS.c_str());
+		printf("PROVIDER_ADDRESS: %s\n", PROVIDER_ADDRESS.c_str());
+		printf("PROVIDER_ADDRESS6: %s\n", PROVIDER_ADDRESS6.c_str());
+		printf("PROVIDER_PORT: %i\n", PROVIDER_PORT);
+		printf(":SECURE_ARROWHEAD_INTERFACE %s\n", std::to_string(SECURE_ARROWHEAD_INTERFACE).c_str());
+		printf("SECURE_PROVIDER_INTERFACE: %s\n", std::to_string(SECURE_PROVIDER_INTERFACE).c_str());
+	}
 } Arrowhead_Data_ext;
 
 class ApplicationServiceInterface :
