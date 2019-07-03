@@ -18,28 +18,29 @@ SensorHandler::~SensorHandler(void){
 }
 
 void SensorHandler::initSensorHandler(std::string baseName){
-	
+
+	// test sow there in not an error in set up for applicationServiceInterface
 	if (!init_ApplicationServiceInterface(config)){
 		fprintf(stderr, "unable to init applictionServiceInterface");
 	}
 	SensorHandler::baseName = baseName;
 	sensorIsRegistered = false;
+	registerSensor(); // register in the service register
 	return;
 }
 
 void SensorHandler::processProvider(json_object *pJsonSenML) {
-// todo:
-// Delete the following source code if not using json/SenML
-
-
+	//////////////////////////////////
+	// check sow it it a valid msgs //
+	//////////////////////////////////
 	if(pJsonSenML == NULL){
 	    fprintf(stderr, "Error: Could not parse SenML: %s\n", json_object_get_string(pJsonSenML));
 	    return;
 	}
 
      json_object *jBN;
-	if(!json_object_object_get_ex(pJsonSenML, "bn", &jBN)){
-	    fprintf(stderr, "Error: received json does not contain bn field!\n");
+	if(!json_object_object_get_ex(pJsonSenML, "BaseName", &jBN)){
+	    fprintf(stderr, "Error: received json does not contain BaseName field!\n");
 	    return;
 	}
 
@@ -49,8 +50,11 @@ void SensorHandler::processProvider(json_object *pJsonSenML) {
 		fprintf(stderr, "baseNames don not match: %s != %s\n", bn.c_str(), baseName.c_str());
 		return;
 	}
-
-//do not modify below this
+	///////////////
+	// check end //
+	///////////////
+	
+	// is sensor is register is a new msgs set
 	if (sensorIsRegistered) {
 		lastMeasuredValue = pJsonSenML;
 		printf("New measurement received from: %s\n", baseName.c_str());
@@ -80,14 +84,16 @@ bool SensorHandler::registerSensor(){
 		pubkeyContent.erase(0, pubkeyContent.find("\n") + 1);
 		pubkeyContent = pubkeyContent.substr(0, pubkeyContent.size()-25);
 
-          pubkeyContent.erase(std::remove(pubkeyContent.begin(), pubkeyContent.end(), '\n'), pubkeyContent.end());
+        pubkeyContent.erase(std::remove(pubkeyContent.begin(), pubkeyContent.end(), '\n'), pubkeyContent.end());
 
-          config.AUTHENTICATION_INFO = pubkeyContent;
+        config.AUTHENTICATION_INFO = pubkeyContent;
 	}
     /////////
 	// end //
 	/////////
-	
+
+	// try to register in arrowhead servisRegistry (called function in AppligcationInterFace)
+	// return int for error checking
 	int returnValue = registerToServiceRegistry(config);
 
 	printf("%s Post sent (SenML baseName = %s)\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", baseName.c_str());
@@ -97,8 +103,9 @@ bool SensorHandler::registerSensor(){
           sensorIsRegistered = true;
 		return true;
 	}
-	else{
-          printf("Already registered?\n");
+	else{ // error handling
+
+         printf("Already registered?\n");
 		printf("Try re-registration\n");
 
 		returnValue = unregisterFromServiceRegistry(config);
@@ -107,7 +114,7 @@ bool SensorHandler::registerSensor(){
 			printf("Unregistration is successful\n");
 		}
 		else {
-			printf("Unregistration is unsuccessful\n");
+			fprintf(stderr, "Unregistration is unsuccessful\n");
 			return false;
 		}
 
@@ -127,34 +134,6 @@ bool SensorHandler::registerSensor(){
 //Send HTTP PUT to ServiceRegistry
 bool SensorHandler::deregisterSensor(std::string _baseName){
 
-	Arrowhead_Data_ext config;
-/*
-	if (!oProvidedService.getSystemName(config.sSystemName)) {
-		printf("Error: Cannot find SystemName\n");
-		return false;
-	}
-
-	if (!oProvidedService.getServiceDefinition(config.sServiceDefinition)) {
-		printf("Error: Cannot find ServiceDefinition\n");
-		return false;
-	}
-
-	if (!oProvidedService.getServiceInterface(config.sserviceInterface)) {
-		printf("Error: Cannot find ServiceInterface\n");
-		return false;
-	}
-*/
-/*
-     for(std::map<std::string,std::string>::iterator it = oProvidedService.metadata.begin(); it != oProvidedService.metadata.end(); ++it )
-          config.SERVICE_META.insert(std::pair<string,string>(it->first, it->second));
-*/
-/*
-     if (!oProvidedService.getCustomURL(customURL)) {
-		printf("Error: Cannot find customURL\n");
-		return false;
-	}
-*/
-	
 	int returnValue = unregisterFromServiceRegistry(config);
 
 	if( returnValue == 200 /*OK*/ || returnValue == 204 /*No Content*/) {
@@ -169,23 +148,29 @@ bool SensorHandler::deregisterSensor(std::string _baseName){
 -- Called, when Consumer request arrives -- HTTP GET Request
 --
 */
-int SensorHandler::Callback_Serve_HTTP_GET(const char *URL, string *pResponse){
-     printf("\nHTTP GET request received\n");
+int SensorHandler::Callback_Serve_HTTP_GET(const char *URL, std::string *pResponse){
+    printf("\nHTTP GET request received\n");
 
-     printf("Received URL: %s\n", URL);
-     std::string tmp = "/" + config.CUSTOM_URL;
+    printf("Received URL: %s\n", URL);
+    std::string tmp = "/" + config.CUSTOM_URL;
+	// test sow the request has arived at the correct place 
 	if (strcmp(tmp.c_str(), URL) != 0) {
 		fprintf(stderr, "Error: Unknown URL: %s\n", URL);
 		return 1;
 	}
 
      *pResponse = json_object_get_string(lastMeasuredValue);
-     printf("Response:\n%s\n\n", pResponse);
+     printf("Response:\n%s\n\n", pResponse->c_str());
 
 	return 1;
 }
 
-int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, string *pResponse, string _sToken, string _sSignature, string _clientDistName){
+/*
+--
+-- Called, when Consumer request arrives -- HTTPs GET Request
+--
+*/
+int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, std::string *pResponse, std::string _sToken, std::string _sSignature, std::string _clientDistName){
 	printf("\nHTTPs GET request received\n");
 
      printf("Received URL: %s\n", URL);
@@ -308,7 +293,7 @@ int SensorHandler::Callback_Serve_HTTPs_GET(const char *URL, string *pResponse, 
 	}
 
      *pResponse = json_object_get_string(lastMeasuredValue);
-     printf("Response:\n%s\n\n", pResponse);
+     printf("Response:\n%s\n\n", pResponse->c_str());
 
 	return 1;
 }

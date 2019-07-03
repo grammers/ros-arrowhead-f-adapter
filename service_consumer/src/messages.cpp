@@ -7,6 +7,7 @@ Converter::Converter(){
 Converter::~Converter(){
 }
 
+// these initial set up can't be don in the constructor dud to where it is declared and where the params that are used to set it up is declared.
 void Converter::init(std::string sensor_id, std::string unit, std::string baseName){
 	Converter::sensor_id = sensor_id;
 	data_unit = unit;
@@ -14,14 +15,14 @@ void Converter::init(std::string sensor_id, std::string unit, std::string baseNa
 }
 
 
-// the received msgs:
+// the msgs:
 // 	{
-// 		"e":[{
-// 			"n": "this_is_the_sensor_id",
-// 			"v":39.0,
-// 			"t": "1561633848"}],
-// 		"bn": "100",
-// 		"bu": "Celsius"
+// 		"Entity":[{
+// 			"ID": "this_is_the_sensor_id",
+// 			"Temperature":39.0,
+// 			"Time_stamp": "1561633848"}],
+// 		"BaseName": "100",
+// 		"Unit": "Celsius"
 // 	}
 
 void Converter::parce(char *ptr){
@@ -32,16 +33,18 @@ void Converter::parce(char *ptr){
 	
 	// relevant data is in a nested array
 	struct json_object *e;
-	json_object_object_get_ex(obj, "e", &e);
+	json_object_object_get_ex(obj, "Entity", &e);
 
 	// get interesting data from json array object
 	// the array has length 1 but contains a json object
 	struct json_object *v;
 	json_object_object_get_ex(
-		json_object_array_get_idx(e,0), "v", &v);
+		json_object_array_get_idx(e,0), "Temperature", &v);
 	temperature.data  = json_object_get_double(v);	
 }
 
+
+// build the msgs that are sent.
 void Converter::set(double temp, int time){
 	obj = json_object_new_object();	
 	json_object *arr_obj = json_object_new_array();
@@ -52,12 +55,13 @@ void Converter::set(double temp, int time){
 	json_object_object_add(arr_cont,"Time_stamp", json_object_new_int(time));
 	json_object_array_add(arr_obj, arr_cont);
 	json_object_object_add(obj,"Entity", arr_obj);
-	json_object_object_add(obj,"bn", json_object_new_string(identety.c_str()));
+	json_object_object_add(obj,"BaseName", json_object_new_string(identety.c_str()));
 	json_object_object_add(obj,"Unit", json_object_new_string(data_unit.c_str()));
 
 	return;
 }
 
+// return the msgs
 json_object* Converter::getJsonMsgs(){
 	return obj;
 }

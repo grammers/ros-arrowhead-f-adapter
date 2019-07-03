@@ -20,27 +20,31 @@
      #include <windows.h>
 #endif
 
-// the messages that are sent
+// create instances of classes that are used
 Converter convert;
 SensorHandler oSensorHandler;
 
-const std::string version = "4.0";
-
-
+// The ROS callback function
+// reads input
+// set msgs to send
 void getTempCallback(const sensor_msgs::Temperature::ConstPtr& msg){
-    time_t linuxEpochTime = std::time(0);
-	convert.set(msg->temperature, msg->header.seq);
+	// set new msgs and update msgs to be sent
+	convert.set(msg->temperature, msg->header.seq); 
     oSensorHandler.processProvider(convert.getJsonMsgs());
 	return;
 }
 
 int main(int argc, char* argv[]){
+	// init ROS
 	ros::init(argc, argv, "service_example");
 	ros::NodeHandle n;
 
+	// crate a ROS subscriber that listens for a temperature measurement
 	ros::Subscriber temperature_sub = n.subscribe<sensor_msgs::Temperature>("temperature_example", 10,  getTempCallback);
 
-	// prams
+	// prams setted in launch
+	// stored in a arrowhead struck named Arrowhead_Data_ext
+	// mainly used to configure the precumer
 	ros::NodeHandle nh("~");
 	nh.param<std::string>("SR_BASE_URI", oSensorHandler.config.SR_BASE_URI, "http://arrowhead.tmit.bme.hu:8442/serviceregistry/");
 	nh.param<std::string>("SR_BASE_URI_HTTPS", oSensorHandler.config.SR_BASE_URI_HTTPS, "https://arrowhead.tmit.bme.hu:8443/serviceregistry/");
@@ -58,28 +62,31 @@ int main(int argc, char* argv[]){
 	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", oSensorHandler.config.SECURE_ARROWHEAD_INTERFACE, false);
 	nh.param<bool>("SECURE_PROVIDER_INTERFACE", oSensorHandler.config.SECURE_PROVIDER_INTERFACE, false);
 	
-	
+	// Print the configure parameters
 	oSensorHandler.config.print();
 	
-	printf("\n=============================\nProvider Example - v%s\n=============================\n", version.c_str());
+	// Set up the arrowhead part
+	// param is the baseName, used to verify that the correct messages are sent. 
 	oSensorHandler.initSensorHandler(oSensorHandler.config.PROVIDER_SYSTEM_NAME);
+	
+	// Set up the message
+	// param 
+	// @ sensor_id identification name (suggest, use same as service id in arrowhead database)
+	// @ unit the unit that the data are sent in
+	// @ baseName must be some as above
 	convert.init("sensor_id", oSensorHandler.config.UNIT, oSensorHandler.config.PROVIDER_SYSTEM_NAME);
 
 
-//SenML format
-//todo:
-//generate own measured value into "measuredValue"
-//"value" should be periodically updated
-//"sLinuxEpoch" should be periodically updated
 
-
-   	oSensorHandler.registerSensor();
 	// to reserve msgs mast it be define first
 	// should not be don her. 
 	// But good for testing
+	// TODO set it to whit for first update form sensor
 	convert.set(404, 1);
     oSensorHandler.processProvider(convert.getJsonMsgs());
 	
+	// start running
+	// wait for interrupts
 	while (ros::ok()) {
 		ros::spin();
 	}

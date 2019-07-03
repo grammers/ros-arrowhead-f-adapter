@@ -1,6 +1,6 @@
 #pragma once
 #include "std_msgs/Float32.h"
-#include <ros/ros.h>
+//#include <ros/ros.h>
 #include "Interface/include/curl/curl.h"
 #include "microhttpd.h"
 #include "json-c/json.h"
@@ -11,13 +11,25 @@ public:
 	Converter();
 	~Converter();
 
-	void init(std::string sensor_id, std::string unit, std::string baseName);
 	// the message reserved in ROS msgs format
 	static std_msgs::Float32 temperature;
+	
+	// a set up to set private variables for msgs building
+	// param
+	// @ sensor_id Identification name the sensor
+	// @ unit the unit of the requested data
+	// @ baseName identification name for the procomer
+	void init(std::string sensor_id, std::string unit, std::string baseName);
+
 	// parse returning msgs ("pte") from provider to ROS msgs
 	void parce(char* ptr);
+	
+	// Create a new msgs
 	void set(double temperature, int t_stamp);
+	
+	// returns the msgs
 	json_object* getJsonMsgs();
+
 private:
 	json_object *obj;
 	std::string sensor_id;

@@ -20,7 +20,7 @@
      }
 #endif
 
-
+// struct contains all configure variables
 typedef struct _Arrowhead_Data_ext
 {
 	std::string PUBLIC_KEY_PATH;
@@ -66,27 +66,30 @@ class ApplicationServiceInterface :
     Https_Handler
 {
 private:
-	dictionary  *pini = NULL;
 
 	std::string URI;
 	std::string HTTPsURI;
-
-	dictionary *Load_IniFile(char *fname);
-	int Unload_IniFile();
+	
+	bool createServer(std::string ip, int port);
 
 public:
 	ApplicationServiceInterface();
 	~ApplicationServiceInterface();
 
+	// Init system
+	// create server to enable http request
+	// it cascade to createServer and MakeServer
 	bool init_ApplicationServiceInterface(Arrowhead_Data_ext &config);
 	int deinit( );
+	
+	// register to service registry
 	int registerToServiceRegistry(Arrowhead_Data_ext &stAH_data);
 	int unregisterFromServiceRegistry(Arrowhead_Data_ext &stAH_data);
 
-
+	// callbacks form http requests
+	// it redirect to override implementation
 	int httpGETCallback(const char *Id, std::string *pData_str);
 	int httpsGETCallback(const char *Id, std::string *pData_str, std::string param_token, std::string param_signature, std::string clientDistName);
-
 	virtual int Callback_Serve_HTTP_GET(const char *Id, std::string *pData_str);
 	virtual int Callback_Serve_HTTPs_GET(const char *Id, std::string *pData_str, std::string param_token, std::string param_signature, std::string clientDistName);
 };

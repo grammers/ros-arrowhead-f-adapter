@@ -12,6 +12,10 @@ ApplicationServiceInterface::~ApplicationServiceInterface()
 	deinit();
 }
 
+//////////////////////////
+// http/https callbacks //
+//////////////////////////
+
 // HTTP_Handler overload
 int ApplicationServiceInterface::httpGETCallback(const char *Id, string *pData_str)
 {
@@ -35,85 +39,55 @@ int ApplicationServiceInterface::Callback_Serve_HTTPs_GET(const char *Id, string
 	*pData_str = "5678";
 	return 1;
 }
+////////////////////
+// callbacks ends //
+////////////////////
+
+
 
 bool ApplicationServiceInterface::init_ApplicationServiceInterface(Arrowhead_Data_ext &config)
 {
-
-
 	if(config.PROVIDER_ADDRESS.size() != 0){
-
-	    URI      = "http://"  + config.PROVIDER_ADDRESS + ":" + to_string(config.PROVIDER_PORT);
-	    HTTPsURI = "https://" + config.PROVIDER_ADDRESS + ":" + to_string(config.PROVIDER_PORT+1);
-
-	    if( MakeServer(config.PROVIDER_PORT) ) {
-          fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", config.PROVIDER_ADDRESS.c_str(), config.PROVIDER_PORT);
-          return false;
-	    }
-
-//	    if(MakeHttpsServer(PROVIDER_PORT+1)){
-//		fprintf(stderr, "Error: Unable to start HTTPs Server (%s:%d)!\n", PROVIDER_ADDRESS.c_str(), PROVIDER_PORT+1);
-//		return false;
-//	    }
-
-	    printf("\n(HTTP Server) started - %s:%d\n", config.PROVIDER_ADDRESS.c_str(), config.PROVIDER_PORT);
-//	    printf("(HTTPs Server) started - %s:%d\n", PROVIDER_ADDRESS.c_str(), PROVIDER_PORT+1);
+		return createServer(config.PROVIDER_ADDRESS, config.PROVIDER_PORT);
 	}
 	else{ // ipv6
 	    printf("Warning: Could not parse IPv4 address from config, trying to use IPv6!\n");
 
-	    URI      = "http://"  + config.PROVIDER_ADDRESS6 + ":" + to_string(config.PROVIDER_PORT);
-	    HTTPsURI = "https://" + config.PROVIDER_ADDRESS6 + ":" + to_string(config.PROVIDER_PORT+1);
-
-
-	    if( MakeServer(config.PROVIDER_PORT) ) {
-		printf("Error: Unable to start HTTP Server (%s:%d)!\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT);
-		return false;
-	    }
-
-
-	    if( MakeHttpsServer(config.PROVIDER_PORT+1) ) {
-		printf("Error: Unable to start HTTPs Server (%s:%d)!\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT+1);
-		return false;
-	    }
-
-	    printf("\n(HTTP Server) started - %s:%d\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT);
-	    printf("\n(HTTPs Server) started - %s:%d\n", config.PROVIDER_ADDRESS6.c_str(), config.PROVIDER_PORT+1);
-
+		return createServer(config.PROVIDER_ADDRESS6, config.PROVIDER_PORT);
 	}
+}
 
+bool ApplicationServiceInterface::createServer(std::string ip, int port){
+	// https is not in use
+	URI      = "http://"  + ip + ":" + to_string(port);
+	//HTTPsURI = "https://" + ip + ":" + to_string(port+1);
+
+
+	if( MakeServer(port) ) {
+		printf("Error: Unable to start HTTP Server (%s:%d)!\n", ip.c_str(), port);
+		return false;
+    }
+
+
+    //if( MakeHttpsServer(port+1) ) {
+	//	printf("Error: Unable to start HTTPs Server (%s:%d)!\n", ip.c_str(), port+1);
+	//	return false;
+    //}
+
+	printf("\n(HTTP Server) started - %s:%d\n", ip.c_str(), port);
+	//printf("\n(HTTPs Server) started - %s:%d\n", ip.c_str(), port+1);
 	return true;
 }
 
 int ApplicationServiceInterface::deinit( )
 {
-	Unload_IniFile();
-
 	KillServer();
 	KillHttpsServer();
 
     return 0;
 }
 
-dictionary *ApplicationServiceInterface::Load_IniFile(char *fname)
-{
-	pini = iniparser_load(fname);
-	if( pini )
-		iniparser_dump(pini, NULL);
-
-	return pini;
-}
-
-int ApplicationServiceInterface::Unload_IniFile()
-{
-	if( pini )
-	{
-		iniparser_freedict(pini);
-		pini = NULL;
-		return 0;
-	}
-	return 1;
-}
-
+// creates a json of some of the params in config
 inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
 {
 
@@ -208,7 +182,6 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
 *   Return
 */
     return json_object_to_json_string(jobj);
-
 }
 
 int ApplicationServiceInterface::registerToServiceRegistry(Arrowhead_Data_ext &config)
