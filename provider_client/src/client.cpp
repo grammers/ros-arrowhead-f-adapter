@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "std_msgs/Float32.h"
+#include "sensor_msgs/Temperature.h"
 #include "const_global.hpp"
 #include "messages.hpp"
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 
 	// declare a publisher used for debugging and observation
 	// set megs type to std_msgs::Float32, publish on topic "client_demo" and use buffer of size 10
-	ros::Publisher rescived_pub = n.advertise<std_msgs::Float32>("client_demo", 10);
+	ros::Publisher rescived_pub = n.advertise<sensor_msgs::Temperature>("temperature_example", 10);
 
 	//prams
 	ros::NodeHandle nh("~");

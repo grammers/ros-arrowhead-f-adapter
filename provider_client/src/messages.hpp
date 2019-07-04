@@ -1,5 +1,5 @@
 #pragma once
-#include "std_msgs/Float32.h"
+#include "sensor_msgs/Temperature.h"
 #include <ros/ros.h>
 #include "Interface/include/curl/curl.h"
 #include "microhttpd.h"
@@ -12,7 +12,7 @@ public:
 	~Converter();
 
 	// the message reserved in ROS msgs format
-	static std_msgs::Float32 temperature;
+	static sensor_msgs::Temperature temperature;
 
 	// parse returning msgs ("pte") from provider to ROS msgs
 	void parce(char* ptr);

@@ -10,10 +10,10 @@ Currently is it only the insecure interfaces that are working.
 Install [Arrowhead framworke](https://github.com/arrowhead-f/core-java).  
 And install [ROS](http://wiki.ros.org/ROS/Installation) in development is Meloic Morenia used.
 
-## build
+## Build
 You have to the Arrowhead provider and ROS client separately.
 
-### build Arrowhead provider
+### Build Arrowhead provider
 Navigate to the ProviderExampel folder and run
 ```
 make
@@ -81,7 +81,7 @@ cat ~/.ros/log/latest/client-2-stdout.log
 
 To see the published ROS topic
 ```
-rostopic echo /client_demo
+rostopic echo /temperature_example
 ```
 
 
@@ -91,4 +91,3 @@ implemante json formating for internal messgesin in setup
 comment  
 create demo guide  
 fix HTTP  
-code cleanup  

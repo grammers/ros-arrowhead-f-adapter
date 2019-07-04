@@ -1,6 +1,6 @@
 #include "messages.hpp"
 
-std_msgs::Float32 Converter::temperature;
+sensor_msgs::Temperature Converter::temperature;
 
 Converter::Converter(){
 }
@@ -30,7 +30,11 @@ void Converter::parce(char *ptr){
 	// get interesting data from json array object
 	// the array has length 1 but contains a json object
 	struct json_object *v;
+	struct json_object *t;
 	json_object_object_get_ex(
 		json_object_array_get_idx(e,0), "v", &v);
-	temperature.data  = json_object_get_double(v);	
+	json_object_object_get_ex(
+		json_object_array_get_idx(e,0), "t", &t);
+	temperature.temperature  = json_object_get_double(v);	
+	temperature.header.seq = json_object_get_int(t);
 }
