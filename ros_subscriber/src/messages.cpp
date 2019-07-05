@@ -41,13 +41,8 @@ void Converter::parce(const char *url, const char *ptr){
 	json_object_object_get_ex(
 		json_object_array_get_idx(entity,0), "Time_stamp", &time);
 	
-	// get ID from from msgs
-	// the array has length 1 but contains a json object
-	struct json_object *bn;
-	json_object_object_get_ex(obj, "BaseName", &bn);
 
 	// Check sow it is a new measurement and not an old
-	std::string baseName = json_object_get_string(bn);
 	int TIME = json_object_get_int(time);
 	if (TIME > temperature.header.stamp.sec){
 		temperature.header.stamp.sec  = TIME;
