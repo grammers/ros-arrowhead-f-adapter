@@ -71,7 +71,9 @@ int main(int argc, char **argv)
 	// loops call to provider
 	while(ros::ok())
 	{
-    	convert.set(i++, std::time(0));
+    	// update the message to a new one
+		convert.set(i++, std::time(0));
+		
 		// arrowhead ask provider for data
     	oSensorHandler.processConsumer(convert.getJsonMsgs());
 

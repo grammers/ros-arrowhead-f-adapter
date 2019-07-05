@@ -1,248 +1,220 @@
-# Implementation documentation for provider_client
+# Implementation documentation for ros_publisher
+
 ## SoSD
-''provider_client'' is a system that contains one provider and one consumer.
-The consumer are a legacy devise to ROS.
-The provided resource in a dummy float.
-These system is developed to be a prof of concept, skeleton and demo of arrowhead connecting ROS as a legacy devise.
-Thanks to the main peeress of these system is the focus on the consumer (often called client do to ROS terminology).
-It is the intended meaning to replace the provider with something useful when an actual implementation are done.
-There for is the documentation angel to understand how the consumer works.
+''ros_publisher'' is a system that contains a publisher and subscriber.
+The publisher is a Robotic Operating System (ROS) node.
+The subscriber is a Arrowhead framework node that only print the received data.
+These system is constructed ass a prof of concept and skeleton for arrowhead connecting to ROS ass a legacy devise.
+Dud to the main purpose of these system will these document focus on the publisher and not the subscriber.
 
-![alt text](privider_client_uml.png)
-UML diagram of the system.
-
-![alt text](provider_client_usercase.png)
-A sequence diagram for a request form consumer from provider.
-
-
-There is currently no active security protocol working.
 
 ## SoSDD
 To achieve the ROS-Arrowhead framework interaction is the [client-cpp](https://github.com/arrowhead-f/client-cpp) code used ass a base.
-The ConsumerExample.cpp is rewritten to become a ROS nod.
-The arrowhead connection code is kept and the rest of the file in client-cpp are functional unchanged.
-A ''.launch'' file was added to simplify setting management.
-The messages file are to convert between Arrowhead json-SenML and ROS messages.
+The code are how ever re worked some to work ass a publisher subscriber couple.
+The old provider is reworked into the ROS subscriber.
+In `ros_publisher.cpp` is the main function.
+It all sow contains the access point to ROS and Arrowhead.
+In SubscriberExample is the pure Arrowhead subscriber placed.
+It has some funky naming but the plan is to rewrite most of it (don't fell for double work).
+The messages that are sent between are of json format.
 
+Internally is Arrowhead core system used by the publisher and subscriber access orchestration, authorisation and servisRegistry.
 
-Internally is the consumer utilising the orchestrator, that in its tern utilises authorization and servisRegestry, to communicate with the provider.
-
-
-## SysD
-The provider has the system_name InsecureTemperatureSensor and provides the services IndoorTemperature_ProviderExample.
-The interface protocol is ''rest-json-SenML''.
-The json return messages has the stricture: 
-```
- {
- 	"e":[{
- 		"n": "this_is_the_sensor_id",
- 		"v":$temperature,
- 		"t": "$time_stamp"}],
-	"bn": "$serviceID",
- 	"bu": "Celsius"
+##SysD
+The publisher has the system name ''publisher_ros_insecure'' and is publishing the service ''example_temperature''.
+The subscriber is named ''subscrier_ah_example_insecure''.
+The protocol that are used to communicate between these are json SenML.
+The messages has the structure:
+```JSON
+{
+ 	"Entity":[{
+ 		"ID": "this_is_the_sensor_id",
+ 		"Temperature":$temperature,
+ 		"Time_stamp": "$time_stamp"}],
+	"BaseName": "$serviceID",
+ 	"Unit": "Celsius"
 }
 ```
-The consumer has the system name ''client_ros_insecure''.
-It consumer the service ''IndoorTemperature_providerExample''.
-The consumer transform the incoming messages to a ROS messages of type std_msgs::Float32.
-The ROS messages are published on topic ''client_demo''.
-
-## SysDD
-TODO these section shod describe the code in detail.
-Below follows a walk thru of the code.
+In the publisher is all sow a ROS publisher that are use in debugging purpose.
+It publish on topic `/temperature_example` and the messages are of type `sensor_msgs/Temperature`
 
 
-### client.cpp
-In the main file [client.cpp](src/client.cpp)
+##SysDD
+Below follows a walk thru of the subscriber code (arrowhead interface code are excluded because it is supposed to work ass a library).
+
+### service.cpp
+The main file [ros_subscriber.cpp](src/ros_subscriber.cpp).
+
 ```cpp
-#define b2s(x) ((x)?"true":"false") 
+Converter convert;
+SensorHandler oSensorHandler;
 ```
-A macro used to simplify and strim line printing of boolean.
-It converts true to the string ''true'' and false to the string ''false''.
+Creates a instances of the classes `Converter` and `SensorHandler`.
+`Converter` is used to convert messages between ROS standard and Arrowhead json standard.
+`SensorHandler` is the interface access point to Arrowhead.
+
 
 ```cpp
-bool SECURE_PROVIDER_INTERFACE;
-bool SECURE_ARROWHEAD_INTERFACE;
-std::string OR_BASE_URI;
-std::string OR_BASE_URI_HTTPS;
-int CLIENT_PORT;
-std::string CLIENT_ADDRESS;
-std::string CLIENT_ADDRESS6;
-std::string CONSUMER_ID;
-std::string CLIENT_SYSTEM_NAME;
-std::string AUTHENTICATION_INFO;
-std::string SERVICE_DEFINITION;
-std::string INTERFACES;
-std::string SECURITY;
-bool OVERRIDE_STORE;
-bool MATCHMAKING;
-bool METADATA_SEARCH;
-bool PING_PROVIDERS;
-bool ONLY_PREFERRED;
-bool EXTERNAL_SERVICE_REQUEST;
-std::string PROVIDER_SYSTEM_NAME;
-std::string PROVIDER_ADDRESS;
-int PROVIDER_PORT;
-```
-Defines the global setup variables. These are to be treated ass constant.
-The method to set them do not allow to declare them ass `const`.
-These is the variables that are sett in the lunch file.
-
-
-Inside ''main''.
-```cpp
-	ros::init(argc, argv, "client_example");
+	ros::init(argc, argv, "subscriber_example");
 	ros::NodeHandle n;
-	ros::Publisher rescived_pub = n.advertise<std_msgs::Float32>("client_demo", 10);
+	ros::Publisher rescived_pub = n.advertise<sensor_msgs::Temperature>("temperature_example", 10);
 ```
-Set up for ROS.
-`ros::init` and `ros::NodeHandler` are necessary for ROS nodes and the communication to ''roscore''.
-A `ros::Publisher` creates a publisher node.
-It advertise a std_msgs::Float32 to topic ''client_demo'' with a buffer of size 10.
+Here are the ROS nod initialised.
+`inti` and `NodeHandle` are used to connect to `roscore`.
+`Publisher` sets these node as a publisher on the topic ''temperature_example'' whit the messages of type ''sensor_msgs::Temperature''.
+You can all sow see that a buffer of size ''10'' is used.
 
 
 ```cpp
 	ros::NodeHandle nh("~");
-	nh.param<bool>("SECURE_PROVIDER_INTERFACE", SECURE_PROVIDER_INTERFACE , false);
-	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", SECURE_ARROWHEAD_INTERFACE , false);
-	nh.param<std::string>("OR_BASE_URI", OR_BASE_URI ,"http://arrowhead.tmit.bme.hu:8440/orchestrator/orchestration");
-	nh.param<std::string>("OR_BASE_URI_HTTPS", OR_BASE_URI_HTTPS ,"https://arrowhead.tmit.bme.hu:8441/orchestrator/orchestration");
-	nh.param<int>("CLIENT_PORT", CLIENT_PORT, 8454);
-	nh.param<std::string>("CLIENT_ADDRESS", CLIENT_ADDRESS, "10.0.0.40");
-	nh.param<std::string>("CLIENT_ADDRESS6", CLIENT_ADDRESS6, "[fe80::1a57:58d9:c43:6319]");
-	nh.param<std::string>("CONSUMER_ID",CONSUMER_ID, "TestconsumerID");
-	nh.param<std::string>("CLIENT_SYSTEM_NAME", CLIENT_SYSTEM_NAME, "client1");
-	nh.param<std::string>("AUTHENTICATION_INFO", AUTHENTICATION_INFO, "null");
-	nh.param<std::string>("SERVICE_DEFINITION", SERVICE_DEFINITION,"IndoorTemperature_providerExample");
-	nh.param<std::string>("INTERFACES", INTERFACES, "REST-JSON-SENML");
-	nh.param<std::string>("SECURITY", SECURITY, "toke");
-	nh.param<bool>("OVERRIDE_STORE", OVERRIDE_STORE, true);
-	nh.param<bool>("MATCHMAKING", MATCHMAKING, true);
-	nh.param<bool>("METADATA_SEARCH", METADATA_SEARCH, false);
-	nh.param<bool>("PING_PROVIDERS", PING_PROVIDERS, false);
-	nh.param<bool>("ONLY_PREFERRED", ONLY_PREFERRED, true);
-	nh.param<bool>("EXTERNAL_SERVICE_REQUEST", EXTERNAL_SERVICE_REQUEST, false);
-	nh.param<std::string>("PROVIDER_SYSTEM_NAME", PROVIDER_SYSTEM_NAME, "SecureTemperatureSensor");
-	nh.param<std::string>("PROVIDER_ADDRESS", PROVIDER_ADDRESS, "10.10.10.122");
-	nh.param<int>("PROVIDER_PORT", PROVIDER_PORT, 8452);
+	nh.param<bool>("SECURE_PROVIDER_INTERFACE", oSensorHandler.config.SECURE_PROVIDER_INTERFACE , false);
+	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", oSensorHandler.config.SECURE_ARROWHEAD_INTERFACE , false);
+	nh.param<std::string>("ACCESS_URI", oSensorHandler.config.ACCESS_URI ,"http://arrowhead.tmit.bme.hu:8440/orchestrator/orchestration");
+	nh.param<std::string>("ACCESS_URI_HTTPS", oSensorHandler.config.ACCESS_URI_HTTPS ,"https://arrowhead.tmit.bme.hu:8441/orchestrator/orchestration");
+	nh.param<int>("THIS_PORT", oSensorHandler.config.THIS_PORT, 8454);
+	nh.param<std::string>("THIS_ADDRESS", oSensorHandler.config.THIS_ADDRESS, "10.0.0.40");
+	nh.param<std::string>("THIS_ADDRESS6", oSensorHandler.config.THIS_ADDRESS6, "[fe80::1a57:58d9:c43:6319]");
+	nh.param<std::string>("THIS_SYSTEM_NAME", oSensorHandler.config.THIS_SYSTEM_NAME, "client1");
+	nh.param<std::string>("AUTHENTICATION_INFO", oSensorHandler.config.AUTHENTICATION_INFO, "null");
+	nh.param<std::string>("SERVICE_DEFINITION", oSensorHandler.config.SERVICE_DEFINITION,"IndoorTemperature_providerExample");
+	nh.param<std::string>("INTERFACE", oSensorHandler.config.INTERFACE, "REST-JSON-SENML");
+	nh.param<std::string>("SECURITY", oSensorHandler.config.SECURITY, "toke");
+	nh.param<bool>("OVERRIDE_STORE", oSensorHandler.config.OVERRIDE_STORE, true);
+	nh.param<bool>("MATCHMAKING", oSensorHandler.config.MATCHMAKING, true);
+	nh.param<bool>("METADATA_SEARCH", oSensorHandler.config.METADATA_SEARCH, false);
+	nh.param<bool>("PING_PROVIDERS", oSensorHandler.config.PING_PROVIDERS, false);
+	nh.param<bool>("ONLY_PREFERRED", oSensorHandler.config.ONLY_PREFERRED, true);
+	nh.param<bool>("EXTERNAL_SERVICE_REQUEST", oSensorHandler.config.EXTERNAL_SERVICE_REQUEST, false);
+	nh.param<std::string>("TARGET_SYSTEM_NAME", oSensorHandler.config.TARGET_SYSTEM_NAME, "SecureTemperatureSensor");
+	nh.param<std::string>("TARGET_ADDRESS", oSensorHandler.config.TARGET_ADDRESS, "10.10.10.122");
+	nh.param<int>("TARGET_PORT", oSensorHandler.config.TARGET_PORT, 8452);
+	nh.param<std::string>("UNIT", oSensorHandler.config.UNIT, "NOT SPIFFED");	
 ```
-The second `ros::NodeHandle` is weirdly needed to be able to read form the launch file (it shod be possible to do with out).
-The following liens are reading from launch file and set settings of corresponding variables. 
-Structure of the compand is `nh.param<[type]>("[name used in launch]", [variable name], [default value if no valu is sent]);`
-
+Here is the parameters form the launch file red in to the program.
+`oSensorHandler.config` is a struct containing the configure variables.
+If there is a need to add settings is the struct defined in ''[arrowhead_data_ext.hpp](src/Consumer/arrowhead_data_ext.hpp)''
+The structure of the ''nh.param'' is:
+`nh.param<variabel_type>("name_in_lanch_file", variabel_name, default_value_if_no_input)`.
 
 ```cpp
-	bool debug = true;
-	if(debug)
-		debugPrint();
+	convert.init("sensor_id", oSensorHandler.config.UNIT, oSensorHandler.config.THIS_SYSTEM_NAME);
 ```
-Enable a debug print for the launch variables.
-If debug is true is the values of the global variables printed.
-The prints can be seen in `~/.ros/log/latest`.
+Now when the configure variables are set can the Arrowhead system be properly initialised.
+`init` sets some constant in the  messages.
 
 ```cpp
-	Converter oConverter;
-	SensorHandler oSensorHandler;
+	convert.set(404, 1);
 ```
-Create instances of needed classes.
-`Conveter` are the class in messages and `SensorHandler` are the entry point to the arrowhead part.
-
+These lines should not be dun in these way.
+It is sets the messages to a fake value.
+They exist to enable fast and easy testing.
+But be aware of the message is initialised is a race condition likely.
 
 ```cpp
-	std::string consumerMessageExample = 
-		(std::string)"{\"bn\":\"TestconsumerID\"\n}";
 	ros::Rate loop_rate(0.3);
+	int i = 0;
+	while (ros::ok()) {
+		convert.set(i++, std::time(0));
+    	oSensorHandler.processConsumer(convert.getJsonMsgs());
+		rescived_pub.publish(convert.temperature);
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
 ```
-`consumerMessageExample` is a set up to select correct services.
-It is in json - SenML format.
-`loop_rate` sets the update frequency in witch a new request are sent.
-It is a ruff estimate of the actual frequency.
-In these example is it set to 0.3 Hz, ruffly one request every 3s.
+First is the loop rate set and a counter acting temperature sensor set.  
+1 The messages is updated.   
+2 The messages is published on the Arrowhead system.  
+3 A message is published on the ROS system to prov it works on both.  
+4 Wait for interrupt and pass before next lop lap.  
 
-```cpp
-	while(ros::ok())
-	{
-```
-A while loop that lops until it is terminated.
-In side is all the requests and publishing don.
-
-```cpp
-   	oSensorHandler.processConsumer(consumerMessageExample);
-```
-Sends a arrowhead request.
-It is a syncrone operation sow the system will wait for a response
-
-
-```cpp
-	rescived_pub.publish(oConverter.temperature);
-```
-Publish the reserved data.
-The actual data is stored in the `OConverter` class.
-
-```cpp
-	ros::spinOnce();
-	loop_rate.sleep();
-```
-Here is a sleep preformed until it is time for next request.
-`ros::spineOnce();` is preformed to scan the ros system for any thing to react on.
-
+Noticeable is that the loop_rate is set in Hz and these whey to do it is very inaccurate.
 
 ### messages.cpp
+The messages file are used to convert the messages data between different formats.
+
 
 ```cpp
-	std_msgs::Float32 Converter::temperature;
+	obj = json_object_new_object();	
+	json_object *arr_obj = json_object_new_array();
+	json_object *arr_cont = json_object_new_object();
 ```
-The relevant data in ROS standard messages type.
-Declare ass static to enable setting form on please and reading form an other.
+Creates the needed `json_objects`.
 
 ```cpp
-void Converter::parce(char *ptr){
-```
-The function that take the reopens from the request and extract re relevant information.
-
-```cpp
-	// parsuing theperature from json sneml respons	
 	std::string str(ptr);
 	struct json_object *obj;
-	obj = json_tokener_parse(str.c_str()); //extrat a json objekt
-	
-	// relevant data is in a nested array
-	struct json_object *e;
-	json_object_object_get_ex(obj, "e", &e);
-
-	// get intresting data from json array object
-	// the array has lenth 1 but contains a json objekt
-	struct json_object *v;
-	json_object_object_get_ex(
-		json_object_array_get_idx(e,0), "v", &v);
+	obj = json_tokener_parse(str.c_str()); //extract a json object
+	struct json_object *entity;
+	json_object_object_get_ex(obj, "Entity", &entity);
 ```
-The response is of json - SenMl type.
-Sow first is the message is typecast to be an actual json object.
-From that object is then et elements at value ''e'' extracted.
-The value ''e'' is of type array.
-At the first position is a json object with the value ''v''.
-Sow one lined is the ''v'' value extracted.
+These lines sets the incoming messages to be treated ass a `json_object` and extract the array containing the interesting data.
+
 
 ```cpp
-	temperature.data  = json_object_get_double(v);	
+	struct json_object *time;
+	json_object_object_get_ex(
+		json_object_array_get_idx(entity,0), "Time_stamp", &time);
+	int TIME = json_object_get_int(time);
+	if (TIME > temperature.header.stamp.sec){
 ```
-The value ''v'' is than typecast ed to the storages variable.
-The type 'std_msgs::Float32' is a ROS messages type and they exist of multiple internal variables.
-These one has only one.
-It is called ''data'' and in of type Float32.
+These lines extract the time stamp and check if the messages is a newer messages than the last.
+These is security agents delayed packages.
+
+```cpp
+		temperature.header.stamp.sec  = TIME;
+		struct json_object *temp;
+		json_object_object_get_ex(
+			json_object_array_get_idx(entity,0), "Temperature", &temp);
+		temperature.temperature  = json_object_get_double(temp);	
+```
+In side the if is the messages stored to the ros messages `sensor_msgs/Temperature` called temperature.
 
 
-## IDD
-To implement your one ROS consumer can you copy these project and remove the example provider.
-Then you change the values in [launch/provider_client.launch](launch/provider_client.launch) to mach your system.
-You can all sowed change the projects name but remember to change it in [provider_client.launch](launch/provider_client.launch), in [CMakeLists.txt](CMakeLists.txt) and in [package.xml](package.xml) ass well ass the name of the folder and launch file.
+```cpp
+	json_object_object_add(arr_cont,"ID", json_object_new_string(sensor_id.c_str()));
+	json_object_object_add(arr_cont,"Temperature", json_object_new_double(temp));
+	json_object_object_add(arr_cont,"Time_stamp", json_object_new_int(time));
+	json_object_array_add(arr_obj, arr_cont);
+```
+The first part of the message is a array of size 1.
+The internal element is a `json_object`.
 
-Then is it necessary (probably) to modify the [messages.cpp](src/messages.cpp) and [messages.hpp](src/messages.hpp) to match your resources messages.
-How ever be careful with changing names on the fill or the function.
-[SensorHandler](src/Consumer/SensorHandler.h) is including and using it.
-And finally is it only to extend the ROS system as if it where a regular ROS node ([learn how](http://wiki.ros.org/ROS/Tutorials)).
+##IDD
+To implement your one ROS Publisher can you copy these project and remove the example subscriber.
+Then can you change the values in [launch/ros_publisher.launch](launch/ros_publisher.launch) to mach your system.
+You can all sow change the projects name, but remember to change it in [ros_publisher.launch](launnch/ros_publicher.launch), in [CMakeLists.txt](CMakeLists.txt) and in [package.xml](package.xml) ass well ass the name of the folder and launch file.
 
-If you desire to utilise a different interfaces do you have to update code in other files to.
-At writhing moment do I not know how.
-Sow if you know, pleas writ it down!
-I haven't tested all settings in the launch file sow there mighty be some that's not easily changed.
+Then is it necessary (probably) to change [messages.cpp] (src/messages.cpp) sow it fit your resource.
+Finally is it only to extend [ros_publisher.cpp](src/publicher.cpp) as a normal ROS node ([learn how](http://wiki.ros.org/ROS/Tutorials)).
+Hopefully is there no need for you to make changes in other places.
+
+
+### Parameters
+
+
+| Parameter		 				| Type 			| Usages |
+|:------------------------------|:--------------|:----------------------------|
+| SERVICE_DEFINITION			| std::string	| service name|
+| INTERFACE						| std::string	| The interface used for the messages |
+| CUSTOM_URL					| std::string	| A url used to find the correct provider|
+| UNIT							| std::string	| The unit of the data|
+| SECURITY						| std::string	| Security protocol used, typical ''token''|
+| ACCESS_URI					| std::string	| Url to core systems |
+| ACCESS_URI_HTTPS				| std::string	| Url to core systems https|
+| OVERRIDE_STORE				| std::string	| Orchestrator interface setting|
+| MATCHMAKING					| std::string	| Orchestrator interface setting|
+| PING_PROVIDER					| std::string	| Orchestrator interface setting|
+| ONLY_PREFERRED				| std::string	| Orchestrator interface setting|
+| EXTERNAL_SERVICE_REQUEST		| std::string	| Orchestrator interface setting|
+| THIS_SYSTEM_NAME				| std::string	| The this prosumer system name|
+| THIS_ADDRESS					| std::string	| The ipv4 address to the this prosumer|
+| THIS_ADDRESS6					| std::string	| The ipv6 address to the this prosumer|
+| THIS_PORT						| int			| The port the this prosumer uses|
+| TARGET_SYSTEM_NAME			| std::string	| The system name to the target procumer|
+| TARGET_ADDRESS				| std::string	| The ipv4 address to the target prosumer|
+| TARGET_PORT					| int 			| The port that the target prosumer uses |
+| SECURE_ARROWHEAD_INTERFACE	| bool			| Set if the arrowhead interface should be secure|
+| SECURE_PROVIDER_INTERFACE		| bool			| Set if the provider interface should be secure|
+| PUBLIC_KEY_PATH				| std::string	| A absolute path to a public key|
+| PRIVATE_KEY_PATH				| std::string	| A absolute path to a matching private key|
+| AUTHENTICATION_INFO			| std::string	| Public RSA key, set by code from PUBLIC_KEY_PATH|
