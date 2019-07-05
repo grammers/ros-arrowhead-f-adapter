@@ -28,16 +28,16 @@ void SensorHandler::processConsumer(std::string pJsonSenML) {
 	printf("consumerID: %s\n", consumerID.c_str());
 
      std::string requestForm;
-     if(!oConsumedService.getRequestForm(consumerID, requestForm)){
+     if(!oConsumedService.getRequestForm(requestForm, &config)){
           fprintf(stderr, "Error: Request Form is missing for %s!\n", consumerID.c_str());
           return;
      }
 
 	printf("\nrequestForm: %s\n", requestForm.c_str());
 
-     printf("Sending Orchestration Request: (%s)\n", SECURE_ARROWHEAD_INTERFACE ? "Secure Arrowhead Interface" : "Insecure Arrowhead Interface");
+     printf("Sending Orchestration Request: (%s)\n", config.SECURE_ARROWHEAD_INTERFACE ? "Secure Arrowhead Interface" : "Insecure Arrowhead Interface");
 
-     int returnValue = sendOrchestrationRequest(requestForm);
+     int returnValue = sendOrchestrationRequest(requestForm, &config);
 }
 
 
@@ -126,7 +126,7 @@ size_t SensorHandler::Callback_OrchestrationResponse(char *ptr, size_t size) {
 	sInterface = string(json_object_get_string(jIntf0));
      sURI       = string(json_object_get_string(jUri));
 
-	 if(SECURE_PROVIDER_INTERFACE){
+	 if(config.SECURE_PROVIDER_INTERFACE){
      	if(!json_object_object_get_ex(jResponse,  "authorizationToken", &jToken)){
 			fprintf(stderr, "Error: could not find authorizationToken\n");
 			return 1;

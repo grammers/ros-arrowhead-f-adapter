@@ -28,29 +28,29 @@ size_t OrchestratorInterface::Callback_OrchestrationResponse(char *ptr, size_t s
 	return size;
 }
 
-bool OrchestratorInterface::init_OrchestratorInterface()
+bool OrchestratorInterface::init_OrchestratorInterface(Arrowhead_Data_ext *config)
 {
-	if(CLIENT_ADDRESS.size() != 0){
-	    URI = "http://" + CLIENT_ADDRESS + ":" + to_string(CLIENT_PORT);
+	if(config->THIS_ADDRESS.size() != 0){
+	    URI = "http://" + config->THIS_ADDRESS + ":" + to_string(config->THIS_PORT);
 
-	    if ( MakeServer(CLIENT_PORT) ) {
-		fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS.c_str(), CLIENT_PORT);
+	    if ( MakeServer(config->THIS_PORT) ) {
+		fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", config->THIS_ADDRESS.c_str(), config->THIS_PORT);
 		return false;
 	    }
 
-	    printf("\nOrchestratorInterface started - %s:%d\n", CLIENT_ADDRESS.c_str(), CLIENT_PORT);
+	    printf("\nOrchestratorInterface started - %s:%d\n", config->THIS_ADDRESS.c_str(), config->THIS_PORT);
 
 	}
 	else{
 	    printf("Warning: Could not parse IPv4 address from config, trying to use IPv6!\n");
-	    URI = "http://" + CLIENT_ADDRESS6 + ":" + to_string(CLIENT_PORT);
+	    URI = "http://" + config->THIS_ADDRESS6 + ":" + to_string(config->THIS_PORT);
 
-	    if ( MakeServer(CLIENT_PORT) ) {
-	    fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", CLIENT_ADDRESS6.c_str(), CLIENT_PORT);
+	    if ( MakeServer(config->THIS_PORT) ) {
+	    fprintf(stderr, "Error: Unable to start HTTP Server (%s:%d)!\n", config->THIS_ADDRESS6.c_str(), config->THIS_PORT);
 	    return false;
 	    }
 
-	    printf("\nOrchestratorInterface started - %s:%d\n", CLIENT_ADDRESS6.c_str(), CLIENT_PORT);
+	    printf("\nOrchestratorInterface started - %s:%d\n", config->THIS_ADDRESS6.c_str(), config->THIS_PORT);
 	}
 
 	return true;
@@ -85,10 +85,10 @@ int OrchestratorInterface::Unload_IniFile()
 	return 1;
 }
 
-int OrchestratorInterface::sendOrchestrationRequest(string requestForm)
+int OrchestratorInterface::sendOrchestrationRequest(string requestForm, Arrowhead_Data_ext *config)
 {
-	if(SECURE_ARROWHEAD_INTERFACE)
-          return SendHttpsRequest(requestForm, OR_BASE_URI_HTTPS, "POST");
+	if(config->SECURE_ARROWHEAD_INTERFACE)
+          return SendHttpsRequest(requestForm, config->ACCESS_URI_HTTPS, "POST");
 	else
-          return SendRequest(requestForm, OR_BASE_URI, "POST");
+          return SendRequest(requestForm, config->ACCESS_URI, "POST");
 }

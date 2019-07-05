@@ -9,7 +9,7 @@ using namespace std;
 
 #include "Http_Handler.hpp"
 #include "Https_Handler.hpp"
-#include "../const_global.hpp"
+#include "../Consumer/arrowhead_data_ext.hpp"
 
 #ifdef __linux__
 #include "ini/iniparser.h"
@@ -35,10 +35,10 @@ public:
 	OrchestratorInterface();
 	~OrchestratorInterface();
 
-	bool init_OrchestratorInterface();
+	bool init_OrchestratorInterface(Arrowhead_Data_ext *config);
 	int deinit();
 
-	int sendOrchestrationRequest(string rResult);
+	int sendOrchestrationRequest(string rResult, Arrowhead_Data_ext *config);
 
 	size_t httpResponseCallback(char *ptr, size_t size);
 	size_t httpsResponseCallback(char *ptr, size_t size);

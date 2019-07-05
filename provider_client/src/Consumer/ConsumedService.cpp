@@ -6,37 +6,34 @@ ConsumedService::ConsumedService() {
 ConsumedService::~ConsumedService() {
 
 }
-bool ConsumedService::getRequestForm(std::string consumerID, std::string &rRequestForm) {
+bool ConsumedService::getRequestForm(std::string &rRequestForm, Arrowhead_Data_ext *config) {
 
-	if (CONSUMER_ID == consumerID){
 		//TODO change these to a actual json implementation
 		// change return path to handle json
 		// cascade throe sensorHandler, OrchestraIntreface, http...
-		rRequestForm = 
-				"{ \"requesterSystem\": { "
-					"\"systemName\": \""+CLIENT_SYSTEM_NAME+"\", "
-					"\"address\": \""+CLIENT_ADDRESS+"\", "
-					"\"port\": "+std::to_string(CLIENT_PORT)+", "
-					"\"authenticationInfo\": \""+AUTHENTICATION_INFO+"\" }, "
-				"\"requestedService\": { "
-					"\"serviceDefinition\": \""+SERVICE_DEFINITION+"\", "
-					"\"interfaces\": [ \""+INTERFACES+"\" ], "
-					"\"serviceMetadata\": { "
-						"\"security\": \""+SECURITY+"\" } }, "
-				"\"orchestrationFlags\": { "
-					"\"overrideStore\": "+std::to_string(OVERRIDE_STORE)+"," 
-					"\"matchmaking\": "+std::to_string(MATCHMAKING)+", "
-					"\"metadataSearch\": "+std::to_string(METADATA_SEARCH)+", "
-					"\"pingProviders\": "+std::to_string(PING_PROVIDERS)+", "
-					"\"onlyPreferred\": "+std::to_string(ONLY_PREFERRED)+", "
-					"\"externalServiceRequest\": "+std::to_string(EXTERNAL_SERVICE_REQUEST)+" }, "
-				"\"preferredProviders\": [ { "
-				"\"providerSystem\": { "
-					"\"systemName\": \""+PROVIDER_SYSTEM_NAME+"\", "
-					"\"address\": \""+PROVIDER_ADDRESS+"\", "
-					"\"port\": \""+std::to_string(PROVIDER_PORT)+"\" } } ] }";
+	rRequestForm = 
+			"{ \"requesterSystem\": { "
+				"\"systemName\": \""+config->THIS_SYSTEM_NAME+"\", "
+				"\"address\": \""+config->THIS_ADDRESS+"\", "
+				"\"port\": "+std::to_string(config->THIS_PORT)+", "
+				"\"authenticationInfo\": \""+config->AUTHENTICATION_INFO+"\" }, "
+			"\"requestedService\": { "
+				"\"serviceDefinition\": \""+config->SERVICE_DEFINITION+"\", "
+				"\"interfaces\": [ \""+config->INTERFACE+"\" ], "
+				"\"serviceMetadata\": { "
+					"\"security\": \""+config->SECURITY+"\" } }, "
+			"\"orchestrationFlags\": { "
+				"\"overrideStore\": "+std::to_string(config->OVERRIDE_STORE)+"," 
+				"\"matchmaking\": "+std::to_string(config->MATCHMAKING)+", "
+				"\"metadataSearch\": "+std::to_string(config->METADATA_SEARCH)+", "
+				"\"pingProviders\": "+std::to_string(config->PING_PROVIDERS)+", "
+				"\"onlyPreferred\": "+std::to_string(config->ONLY_PREFERRED)+", "
+				"\"externalServiceRequest\": "+std::to_string(config->EXTERNAL_SERVICE_REQUEST)+" }, "
+			"\"preferredProviders\": [ { "
+			"\"providerSystem\": { "
+				"\"systemName\": \""+config->TARGET_SYSTEM_NAME+"\", "
+				"\"address\": \""+config->TARGET_ADDRESS+"\", "
+				"\"port\": \""+std::to_string(config->TARGET_PORT)+"\" } } ] }";
 
-		return true;
-	}
-	return false;
+	return true;
 }

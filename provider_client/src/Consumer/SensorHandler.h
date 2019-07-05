@@ -2,8 +2,9 @@
 
 #include "../Interface/OrchestratorInterface.hpp"
 #include "ConsumedService.h"
-#include "../const_global.hpp"
 #include "../messages.hpp"
+#include "arrowhead_data_ext.hpp"
+
 
 class SensorHandler : OrchestratorInterface
 {
@@ -11,6 +12,8 @@ class SensorHandler : OrchestratorInterface
 public:
 	SensorHandler();
 	~SensorHandler();
+	
+	Arrowhead_Data_ext config;
 
 	void processConsumer(std::string consumerID);
 
