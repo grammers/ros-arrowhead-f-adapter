@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<!-- client -->
+	<node pkg="ros_publisher" type="ros_publisher" name="ros_publisher">
+		<param name="SECURE_PROVIDER_INTERFACE" value="false"/>
+		<param name="SECURE_ARROWHEAD_INTERFACE" value="false"/>
+		<param name="ACCESS_URI" value="http://localhost:8440/orchestrator/orchestration"/>
+		<param name="ACCESS_URI_HTTPS" value="https://localhost:8441/orchestrator/orchestration"/>
+		<param name="THIS_PORT" value="8488"/>
+		<param name="THIS_ADDRESS" value="130.240.5.68"/>
+		<param name="THIS_ADDRESS6" value="[fe80::1a57:58d9:c43e:6319]"/>
+		<param name="THIS_SYSTEM_NAME" value="publisher_ros_insecure"/>
+		<param name="AUTHENTICATION_INFO" value="null"/>
+		<param name="SERVICE_DEFINITION" value="example_temperature"/>
+		<param name="INTERFACES" value="REST-JSON-SENML"/>
+		<param name="SECURITY" value="token"/>
+		<param name="OVERRIDE_STORE" value="true"/>
+		<param name="MATCHMAKING" value="true"/>
+		<param name="METADATA_SEARCH" value="false"/>
+		<param name="PING_TARGETS" value="false"/>
+		<param name="ONLY_PREFERRED" value="true"/>
+		<param name="EXTERNAL_SERVICE_REQUEST" value="false"/>
+		<param name="TARGET_SYSTEM_NAME" value="subscriber_ah_insecure"/>
+		<param name="TARGET_ADDRESS" value="130.240.5.68"/>
+		<param name="TARGET_PORT" value="8490"/>
+		<param name="UNIT" value="Celsius"/>
+	</node>
+
+</launch>
