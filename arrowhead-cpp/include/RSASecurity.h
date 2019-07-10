@@ -18,6 +18,7 @@
 
 #define AUTHORIZERPUBLICKEYPATH "keys/authorizerPublicKey.pem"
 
+namespace arrowhead{
 class RSASecurity{
 
     public:
@@ -39,3 +40,4 @@ class RSASecurity{
 	bool getVerificationResult();
 
 };
+}

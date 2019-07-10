@@ -1,5 +1,6 @@
 
 #include "ApplicationServiceInterface.hpp"
+namespace arrowhead{
 
 ApplicationServiceInterface::ApplicationServiceInterface( )
 {
@@ -30,6 +31,7 @@ int ApplicationServiceInterface::Callback_Serve_HTTP_GET(const char *Id, string 
 
 // HTTP_Hander overload POST
 int ApplicationServiceInterface::httpPOSTCallback(const char *url, const char *payload){
+	printf("POST callback to application: %s\n", payload);
 	return Callback_Serve_HTTP_POST(url, payload);
 }
 
@@ -207,4 +209,5 @@ int ApplicationServiceInterface::unregisterFromServiceRegistry(	Arrowhead_Data_e
           return SendHttpsRequest(GetHttpPayload(config), config.ACCESS_URI_HTTPS + "remove", "PUT");
      else
           return SendRequest(GetHttpPayload(config), config.ACCESS_URI + "remove", "PUT");
+}
 }

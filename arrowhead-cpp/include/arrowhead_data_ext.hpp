@@ -5,6 +5,7 @@
 // required to print booleans ass string
 #define b2s(x) ((x)?"true":"false")
 
+namespace arrowhead{
 // struct contains all configure variables
 typedef struct _Arrowhead_Data_ext
 {
@@ -81,7 +82,8 @@ typedef struct _Arrowhead_Data_ext
 		printf("PUBLIC_KEY_PATH: %s\n", PUBLIC_KEY_PATH.c_str());
 		printf("PRIVATE_KEY_PATH: %s\n", PRIVATE_KEY_PATH.c_str());
 		printf("AUTHENTICATION_INFO: %s\n", AUTHENTICATION_INFO.c_str());
-		printf(":SECURE_ARROWHEAD_INTERFACE %s\n", b2s(SECURE_ARROWHEAD_INTERFACE));
-		printf("SECURE_THIS_INTERFACE: %s\n", b2s(SECURE_PROVIDER_INTERFACE));
+		printf("SECURE_ARROWHEAD_INTERFACE: %s\n", b2s(SECURE_ARROWHEAD_INTERFACE));
+		printf("SECURE_PROVIDER_INTERFACE: %s\n", b2s(SECURE_PROVIDER_INTERFACE));
 	}
 } Arrowhead_Data_ext;
+}

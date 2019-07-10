@@ -9,6 +9,7 @@
 #include "OrchestratorInterface.hpp"
 #include "json-c/json.h"
 
+namespace arrowhead{
 
 // for callbacks
 using f_void_f = void(*)(const char*, const char*);
@@ -26,7 +27,7 @@ public:
 	void init_provider(std::string base_name);
 	void init_consumer(f_void_f callback);
 	void init_publisher();
-	void inti_subscriber(std::string base_name, f_void_f callback);
+	void init_subscriber(std::string base_name, f_void_f callback);
 
 	// set a (new) messages to be sent
 	void setProviderMsgs(json_object *pJsonSenML);
@@ -38,7 +39,7 @@ public:
 	int Callback_Serve_HTTPs_GET(const char *Id, std::string *pStr, std::string sToken, std::string sSignature, std::string clientDistName);
 	int Callback_Serve_HTTP_POST(const char *url, const char *payload);
 	// Overload - OrchestrationInterface callback
-	size_t Callback_OrchetrationResponse(char *ptr, size_t size);
+	size_t Callback_OrchestrationResponse(char *ptr, size_t size);
 	size_t callback_GET(const char *prt, size_t size);
 
 	/*Sensor registration, deregistration --- ApplicationService functions*/
@@ -47,6 +48,7 @@ public:
 	bool registerSensor();
 	bool deregisterSensor(std::string _sensorURI);
 
+	f_void_f callback; // callback for POST/GET-return
 private:
     
 	void init_Application();
@@ -57,7 +59,6 @@ private:
 	std::string base_name;
 	bool sensorIsRegistered;
 	json_object *msgs;
-	f_void_f callback; // callback for POST/GET-return
 };
 
 // used in https
@@ -82,4 +83,5 @@ split(const T &str, const T &delimiters) {
 	}
 
 	return v;
+}
 }

@@ -32,6 +32,7 @@
 #include "base64.h"
 #include <iostream>
 
+namespace arrowhead{
 static const std::string base64_chars = 
              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
              "abcdefghijklmnopqrstuvwxyz"
@@ -119,4 +120,5 @@ std::string base64_decode(std::string const& encoded_string) {
   }
 
   return ret;
+}
 }

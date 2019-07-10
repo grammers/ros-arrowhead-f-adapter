@@ -11,6 +11,7 @@
 
 #endif
 
+namespace arrowhead{
 using namespace std;
 
 #define SERVERKEYFILE	"keys/tempsensor.testcloud1.private.key" //password protected private key
@@ -36,3 +37,4 @@ public:
 	int KillHttpsServer();
 
 };
+}

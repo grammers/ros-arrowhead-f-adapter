@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<launch>
+	
+	<!-- args -->
+	<!-- system -->
+	<arg name="sr_uri" value="http://localhost:8442/serviceregistry/"/>
+	<arg name="sr_uri_https" value="https://0.0.0.0:8443/serviceregistry/"/>
+	<arg name="or_uri" value="http://localhost:8440/orchestrator/orchestration"/>
+	<arg name="or_uri_https" value="https://localhost:8441/orchestrator/orchestration"/>
+	<arg name="secure_arrowhead_interface" value="false"/>
+	<arg name="secure_provider_interface" value="false"/>
+	<arg name="address" value="130.240.5.68"/>
+	
+	<!-- node spefic -->
+	<arg name="provider_port" value="8490"/>
+	<arg name="provider_system_name" value="temperature_provider_demo"/>
+	<arg name="subscriber_system_name" value="temperature_subscriber_demo"/>
+	<arg name="subscriber_port" value="8494"/>
+	<arg name="consumer_system_name" value="temperature_consumer_demo"/>
+	<arg name="consumer_port" value="8492"/>
+	
+	<!-- service -->
+	<arg name="service_name_c" value="temperature_c"/>
+	<arg name="service_name_f" value="temperature_f"/>
+	<arg name="service_uri" value="Custom_url"/>
+	<arg name="unit_provider" value="Celsius"/>
+	<arg name="unit_subscriber" value="Fahrenheit"/>
+	<arg name="interface" value="JSON"/>
+	<arg name="security" value="Token"/>
+	
+
+	<!-- provider -->
+	<include file="$(find provider)/launch/provider.launch">
+		<arg name="ACCESS_URI" value="$(arg sr_uri)"/>
+		<arg name="ACCESS_URI_HTTPS" value="$(arg sr_uri_https)"/>
+		<arg name="THIS_ADDRESS" value="$(arg address)"/>
+		<arg name="THIS_PORT" value="$(arg provider_port)"/>
+		<arg name="THIS_SYSTEM_NAME" value="$(arg provider_system_name)"/>
+		<arg name="SERVICE_DEFINITION" value="$(arg service_name_c)"/>
+		<arg name="SERVICE_URI" value="$(arg service_uri)"/>
+		<arg name="UNIT" value="$(arg unit_provider)"/> 
+		<arg name="INTERFACE" value="$(arg interface)"/>
+		<arg name="SECURITY" value="$(arg security)"/>
+		<arg name="SECURE_ARROWHEAD_INTERFACE" value="$(arg secure_arrowhead_interface)"/>
+		<arg name="SECURE_PROVIDER_INTERFACE" value="$(arg secure_provider_interface)"/>
+	</include>
+
+	<!-- subscriber -->
+	<include file="$(find subscriber)/launch/subscriber.launch">
+		<arg name="ACCESS_URI" value="$(arg sr_uri)"/>
+		<arg name="ACCESS_URI_HTTPS" value="$(arg sr_uri_https)"/>
+		<arg name="THIS_ADDRESS" value="$(arg address)"/>
+		<arg name="SERVICE_URI" value="$(arg service_uri)"/>
+		<arg name="THIS_SYSTEM_NAME" value="$(arg subscriber_system_name)"/>
+		<arg name="SERVICE_DEFINITION" value="$(arg service_name_f)"/>
+		<arg name="INTERFACE" value="$(arg interface)"/>
+		<arg name="UNIT" value="$(arg unit_subscriber)"/>
+		<arg name="SECURITY" value="$(arg security)"/>
+		<arg name="THIS_PORT" value="$(arg subscriber_port)"/>
+		<arg name="SECURE_ARROWHEAD_INTERFACE" value="$(arg secure_arrowhead_interface)"/>
+		<arg name="SECURE_PROVIDER_INTERFACE" value="$(arg secure_provider_interface)"/>
+	</include>
+
+	<!-- consumer_publisher -->
+	<include file="$(find consumer_publisher)/launch/consumer_publisher.launch">
+		<!-- consumer -->
+		<arg name="SERVICE_DEFINITION_CONSUMER" value="$(arg service_name_c)"/>
+		<arg name="UNIT_CONSUMER" value="$(arg unit_provider)"/>
+		<arg name="TARGET_SYSTEM_NAME_CONSUMER" value="$(arg provider_system_name)"/>
+		<arg name="TARGET_ADDRESS_CONSUMER" value="$(arg address)"/>
+		<arg name="TARGET_PORT_CONSUMER" value="$(arg provider_port)"/>
+		<!-- publisher -->
+		<arg name="SERVICE_DEFINITION_PUBLISHER" value="$(arg service_name_f)"/>
+		<arg name="UNIT_PUBLISHER" value="$(arg unit_subscriber)"/>
+		<arg name="TARGET_SYSTEM_NAME_PUBLISHER" value="$(arg subscriber_system_name)"/>
+		<arg name="TARGET_ADDRESS_PUBLISHER" value="$(arg address)"/>
+		<arg name="TARGET_PORT_PUBLISHER" value="$(arg subscriber_port)"/>
+		<!-- booth -->	
+		<arg name="ACCESS_URI" value="$(arg or_uri)"/>
+		<arg name="ACCESS_URI_HTTPS" value="$(arg or_uri_https)"/>
+		<arg name="THIS_ADDRESS" value="$(arg address)"/>
+		<arg name="THIS_SYSTEM_NAME" value="$(arg consumer_system_name)"/>
+		<arg name="INTERFACE" value="$(arg interface)"/>
+		<arg name="SECURITY" value="$(arg security)"/>
+		<arg name="THIS_PORT" value="$(arg consumer_port)"/>
+		<arg name="SECURE_ARROWHEAD_INTERFACE" value="$(arg secure_arrowhead_interface)"/>
+		<arg name="SECURE_PROVIDER_INTERFACE" value="$(arg secure_provider_interface)"/>
+	</include>
+
+</launch>
+

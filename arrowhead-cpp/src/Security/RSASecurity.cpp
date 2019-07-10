@@ -1,5 +1,6 @@
 
 #include "RSASecurity.h"
+namespace arrowhead{
 
 RSA* RSASecurity::createPrivateRSA(std::string key) {
 	RSA *rsa = NULL;
@@ -156,4 +157,4 @@ bool RSASecurity::getVerificationResult(){
 
      return verifySignature(b64DecodedToken, (char *)sB64EncodedSignature.c_str());
 }
-
+}

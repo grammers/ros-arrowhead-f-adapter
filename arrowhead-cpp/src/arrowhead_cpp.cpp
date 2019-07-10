@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <time.h>
 #include "RSASecurity.h"
-
+namespace arrowhead{
 
 Arrowhead::Arrowhead(){
 }
 
-Arrowhead::~Arrowhead(void){
+Arrowhead::~Arrowhead(){
 }
 
 void Arrowhead::init_provider(std::string base_name){
@@ -26,7 +26,7 @@ void Arrowhead::init_provider(std::string base_name){
 	return;
 }
 
-void Arrowhead::inti_subscriber(std::string base_name, f_void_f callback){
+void Arrowhead::init_subscriber(std::string base_name, f_void_f callback){
 	
 	init_Application();
 
@@ -106,13 +106,15 @@ void Arrowhead::setProviderMsgs(json_object *pJsonSenML) {
 // sends a GET request to provider
 // callback arrives at callback_GET
 void Arrowhead::sendGETRequest(){
+	//init_W_orch();
+
 	printf("Sending GET request to: %s\n", config.TARGET_SYSTEM_NAME.c_str());
 	sendRequestToProvider("", provider_uri, "GET");
 }
 
 // sends a POST request to provider
 void Arrowhead::sendPOSTRequest(json_object *data){
-	sendRequestToProvider(json_object_get_string(data), provider_uri, "POST");
+	sendRequestToProvider(json_object_get_string(data), provider_uri, "pub");
 }
 
 
@@ -366,6 +368,7 @@ int Arrowhead::Callback_Serve_HTTPs_GET(const char *URL, std::string *pResponse,
 // override orchestration
 // run when a GET request is sent
 size_t Arrowhead::callback_GET(const char *ptr, size_t size){
+	printf("GET receved data: %s\n", ptr);
 	// figure out somtheing good to send ass uri
 	callback(config.SERVICE_URI.c_str(), ptr);
 	return size;
@@ -404,7 +407,7 @@ bool Arrowhead::getOrchetrationRequestForm(std::string &request_form){
 
 }
 
-size_t Arrowhead::Callback_OrchetrationResponse(char *ptr, size_t size) {
+size_t Arrowhead::Callback_OrchestrationResponse(char *ptr, size_t size) {
 //
 //Expected Response -- example
 //{
@@ -508,6 +511,6 @@ size_t Arrowhead::Callback_OrchetrationResponse(char *ptr, size_t size) {
      else{
            provider_uri= "http://" + sIPAddress + ":" + std::to_string(uPort) + "/" + sURI;
      }
-
 	return size;
+}
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-using namespace std;
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,15 +12,13 @@ using namespace std;
 
 #include "iniparser.h"
 
+namespace arrowhead{
+using namespace std;
 class OrchestratorInterface : Http_Handler, Https_Handler {
 
 private:
 
-	dictionary  *pini = NULL;
 	string URI;
-
-	dictionary *Load_IniFile(char *fname);
-	int Unload_IniFile();
 
 public:
 	string sConsumerID;
@@ -30,7 +27,7 @@ public:
 	~OrchestratorInterface();
 	
 	void sendRequestToProvider(std::string data, std::string provider_uri, std::string method);
-	size_t callback_GET_http(const char *ptr, size_t size);
+	size_t callback_GET_http(char *ptr, size_t size);
 	virtual size_t callback_GET(const char *ptr, size_t size);
 
 
@@ -44,3 +41,4 @@ public:
 
 	virtual size_t Callback_OrchestrationResponse(char *ptr, size_t size);
 };
+}

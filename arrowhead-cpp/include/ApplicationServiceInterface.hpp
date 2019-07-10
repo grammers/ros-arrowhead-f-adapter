@@ -21,6 +21,7 @@
      }
 #endif
 
+namespace arrowhead{
 
 class ApplicationServiceInterface :
     Http_Handler,
@@ -56,3 +57,4 @@ public:
 	virtual int Callback_Serve_HTTP_GET(const char *Id, std::string *pData_str);
 	virtual int Callback_Serve_HTTPs_GET(const char *Id, std::string *pData_str, std::string param_token, std::string param_signature, std::string clientDistName);
 };
+}

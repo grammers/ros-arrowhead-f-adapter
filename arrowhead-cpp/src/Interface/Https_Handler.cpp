@@ -1,6 +1,7 @@
 
 #include "Https_Handler.hpp"
 #include <cstring>
+namespace arrowhead{
 
 
 size_t Https_Handler::httpsResponseCallback(char *ptr, size_t size)
@@ -328,4 +329,5 @@ int Https_Handler::KillHttpsServer()
 		return 0;
 	}
 return 1;
+} 
 }

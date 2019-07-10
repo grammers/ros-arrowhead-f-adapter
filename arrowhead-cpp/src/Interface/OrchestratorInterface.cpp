@@ -1,6 +1,7 @@
 #include "OrchestratorInterface.hpp"
 #include <iostream>
 
+namespace arrowhead{
 OrchestratorInterface::OrchestratorInterface( )
 {
 
@@ -17,11 +18,12 @@ size_t OrchestratorInterface::httpResponseCallback(char *ptr, size_t size)
 	return Callback_OrchestrationResponse(ptr, size);
 }
 
-size_t OrchestratorInterface::callback_GET_http(const char *ptr, size_t size){
-	return callback_GET(ptr, size);
+size_t OrchestratorInterface::callback_GET_http(char *ptr, size_t size){
+	const char *p = ptr;
+	return callback_GET(p, size);
 }
 
-size_t callback_GET(const char *ptr, size_t size){
+size_t OrchestratorInterface::callback_GET(const char *ptr, size_t size){
 	return size;
 }
 
@@ -66,8 +68,6 @@ bool OrchestratorInterface::init_OrchestratorInterface(Arrowhead_Data_ext *confi
 
 int OrchestratorInterface::deinit( )
 {
-	Unload_IniFile();
-
 	KillServer();
 
     return 0;
@@ -83,4 +83,5 @@ int OrchestratorInterface::sendOrchestrationRequest(string requestForm, Arrowhea
           return SendHttpsRequest(requestForm, config->ACCESS_URI_HTTPS, "POST");
 	else
           return SendRequest(requestForm, config->ACCESS_URI, "POST");
+}
 }

@@ -14,6 +14,7 @@ extern "C" {
 }
 #endif
 
+namespace arrowhead{
 using namespace std;
 
 class Http_Handler
@@ -24,7 +25,7 @@ private:
 public:
 	int SendRequest(string pdata, string paddr, string pmethod);
 
-	virtual size_t callback_GET_http(const char *ptr, size_t size);
+	virtual size_t callback_GET_http(char *ptr, size_t size);
 	virtual int httpGETCallback(const char *Id, string *pData_str);
 	virtual int httpPOSTCallback(const char *url, const char *payload);
 
@@ -33,3 +34,4 @@ public:
 	int MakeServer(unsigned short listen_port);
 	int KillServer();
 };
+}

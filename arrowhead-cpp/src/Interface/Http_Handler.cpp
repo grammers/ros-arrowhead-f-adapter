@@ -12,22 +12,28 @@
 #define POST            1
 
 
+namespace arrowhead{
 
 
-size_t Http_Handler::httpResponseCallback(char *ptr, size_t size)
+inline size_t Http_Handler::httpResponseCallback(char *ptr, size_t size)
 {
 	return size;
 }
 
-size_t httpResponseHandler(char *ptr, size_t size, size_t nmemb, void *userdata)
+inline size_t httpResponseHandler(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
 	return ((Http_Handler *)userdata)->httpResponseCallback(ptr, size*nmemb);
 }
 
-size_t httpGETResponsHandler(char const *ptr, size_t size, size_t nmemb, void *userdata){
-	return ((Http_Handler *)userdata)->callback_GET_http(ptr, size);
+inline size_t httpGETResponsHandler(char *ptr, size_t size, size_t nmemb, void *userdata){
+	return ((Http_Handler *)userdata)->callback_GET_http(ptr, size*nmemb);
 }
 
+inline size_t httpPOSTResponseHandler(char *ptr, size_t size, size_t nmemb, void *userdata){
+	if(0 != strcmp(ptr,"\"Result\":\"OK\""))
+		fprintf(stderr, "POST not ok: %s\n", ptr);
+	return size*nmemb;
+}
 int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string pmethod)
 {
      int http_code = 0;
@@ -39,22 +45,32 @@ int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string 
 	curl_global_init(CURL_GLOBAL_ALL);
   	curl = curl_easy_init();
 
+	//printf("data: %s\n", pdata.c_str());
+	//printf("addr: %s\n", paddr.c_str());
+	//printf("pmethod: %s\n", pmethod.c_str());
+
   	if(curl)
   	{
 		agent = "libcurl/"+string(curl_version_info(CURLVERSION_NOW)->version);
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, agent.c_str());
 
-		headers = curl_slist_append(headers, "Expect:");
-		headers = curl_slist_append(headers, "Content-Type: application/json");
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 		if (pmethod == "GET"){
 			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &httpGETResponsHandler);
+			//curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		}
+		else if (pmethod == "pub"){
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, pdata.c_str());
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &httpPOSTResponseHandler);
+			//curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		}
 		else{
-			if (pmethod == "PUT")
+			headers = curl_slist_append(headers, "Expect:");
+			headers = curl_slist_append(headers, "Content-Type: application/json");
+			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+			if (pmethod == "PUT"){
 				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
-
+			}
 			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, pdata.c_str());
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &httpResponseHandler);
 			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, -1L);
@@ -62,7 +78,7 @@ int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string 
 		
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
 		curl_easy_setopt(curl, CURLOPT_URL, paddr.c_str());
-
+		
 		// Perform the request, res will get the return code
 		res = curl_easy_perform(curl);
 
@@ -81,7 +97,7 @@ int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string 
 // CLIENT side
 // return of GET!
 // can be overloaded in child class
-size_t Http_Handler::callback_GET_http(const char *ptr, size_t size){
+size_t Http_Handler::callback_GET_http(char *ptr, size_t size){
 	printf("return of GET request.\nreturn data: %s\n", ptr);
 	return size;
 }
@@ -261,4 +277,5 @@ int Http_Handler::KillServer()
 	}
 
      return 1;
+}
 }
