@@ -1,5 +1,9 @@
 
 #include "arrowhead_cpp.h"
+#include "split.h"
+#include "RSASecurity.h"
+#include "json-c/json.h"
+#include <inttypes.h>
 #include <map>
 #include <mutex>
 #include <iostream>
@@ -8,7 +12,6 @@
 #include <thread>
 #include <algorithm>
 #include <time.h>
-#include "RSASecurity.h"
 namespace arrowhead{
 
 Arrowhead::Arrowhead(){
@@ -16,7 +19,7 @@ Arrowhead::Arrowhead(){
 
 Arrowhead::~Arrowhead(){
 }
-
+/*
 void Arrowhead::init_provider(std::string base_name){
 	init_Application();
 
@@ -38,13 +41,13 @@ void Arrowhead::init_subscriber(std::string base_name, f_void_f callback){
 	registerSensor(); // register in the service register
 	return;
 }
-
-void Arrowhead::init_Application(){
+*/
+//void Arrowhead::init_Application(){
 	// test sow there in not an error in set up for applicationServiceInterface
-	if (!init_ApplicationServiceInterface(config)){
-		fprintf(stderr, "unable to init applictionServiceInterface");
-	}
-}
+	//if (!init_ApplicationServiceInterface(config)){
+	//	fprintf(stderr, "unable to init applictionServiceInterface");
+	//}
+//}
 
 
 void Arrowhead::init_consumer(f_void_f callback){
@@ -58,7 +61,7 @@ void Arrowhead::init_publisher(){
 
 void Arrowhead::init_W_orch(){
 	std::string request_form;
-	if(!getOrchetrationRequestForm(request_form)){
+	if(!getOrchetrationRequestForm(request_form, config)){
 		fprintf(stderr, "Error: Request form is missing");
 		return;
 	}
@@ -68,7 +71,7 @@ void Arrowhead::init_W_orch(){
 
 	sendOrchestrationRequest(request_form, &config);
 }
-
+/*
 void Arrowhead::setProviderMsgs(json_object *pJsonSenML) {
 	//////////////////////////////////
 	// check sow it it a valid msgs //
@@ -102,7 +105,7 @@ void Arrowhead::setProviderMsgs(json_object *pJsonSenML) {
 		return;
 	}
 }
-
+*/
 // sends a GET request to provider
 // callback arrives at callback_GET
 void Arrowhead::sendGETRequest(){
@@ -375,37 +378,6 @@ size_t Arrowhead::callback_GET(const char *ptr, size_t size){
 }
 
 
-bool Arrowhead::getOrchetrationRequestForm(std::string &request_form){
-	//TODO change these to a actual json implementation
-    // change return path to handle json
-    // cascade throe sensorHandler, OrchestraIntreface, http...
-    request_form = 
-    	"{ \"requesterSystem\": { "     
-        	"\"systemName\": \""+config.THIS_SYSTEM_NAME+"\", "
-            "\"address\": \""+config.THIS_ADDRESS+"\", "
-            "\"port\": "+std::to_string(config.THIS_PORT)+", "
-            "\"authenticationInfo\": \""+config.AUTHENTICATION_INFO+"\" }, "
-		"\"requestedService\": { "      
-        	"\"serviceDefinition\": \""+config.SERVICE_DEFINITION+"\", "
-            "\"interfaces\": [ \""+config.INTERFACE+"\" ], "
-            "\"serviceMetadata\": { "       
-            	"\"security\": \""+config.SECURITY+"\" } }, "
-		"\"orchestrationFlags\": { "    
-        	"\"overrideStore\": "+std::to_string(config.OVERRIDE_STORE)+"," 
-            "\"matchmaking\": "+std::to_string(config.MATCHMAKING)+", "
-            "\"metadataSearch\": "+std::to_string(config.METADATA_SEARCH)+", "
-            "\"pingProviders\": "+std::to_string(config.PING_PROVIDERS)+", "
-            "\"onlyPreferred\": "+std::to_string(config.ONLY_PREFERRED)+", "
-            "\"externalServiceRequest\": "+std::to_string(config.EXTERNAL_SERVICE_REQUEST)+" }, "
-        "\"preferredProviders\": [ { "
-        "\"providerSystem\": { "        
-        	"\"systemName\": \""+config.TARGET_SYSTEM_NAME+"\", "
-            "\"address\": \""+config.TARGET_ADDRESS+"\", "
-            "\"port\": \""+std::to_string(config.TARGET_PORT)+"\" } } ] }";
- 
-     return true;
-
-}
 
 size_t Arrowhead::Callback_OrchestrationResponse(char *ptr, size_t size) {
 //

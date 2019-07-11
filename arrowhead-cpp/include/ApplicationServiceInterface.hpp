@@ -30,18 +30,22 @@ class ApplicationServiceInterface :
 private:
 
 	std::string URI;
-	std::string HTTPsURI;
+	std::string HTTPs_URI;
 	
 	bool createServer(std::string ip, int port);
 
-public:
+protected:
+	bool sensorIsRegistered;
+
+//public:
 	ApplicationServiceInterface();
 	~ApplicationServiceInterface();
 
 	// Init system
 	// create server to enable http request
 	// it cascade to createServer and MakeServer
-	bool init_ApplicationServiceInterface(Arrowhead_Data_ext &config);
+	bool initApplicationServiceInterface(Arrowhead_Data_ext &config);
+	bool registerSensor(Arrowhead_Data_ext &config, std::string base_name);
 	int deinit( );
 	
 	// register to service registry
@@ -51,10 +55,18 @@ public:
 	// callbacks form http requests
 	// it redirect to override implementation
 	int httpGETCallback(const char *Id, std::string *pData_str);
-	int httpsGETCallback(const char *Id, std::string *pData_str, std::string param_token, std::string param_signature, std::string clientDistName);
+	int httpsGETCallback(const char *Id, std::string *pData_str, 
+					std::string param_token, 
+					std::string param_signature, 
+					std::string clientDistName);
+	virtual int callbackServerHttpGET(const char *Id, 
+					std::string *pData_str);
+	virtual int Callback_Server_HTTPs_GET(const char *Id, 
+					std::string *pData_str, std::string param_token, 
+					std::string param_signature, std::string clientDistName);
+
 	int httpPOSTCallback(const char *url, const char *payload);
-	virtual int Callback_Serve_HTTP_POST(const char *url, const char *payload);
-	virtual int Callback_Serve_HTTP_GET(const char *Id, std::string *pData_str);
-	virtual int Callback_Serve_HTTPs_GET(const char *Id, std::string *pData_str, std::string param_token, std::string param_signature, std::string clientDistName);
+	virtual int callbackServerHttpPOST(const char *url, 
+					const char *payload);
 };
 }

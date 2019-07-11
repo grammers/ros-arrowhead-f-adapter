@@ -10,7 +10,14 @@
 	<arg name="secure_arrowhead_interface" value="false"/>
 	<arg name="secure_provider_interface" value="false"/>
 	<arg name="address" value="130.240.5.68"/>
-	
+	<!-- or setings -->
+	<arg name="override_store" value="true"/>
+	<arg name="matchmaking" value="true"/>
+	<arg name="metadata_search" value="false"/>
+	<arg name="ping_providers" value="false"/>
+	<arg name="only_preferred" value="true"/>
+	<arg name="external_service_request" value="false"/>
+
 	<!-- node spefic -->
 	<arg name="provider_port" value="8490"/>
 	<arg name="provider_system_name" value="temperature_provider_demo"/>
@@ -85,6 +92,12 @@
 		<arg name="THIS_PORT" value="$(arg consumer_port)"/>
 		<arg name="SECURE_ARROWHEAD_INTERFACE" value="$(arg secure_arrowhead_interface)"/>
 		<arg name="SECURE_PROVIDER_INTERFACE" value="$(arg secure_provider_interface)"/>
+		<arg name="OVERRIDE_STORE" value="$(arg override_store)"/>
+		<arg name="MATCHMAKING" value="$(arg matchmaking)"/>
+		<arg name="METADATA_SEARCH" value="$(arg metadata_search)"/>
+		<arg name="PING_PROVIDERS" value="$(arg ping_providers)"/>
+		<arg name="ONLY_PREFERRED" value="$(arg only_preferred)"/>
+		<arg name="EXTERNAL_SERVICE_REQUEST" value="$(arg external_service_request)"/>
 	</include>
 
 </launch>

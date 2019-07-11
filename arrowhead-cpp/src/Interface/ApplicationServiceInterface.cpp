@@ -1,5 +1,8 @@
 
 #include "ApplicationServiceInterface.hpp"
+#include <fstream>
+#include <algorithm>
+
 namespace arrowhead{
 
 ApplicationServiceInterface::ApplicationServiceInterface( )
@@ -13,6 +16,67 @@ ApplicationServiceInterface::~ApplicationServiceInterface()
 	deinit();
 }
 
+bool ApplicationServiceInterface::registerSensor(Arrowhead_Data_ext &config, std::string base_name){
+
+	printf("\nREGISTRATION (%s, %s)\n\n", config.SECURE_PROVIDER_INTERFACE ? "Secure Provider" : "Insecure Provider", config.SECURE_ARROWHEAD_INTERFACE ? "Secure AHInterface" : "Insecure AHInterface");
+
+	
+	///////////
+	// HTTPS //
+	///////////
+	if(config.SECURE_PROVIDER_INTERFACE){
+		std::ifstream ifs(config.PUBLIC_KEY_PATH.c_str());
+		std::string pubkeyContent( (std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()) );
+
+		pubkeyContent.erase(0, pubkeyContent.find("\n") + 1);
+		pubkeyContent = pubkeyContent.substr(0, pubkeyContent.size()-25);
+
+        pubkeyContent.erase(std::remove(pubkeyContent.begin(), pubkeyContent.end(), '\n'), pubkeyContent.end());
+
+        config.AUTHENTICATION_INFO = pubkeyContent;
+	}
+    /////////
+	// end //
+	/////////
+
+	// try to register in Arrowhead servisRegistry (called function in AppligcationInterFace)
+	// return int for error checking
+	int returnValue = registerToServiceRegistry(config);
+
+	printf("%s Post sent (SenML baseName = %s)\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", base_name.c_str());
+	printf("%s Post return value: %d\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", returnValue);
+
+	if (returnValue == 201 /*Created*/){
+          sensorIsRegistered = true;
+		return true;
+	}
+	else{ // error handling
+
+         printf("Already registered?\n");
+		printf("Try re-registration\n");
+
+		returnValue = unregisterFromServiceRegistry(config);
+
+		if (returnValue == 200 /*OK*/ || returnValue == 204 /*No Content*/) {
+			printf("Unregistration is successful\n");
+		}
+		else {
+			fprintf(stderr, "Unregistration is unsuccessful\n");
+			return false;
+		}
+
+		returnValue = registerToServiceRegistry(config);
+
+		if (returnValue == 201 /*Created*/) {
+               sensorIsRegistered = true;
+               return true;
+		}
+		else {
+			fprintf(stderr, "unsuccessful registration\n");
+			return false; //unsuccessful registration
+		}
+	}
+}
 //////////////////////////
 // http/https callbacks //
 //////////////////////////
@@ -20,10 +84,10 @@ ApplicationServiceInterface::~ApplicationServiceInterface()
 // HTTP_Handler overload
 int ApplicationServiceInterface::httpGETCallback(const char *Id, string *pData_str)
 {
-	return Callback_Serve_HTTP_GET(Id, pData_str);
+	return callbackServerHttpGET(Id, pData_str);
 }
 
-int ApplicationServiceInterface::Callback_Serve_HTTP_GET(const char *Id, string *pData_str)
+int ApplicationServiceInterface::callbackServerHttpGET(const char *Id, string *pData_str)
 {
 	*pData_str = "5678";
 	return 1;
@@ -31,21 +95,21 @@ int ApplicationServiceInterface::Callback_Serve_HTTP_GET(const char *Id, string 
 
 // HTTP_Hander overload POST
 int ApplicationServiceInterface::httpPOSTCallback(const char *url, const char *payload){
-	printf("POST callback to application: %s\n", payload);
-	return Callback_Serve_HTTP_POST(url, payload);
+	return callbackServerHttpPOST(url, payload);
 }
 
-int ApplicationServiceInterface::Callback_Serve_HTTP_POST(const char *url, const char *payload){
+int ApplicationServiceInterface::callbackServerHttpPOST(const char *url, const char *payload){
+	printf("POST callback to application: %s\n", payload);
 	return 1;
 }
 
 // HTTPs_Handler overload
 int ApplicationServiceInterface::httpsGETCallback(const char *Id, string *pData_str, string _sToken, string _sSignature, string _clientDistName)
 {
-	return Callback_Serve_HTTPs_GET(Id, pData_str, _sToken, _sSignature, _clientDistName);
+	return Callback_Server_HTTPs_GET(Id, pData_str, _sToken, _sSignature, _clientDistName);
 }
 
-int ApplicationServiceInterface::Callback_Serve_HTTPs_GET(const char *Id, string *pData_str, string _sToken, string _sSignature, string _clientDistName)
+int ApplicationServiceInterface::Callback_Server_HTTPs_GET(const char *Id, string *pData_str, string _sToken, string _sSignature, string _clientDistName)
 {
 	*pData_str = "5678";
 	return 1;
@@ -56,7 +120,7 @@ int ApplicationServiceInterface::Callback_Serve_HTTPs_GET(const char *Id, string
 
 
 
-bool ApplicationServiceInterface::init_ApplicationServiceInterface(Arrowhead_Data_ext &config)
+bool ApplicationServiceInterface::initApplicationServiceInterface(Arrowhead_Data_ext &config)
 {
 	if(config.THIS_ADDRESS.size() != 0){
 		return createServer(config.THIS_ADDRESS, config.THIS_PORT);
@@ -71,7 +135,7 @@ bool ApplicationServiceInterface::init_ApplicationServiceInterface(Arrowhead_Dat
 bool ApplicationServiceInterface::createServer(std::string ip, int port){
 	// https is not in use
 	URI      = "http://"  + ip + ":" + to_string(port);
-	//HTTPsURI = "https://" + ip + ":" + to_string(port+1);
+	//HTTPs_URI = "https://" + ip + ":" + to_string(port+1);
 
 
 	if( MakeServer(port) ) {

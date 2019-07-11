@@ -26,6 +26,7 @@ void Converter::init(std::string sensor_id, std::string unit, std::string baseNa
 // 	}
 
 void Converter::parce(const char *url, const char *ptr){
+	printf("\nin side parce\n");
 	// parsing temperature from json SneML response	
 	std::string str(ptr);
 	struct json_object *obj;
@@ -75,6 +76,11 @@ void Converter::set(double temp, int time){
 
 	return;
 }
+
+void Converter::updateMsgs(){
+	set(temperature.temperature, temperature.header.stamp.sec);
+}
+
 
 // return the msgs
 json_object* Converter::getJsonMsgs(){

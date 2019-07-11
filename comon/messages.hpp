@@ -24,7 +24,9 @@ public:
 	
 	// Create a new msgs
 	void set(double temperature, int t_stamp);
-	
+
+	void updateMsgs();
+
 	// returns the msgs
 	json_object* getJsonMsgs();
 

@@ -26,6 +26,12 @@
 	<arg name="THIS_PORT" default="8492"/>
 	<arg name="SECURE_ARROWHEAD_INTERFACE" default="false"/>
 	<arg name="SECURE_PROVIDER_INTERFACE" default="false"/>
+	<arg name="OVERRIDE_STORE" default="true"/>
+	<arg name="MATCHMAKING" default="true"/>
+	<arg name="METADATA_SEARCH" default="false"/>
+	<arg name="PING_PROVIDERS" default="false"/>
+	<arg name="ONLY_PREFERRED" default="true"/>
+	<arg name="EXTERNAL_SERVICE_REQUEST" default="false"/>
 
 
 
@@ -56,6 +62,12 @@
 		<param name="THIS_PORT" value="$(arg THIS_PORT)"/>
 		<param name="SECURE_ARROWHEAD_INTERFACE" value="$(arg SECURE_ARROWHEAD_INTERFACE)"/>
 		<param name="SECURE_PROVIDER_INTERFACE" value="$(arg SECURE_PROVIDER_INTERFACE)"/>
+		<param name="OVERRIDE_STORE" value="$(arg OVERRIDE_STORE)"/>
+		<param name="MATCHMAKING" value="$(arg MATCHMAKING)"/>
+		<param name="METADATA_SEARCH" value="$(arg METADATA_SEARCH)"/>
+		<param name="PING_PROVIDERS" value="$(arg PING_PROVIDERS)"/>
+		<param name="ONLY_PREFERRED" value="$(arg ONLY_PREFERRED)"/>
+		<param name="EXTERNAL_SERVICE_REQUEST" value="$(arg EXTERNAL_SERVICE_REQUEST)"/>
 	</node>
 
 

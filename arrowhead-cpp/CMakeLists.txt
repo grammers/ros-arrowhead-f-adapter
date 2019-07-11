@@ -11,7 +11,11 @@ project(arrowhead_cpp)
 
 
 add_library(arrowhead_cpp SHARED 
-	src/arrowhead_cpp.cpp
+	#src/arrowhead_cpp.cpp
+	src/provider.cpp
+	src/subscriber.cpp
+	src/consumer.cpp
+	src/publisher.cpp
 	src/Interface/Http_Handler.cpp
 	src/Interface/Https_Handler.cpp
 	src/Interface/ApplicationServiceInterface.cpp

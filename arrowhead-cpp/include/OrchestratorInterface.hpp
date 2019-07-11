@@ -19,6 +19,8 @@ class OrchestratorInterface : Http_Handler, Https_Handler {
 private:
 
 	string URI;
+protected:
+	std::string target_uri;
 
 public:
 	string sConsumerID;
@@ -26,19 +28,19 @@ public:
 	OrchestratorInterface();
 	~OrchestratorInterface();
 	
-	void sendRequestToProvider(std::string data, std::string provider_uri, std::string method);
-	size_t callback_GET_http(char *ptr, size_t size);
-	virtual size_t callback_GET(const char *ptr, size_t size);
-
-
-	bool init_OrchestratorInterface(Arrowhead_Data_ext *config);
-	int deinit();
-
+	bool getOrchetrationRequestForm(std::string &request_form,
+									Arrowhead_Data_ext &config);
+	
 	int sendOrchestrationRequest(string rResult, Arrowhead_Data_ext *config);
+	size_t CallbackOrchestrationResponse(char *ptr, size_t size);
+	void sendRequestToProvider(std::string data, 
+					std::string provider_uri, std::string method);
+	size_t callback_GET_http(char *ptr, size_t size);
+	virtual size_t callbackRequest(const char *ptr, size_t size);
+
+
 
 	size_t httpResponseCallback(char *ptr, size_t size);
 	size_t httpsResponseCallback(char *ptr, size_t size);
-
-	virtual size_t Callback_OrchestrationResponse(char *ptr, size_t size);
 };
 }
