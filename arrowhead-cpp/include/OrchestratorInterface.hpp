@@ -9,7 +9,7 @@
 #include "Http_Handler.hpp"
 #include "Https_Handler.hpp"
 #include "arrowhead_data_ext.hpp"
-
+#include <json-c/json.h>
 #include "iniparser.h"
 
 namespace arrowhead{
@@ -28,7 +28,7 @@ public:
 	OrchestratorInterface();
 	~OrchestratorInterface();
 	
-	bool getOrchetrationRequestForm(std::string &request_form,
+	bool getOrchetrationRequestForm(json_object *&request_form,
 									Arrowhead_Data_ext &config);
 	
 	int sendOrchestrationRequest(string rResult, Arrowhead_Data_ext *config);

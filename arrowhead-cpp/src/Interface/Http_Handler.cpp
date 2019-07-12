@@ -45,10 +45,6 @@ int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string 
 	curl_global_init(CURL_GLOBAL_ALL);
   	curl = curl_easy_init();
 
-	//printf("data: %s\n", pdata.c_str());
-	//printf("addr: %s\n", paddr.c_str());
-	//printf("pmethod: %s\n", pmethod.c_str());
-
   	if(curl)
   	{
 		agent = "libcurl/"+string(curl_version_info(CURLVERSION_NOW)->version);
@@ -120,6 +116,7 @@ int Http_Handler::httpPOSTCallback(const char *url, const char *payload)
 	printf("Http POST reseved.\nNo Overload, payload is thrown away.\nPayload: %s\n", payload);
      return 1;
 }
+
 
 // static C function (not member of class!)
 struct connection_info_struct
@@ -250,7 +247,6 @@ extern "C" int MHD_Callback(void *cls,
 
      return ret;
 }
-
 
 int Http_Handler::MakeServer(unsigned short listen_port)
 {

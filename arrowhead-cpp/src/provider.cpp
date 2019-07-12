@@ -14,7 +14,8 @@ namespace arrowhead{
 		this -> base_name = base_name;
 		
 		// register in the service register
-		registerSensor(config, base_name);
+		if(!registerSensor(config, base_name))
+				fprintf(stderr, "cod not register sensor!\n");
 	
 		return;
 	}
@@ -63,7 +64,6 @@ namespace arrowhead{
   	 	printf("Received URL: %s\n", URL);
     	std::string tmp = "/" + this -> config.SERVICE_URI;
 		// test sow the request has arived at the correct place 
-		
 		if (strcmp(tmp.c_str(), URL) != 0) {
 			fprintf(stderr, "Error: Unknown URL: %s\n", URL);
 			return 1;

@@ -1,4 +1,5 @@
 #include "consumer.h"
+#include <json-c/json.h>
 
 namespace arrowhead{
 
@@ -6,21 +7,22 @@ namespace arrowhead{
 	Consumer::~Consumer(){}
 
 	bool Consumer::init(f_void_f callback){
-		std::string request_form;
+		json_object *request_form;
 		if(!getOrchetrationRequestForm(request_form, config)){
 			fprintf(stderr, "Error: Request form is missing");
 			return false;
 		}
 	
 		// NOTE might put in orchestration instead
-		printf("\nrequest form: %s\n", request_form.c_str());
+		printf("\nrequest form: %s\n", 
+						json_object_get_string(request_form));
 		printf("Sending Orchestration Request to: %s\n", 
 						config.SECURE_ARROWHEAD_INTERFACE ? 
 							"Secure Arrowhead Interface" : 
 							"Insecure Arrowhead Interface");
 	
-		//fprintf(stderr, "\nreturn nr: %i\n", sendOrchestrationRequest(request_form, &config));
-		if(200 != sendOrchestrationRequest(request_form, &config)){
+		if(200 != sendOrchestrationRequest(
+						json_object_get_string(request_form), &config)){
 			fprintf(stderr, "can't connect to provider\n");
 			return false;
 		}
