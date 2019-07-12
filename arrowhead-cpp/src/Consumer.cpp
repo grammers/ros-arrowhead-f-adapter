@@ -1,4 +1,4 @@
-#include "consumer.h"
+#include "Consumer.h"
 #include <json-c/json.h>
 
 namespace arrowhead{
@@ -6,7 +6,7 @@ namespace arrowhead{
 	Consumer::Consumer(){}
 	Consumer::~Consumer(){}
 
-	bool Consumer::init(f_void_f callback){
+	bool Consumer::init(f_void_f callback) {
 		json_object *request_form;
 		if(!getOrchetrationRequestForm(request_form, config)){
 			fprintf(stderr, "Error: Request form is missing");
@@ -20,7 +20,8 @@ namespace arrowhead{
 						config.SECURE_ARROWHEAD_INTERFACE ? 
 							"Secure Arrowhead Interface" : 
 							"Insecure Arrowhead Interface");
-	
+		
+		// if return is 200 did it work
 		if(200 != sendOrchestrationRequest(
 						json_object_get_string(request_form), &config)){
 			fprintf(stderr, "can't connect to provider\n");
@@ -33,16 +34,19 @@ namespace arrowhead{
 
 	// sends a GET request to provider
 	// callback arrives at callbackRequest
-	void Consumer::request(){
+	void Consumer::request() {
 		printf("Sending GET request to: %s\n", 
 						config.TARGET_SYSTEM_NAME.c_str());
 		sendRequestToProvider("", this -> target_uri, "GET"); 
 	}
 
-	size_t Consumer::callbackRequest(const char *payload, size_t size){
+	// @override
+	// TODO error checking and handling
+	// return size imply success
+	size_t Consumer::callbackRequest(const char *payload, size_t size) {
 		printf("Request received data: %s\n", payload);
-		// figure out somtheing good to send ass uri
-		this -> callback(config.SERVICE_URI.c_str(), payload);
+		// figure out something good to send ass uri
+		callback(config.SERVICE_URI.c_str(), payload);
 		return size;
 	}
 

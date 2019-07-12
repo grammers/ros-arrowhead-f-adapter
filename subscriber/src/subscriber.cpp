@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/Temperature.h"
 #include "../../comon/messages.hpp"
-#include "arrowhead/subscriber.h"
+#include "arrowhead/Subscriber.h"
 
 #include <sstream>
 #include <stdio.h>
@@ -30,27 +30,40 @@ int main(int argc, char* argv[]){
 	ros::NodeHandle n;
 
 	// crate a ROS subscriber that listens for a temperature measurement
-	ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>("temperature_subscriber", 10);
+	ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>(
+					"temperature_subscriber", 10);
 
 	// prams setted in launch
 	// stored in a arrowhead struck named Arrowhead_Data_ext
 	// mainly used to configure the precumer
 	ros::NodeHandle nh("~");
-	nh.param<std::string>("ACCESS_URI", subscriber.config.ACCESS_URI, "http://arrowhead.tmit.bme.hu:8442/serviceregistry/");
-	nh.param<std::string>("ACCESS_URI_HTTPS", subscriber.config.ACCESS_URI_HTTPS, "https://arrowhead.tmit.bme.hu:8443/serviceregistry/");
-	nh.param<std::string>("THIS_ADDRESS", subscriber.config.THIS_ADDRESS, "10.0.0.40");
-	nh.param<std::string>("THIS_ADDRESS6", subscriber.config.THIS_ADDRESS6, "[fe80::1a57:58d9:c43e:6319]");
-	nh.param<std::string>("SERVICE_URI", subscriber.config.SERVICE_URI, "this_is_the_custom_url");
-	nh.param<std::string>("THIS_SYSTEM_NAME", subscriber.config.THIS_SYSTEM_NAME, "SecureTemperatureSensor");
-	nh.param<std::string>("SERVICE_DEFINITION", subscriber.config.SERVICE_DEFINITION, "IndoorTemperature_ProviderExample");
+	nh.param<std::string>("ACCESS_URI", subscriber.config.ACCESS_URI, 
+					"http://arrowhead.tmit.bme.hu:8442/serviceregistry/");
+	nh.param<std::string>("ACCESS_URI_HTTPS", 
+					subscriber.config.ACCESS_URI_HTTPS, 
+					"https://arrowhead.tmit.bme.hu:8443/serviceregistry/");
+	nh.param<std::string>("THIS_ADDRESS", subscriber.config.THIS_ADDRESS, 
+					"10.0.0.40");
+	nh.param<std::string>("THIS_ADDRESS6", subscriber.config.THIS_ADDRESS6, 
+					"[fe80::1a57:58d9:c43e:6319]");
+	nh.param<std::string>("SERVICE_URI", subscriber.config.SERVICE_URI, 
+					"this_is_the_custom_url");
+	nh.param<std::string>("THIS_SYSTEM_NAME", subscriber.config.THIS_SYSTEM_NAME, 
+					"SecureTemperatureSensor");
+	nh.param<std::string>("SERVICE_DEFINITION", subscriber.config.SERVICE_DEFINITION, 
+					"IndoorTemperature_ProviderExample");
 	nh.param<std::string>("INTERFACE", subscriber.config.INTERFACE, "JSON");
-	nh.param<std::string>("PRIVATE_KEY_PATH", subscriber.config.PRIVATE_KEY_PATH, "keys/tempsensor.testcloud1.private.key");
-	nh.param<std::string>("PUBLIC_KEY_PATH", subscriber.config.PUBLIC_KEY_PATH, "keys/tempsensor.testcloud1.publickey.pem");
+	nh.param<std::string>("PRIVATE_KEY_PATH", subscriber.config.PRIVATE_KEY_PATH, 
+					"keys/tempsensor.testcloud1.private.key");
+	nh.param<std::string>("PUBLIC_KEY_PATH", subscriber.config.PUBLIC_KEY_PATH, 
+					"keys/tempsensor.testcloud1.publickey.pem");
 	nh.param<std::string>("UNIT", subscriber.config.UNIT, "Celsius");
 	nh.param<std::string>("SECURITY", subscriber.config.SECURITY, "token");
 	nh.param<int>("THIS_PORT", subscriber.config.THIS_PORT, 8452);
-	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", subscriber.config.SECURE_ARROWHEAD_INTERFACE, false);
-	nh.param<bool>("SECURE_PROVIDER_INTERFACE", subscriber.config.SECURE_PROVIDER_INTERFACE, false);
+	nh.param<bool>("SECURE_ARROWHEAD_INTERFACE", 
+					subscriber.config.SECURE_ARROWHEAD_INTERFACE, false);
+	nh.param<bool>("SECURE_PROVIDER_INTERFACE", 
+					subscriber.config.SECURE_PROVIDER_INTERFACE, false);
 	
 	// Print the configure parameters
 	subscriber.config.print();

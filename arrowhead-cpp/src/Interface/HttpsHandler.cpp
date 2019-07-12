@@ -1,21 +1,21 @@
 
-#include "Https_Handler.hpp"
+#include "HttpsHandler.h"
 #include <cstring>
 namespace arrowhead{
 
 
-size_t Https_Handler::httpsResponseCallback(char *ptr, size_t size)
+size_t HttpsHandler::httpsResponseCallback(char *ptr, size_t size)
 {
 	return size;
 }
 
 size_t httpsResponseHandler(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	return ((Https_Handler *)userdata)->httpsResponseCallback(ptr, size*nmemb);
+	return ((HttpsHandler *)userdata)->httpsResponseCallback(ptr, size*nmemb);
 }
 
 
-int Https_Handler::SendHttpsRequest(string pdata, string paddr, string pmethod)
+int HttpsHandler::SendHttpsRequest(std::string pdata, std::string paddr, std::string pmethod)
 {
      printf("SendHttpsRequest: %s\n", paddr.c_str());
 
@@ -23,14 +23,14 @@ int Https_Handler::SendHttpsRequest(string pdata, string paddr, string pmethod)
      CURLcode res;
   	CURL *curl;
 	struct curl_slist *headers = NULL;
-  	string agent;
+  	std::string agent;
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
   	curl = curl_easy_init();
 
   	if(curl){
-		agent = "libcurl/"+string(curl_version_info(CURLVERSION_NOW)->version);
+		agent = "libcurl/"+std::string(curl_version_info(CURLVERSION_NOW)->version);
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, agent.c_str());
 
 		headers = curl_slist_append(headers, "Expect:");
@@ -145,13 +145,13 @@ static char *load_file (const char *filename)
 }
 // This responds to HTTPS GET!
 // can be Overloaded in child class!
-int Https_Handler::httpsGETCallback(const char *Id, string *pData_str, string sToken, string sSignature, string clientDistName)
+int HttpsHandler::httpsGETCallback(const char *Id, std::string *data_str, std::string sToken, std::string sSignature, std::string client_dist_name)
 {
-    *pData_str = "1234";
+    *data_str = "1234";
     return 1;
 }
 
-typedef pair<const char*, string> str_param_t;
+typedef std::pair<const char*, std::string> str_param_t;
 
 static int http_str_param_iter(void *cls, enum MHD_ValueKind kind, const char *key, const char *value){
     str_param_t *p = (str_param_t*)cls;
@@ -227,7 +227,7 @@ extern "C" int MHD_Callback_Https(void *cls,
 {
 	static int aptr;
 	struct MHD_Response *response;
-	string cb_data;
+	std::string cb_data;
 	int value;
 	int ret = MHD_YES;
 
@@ -244,11 +244,11 @@ extern "C" int MHD_Callback_Https(void *cls,
      /*Get URL parameters, token and signature*/
      str_param_t sp_token("token", "default_value");
      MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &http_str_param_iter, &sp_token);
-     string param_token = sp_token.second;
+     std::string param_token = sp_token.second;
 
      str_param_t sp_signature("signature", "default_value");
      MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &http_str_param_iter, &sp_signature);
-     string param_signature = sp_signature.second;
+     std::string param_signature = sp_signature.second;
 
      //Get CN from client cert
      const union MHD_ConnectionInfo *ci;
@@ -276,7 +276,7 @@ extern "C" int MHD_Callback_Https(void *cls,
      }
 
 	// Cast callback to creators class (passing C++ in C functions...)
-     value = ((Https_Handler *)cls)->httpsGETCallback(url, &cb_data, param_token, param_signature, (std::string)clientDistinguishedName);
+     value = ((HttpsHandler *)cls)->httpsGETCallback(url, &cb_data, param_token, param_signature, (std::string)clientDistinguishedName);
 
      if (value)
      {
@@ -289,7 +289,7 @@ extern "C" int MHD_Callback_Https(void *cls,
      return ret;
 }
 
-int Https_Handler::MakeHttpsServer(unsigned short listen_port)
+int HttpsHandler::MakeHttpsServer(unsigned short listen_port)
 {
 	key_pem     = load_file (SERVERKEYFILE);
 	cert_pem    = load_file (SERVERCERTFILE);
@@ -318,7 +318,7 @@ int Https_Handler::MakeHttpsServer(unsigned short listen_port)
 return 0;
 }
 
-int Https_Handler::KillHttpsServer()
+int HttpsHandler::KillHttpsServer()
 {
 	if (pmhd)
 	{

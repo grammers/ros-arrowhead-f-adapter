@@ -38,24 +38,11 @@ add_executable(provider
 	src/provider.cpp
 	../comon/messages.cpp
 )
-#set_source_files_properties(src/Interface/ini/iniparser.c PROPERTIES LANGUAGE CXX)
-#set_source_files_properties(src/Interface/ini/dictionary.c PROPERTIES LANGUAGE CXX)
 
 target_link_libraries(provider 
 	${catkin_LIBRARIES}
 	${PROJECT_LINK_LIBS}
-	#		curl
-	#	microhttpd
-	#crypto
-	#pthread
 	json-c
-	#gnutls
-	
 )
-# tests
-#catkin_add_gtest(provider_client-test test/htest.cpp)
-#if(TARGET provider_client-test)
-#		target_link_libraries(provider_client-test ${catkin_LIBRARIES})
-#endif()
 
 # %EndTag(FULLTEXT)%

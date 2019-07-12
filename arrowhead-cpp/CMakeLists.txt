@@ -3,21 +3,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(arrowhead_cpp)
 
 
-#set(CMAKE_BUILD_TYPE Release)
-
-## Build talker and listener
-#file (GLOB header include/*.h)
-#include_directories(${CMAKE_SOURCE_DIR})
-
-
 add_library(arrowhead_cpp SHARED 
-	#src/arrowhead_cpp.cpp
-	src/provider.cpp
-	src/subscriber.cpp
-	src/consumer.cpp
-	src/publisher.cpp
-	src/Interface/Http_Handler.cpp
-	src/Interface/Https_Handler.cpp
+	src/Provider.cpp
+	src/Subscriber.cpp
+	src/Consumer.cpp
+	src/Publisher.cpp
+	src/Interface/HttpHandler.cpp
+	src/Interface/HttpsHandler.cpp
 	src/Interface/ApplicationServiceInterface.cpp
 	src/Interface/OrchestratorInterface.cpp
 	src/Interface/ini/dictionary.c
@@ -36,12 +28,6 @@ target_link_libraries(arrowhead_cpp
 	json-c
 	gnutls
 )
-
-# tests
-#catkin_add_gtest(provider_client-test test/htest.cpp)
-#if(TARGET provider_client-test)
-#		target_link_libraries(provider_client-test ${catkin_LIBRARIES})
-#endif()
 
 set(dirs "include")
 include_directories("${dirs}")

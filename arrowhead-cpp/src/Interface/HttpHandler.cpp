@@ -1,9 +1,6 @@
 
-#include "Http_Handler.hpp"
+#include "HttpHandler.h"
 #include <cstring>
-
-#include <vector>
-#include <string>
 
 #define POSTBUFFERSIZE  512
 #define MAXNAMESIZE     20
@@ -15,39 +12,45 @@
 namespace arrowhead{
 
 
-inline size_t Http_Handler::httpResponseCallback(char *ptr, size_t size)
+inline size_t HttpHandler::httpResponseCallback(char *ptr, size_t size)
 {
 	return size;
 }
 
-inline size_t httpResponseHandler(char *ptr, size_t size, size_t nmemb, void *userdata)
-{
-	return ((Http_Handler *)userdata)->httpResponseCallback(ptr, size*nmemb);
+inline size_t httpResponseHandler(char *ptr, size_t size, size_t nmemb, 
+				void *userdata) {
+
+	return ((HttpHandler *)userdata)->httpResponseCallback(ptr, size*nmemb);
 }
 
-inline size_t httpGETResponsHandler(char *ptr, size_t size, size_t nmemb, void *userdata){
-	return ((Http_Handler *)userdata)->callback_GET_http(ptr, size*nmemb);
+inline size_t httpGETResponsHandler(char *ptr, size_t size, size_t nmemb, 
+				void *userdata) {
+		
+	return ((HttpHandler *)userdata)->callbackGETHttp(ptr, size*nmemb);
 }
 
-inline size_t httpPOSTResponseHandler(char *ptr, size_t size, size_t nmemb, void *userdata){
+inline size_t httpPOSTResponseHandler(char *ptr, size_t size, 
+				size_t nmemb, void *userdata) {
+
 	if(0 != strcmp(ptr,"\"Result\":\"OK\""))
 		fprintf(stderr, "POST not ok: %s\n", ptr);
 	return size*nmemb;
 }
-int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string pmethod)
-{
-     int http_code = 0;
-     CURLcode res;
+int HttpHandler::sendRequest(std::string pdata, std::string paddr, 
+				std::string pmethod) {
+
+    int http_code = 0;
+    CURLcode res;
   	CURL *curl;
 	struct curl_slist *headers = NULL;
-  	string agent;
+  	std::string agent;
 
 	curl_global_init(CURL_GLOBAL_ALL);
   	curl = curl_easy_init();
 
   	if(curl)
   	{
-		agent = "libcurl/"+string(curl_version_info(CURLVERSION_NOW)->version);
+		agent = "libcurl/"+std::string(curl_version_info(CURLVERSION_NOW)->version);
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, agent.c_str());
 
 		if (pmethod == "GET"){
@@ -79,7 +82,8 @@ int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string 
 		res = curl_easy_perform(curl);
 
 		if(res != CURLE_OK)
-			fprintf(stderr, "curl_easy_perform() failed (in http): %s\n", curl_easy_strerror(res));
+			fprintf(stderr, "curl_easy_perform() failed (in http): %s\n", 
+							curl_easy_strerror(res));
 
           curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 
@@ -93,7 +97,7 @@ int Http_Handler::SendRequest(std::string pdata, std::string paddr, std::string 
 // CLIENT side
 // return of GET!
 // can be overloaded in child class
-size_t Http_Handler::callback_GET_http(char *ptr, size_t size){
+size_t HttpHandler::callbackGETHttp(char *ptr, size_t size) {
 	printf("return of GET request.\nreturn data: %s\n", ptr);
 	return size;
 }
@@ -101,17 +105,17 @@ size_t Http_Handler::callback_GET_http(char *ptr, size_t size){
 // SERVER side
 // This responds to HTTP GET!
 // can be Overloaded in child class!
-int Http_Handler::httpGETCallback(const char *Id, string *pData_str)
+int HttpHandler::httpGETCallback(const char *Id, std::string *data_str)
 {
     printf("http httpGETVallback");
-	*pData_str = "1234";
+	*data_str = "1234";
     return 1;
 }
 
 // SERVER side
 // This responds to HTTP POST!
 // can be Overloaded in child class!
-int Http_Handler::httpPOSTCallback(const char *url, const char *payload)
+int HttpHandler::httpPOSTCallback(const char *url, const char *payload)
 {
 	printf("Http POST reseved.\nNo Overload, payload is thrown away.\nPayload: %s\n", payload);
      return 1;
@@ -135,7 +139,8 @@ inline int iterate_post(void *coninfo_cls,
                         uint64_t off,
                         size_t size)
 {
-     struct connection_info_struct *con_info = (connection_info_struct *) coninfo_cls;
+     struct connection_info_struct *con_info = 
+			 (connection_info_struct *) coninfo_cls;
 
      if (0 == strcmp(key, "name")){
           if ((size > 0) && (size <= MAXNAMESIZE)){
@@ -170,7 +175,7 @@ extern "C" int MHD_Callback(void *cls,
 {
 	static int aptr;
 	struct MHD_Response *response;
-     string cb_data;
+     std::string cb_data;
      int value;
      int ret = MHD_YES;
 
@@ -188,10 +193,12 @@ extern "C" int MHD_Callback(void *cls,
           *con_cls = NULL;                  // reset when done
 
           // Cast callback to creators class (passing C++ in C functions...)
-          value = ((Http_Handler *)cls)->httpGETCallback(url, &cb_data);
+          value = ((HttpHandler *)cls)->httpGETCallback(url, &cb_data);
           if (value)
           {
-             response = MHD_create_response_from_buffer(cb_data.length(), (void *)cb_data.c_str(), MHD_RESPMEM_MUST_COPY);
+             response = MHD_create_response_from_buffer(cb_data.length(), 
+							 (void *)cb_data.c_str(), MHD_RESPMEM_MUST_COPY);
+
              MHD_add_response_header (response, "Content-Type", "application/json");
              ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
              MHD_destroy_response(response);
@@ -203,14 +210,19 @@ extern "C" int MHD_Callback(void *cls,
           //HTTP Header Content type MUST be application/x-www-form-urlencoded
 
           if (NULL == *con_cls){
-               struct connection_info_struct *con_info = (connection_info_struct *) malloc(sizeof(struct connection_info_struct));
+               struct connection_info_struct *con_info = 
+					   (connection_info_struct *) 
+					   malloc(sizeof(struct connection_info_struct));
+
                if (NULL == con_info){
                     return MHD_NO;
                }
                con_info->answerstring = NULL;
 
                if (0 == strcmp(method, "POST")){
-                    con_info->postprocessor = MHD_create_post_processor(connection, 2048, iterate_post, (void *) con_info);
+                    con_info->postprocessor = 
+							MHD_create_post_processor(connection, 2048, 
+											iterate_post, (void *) con_info);
 
                     if (NULL == con_info->postprocessor){
                          free(con_info);
@@ -223,19 +235,26 @@ extern "C" int MHD_Callback(void *cls,
                return MHD_YES;
           }
 
-          struct connection_info_struct *con_info = (connection_info_struct *) *con_cls;
+          struct connection_info_struct *con_info = 
+				  (connection_info_struct *) *con_cls;
 
           if (*upload_data_size != 0){
-               MHD_post_process(con_info->postprocessor, upload_data, *upload_data_size);
+               MHD_post_process(con_info->postprocessor, upload_data, 
+							   *upload_data_size);
 
-               value = ((Http_Handler *)cls)->httpPOSTCallback(url, upload_data); //upload_data contains the POST payload
+			   //upload_data contains the POST payload
+               value = ((HttpHandler *)cls)->
+					   httpPOSTCallback(url, upload_data); 
+
                *upload_data_size = 0;
 
                return MHD_YES;
           }
           else{
-               string resp = "\"Result\":\"OK\"";
-               response = MHD_create_response_from_buffer(resp.length(), (void *)resp.c_str(), MHD_RESPMEM_MUST_COPY);
+               std::string resp = "\"Result\":\"OK\"";
+               response = MHD_create_response_from_buffer(resp.length(), 
+							   (void *)resp.c_str(), MHD_RESPMEM_MUST_COPY);
+
                MHD_add_response_header (response, "Content-Type", "application/json");
                ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
                MHD_destroy_response(response);
@@ -248,7 +267,7 @@ extern "C" int MHD_Callback(void *cls,
      return ret;
 }
 
-int Http_Handler::MakeServer(unsigned short listen_port)
+int HttpHandler::MakeServer(unsigned short listen_port)
 {
 	pmhd = MHD_start_daemon(
 			MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG | MHD_USE_DUAL_STACK,
@@ -263,7 +282,7 @@ int Http_Handler::MakeServer(unsigned short listen_port)
 	return 0;
 }
 
-int Http_Handler::KillServer()
+int HttpHandler::KillServer()
 {
 	if (pmhd)
 	{

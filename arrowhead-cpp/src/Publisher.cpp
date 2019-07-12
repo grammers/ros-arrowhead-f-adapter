@@ -1,4 +1,4 @@
-#include "publisher.h"
+#include "Publisher.h"
 #include <json-c/json.h>
 
 namespace arrowhead{
@@ -20,6 +20,7 @@ namespace arrowhead{
 							"Secure Arrowhead Interface" : 
 							"Insecure Arrowhead Interface");
 
+		// 200 implies success
 		if(200 != sendOrchestrationRequest(
 						json_object_get_string(request_form), &config)){
 			fprintf(stderr, "can't connect to subscriber\n");

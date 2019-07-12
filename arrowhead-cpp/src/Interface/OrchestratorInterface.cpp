@@ -1,53 +1,32 @@
-#include "OrchestratorInterface.hpp"
-#include <iostream>
+#include "OrchestratorInterface.h"
 #include <json-c/json.h>
 
 namespace arrowhead{
-OrchestratorInterface::OrchestratorInterface( )
-{
 
+OrchestratorInterface::OrchestratorInterface() {}
+
+OrchestratorInterface::~OrchestratorInterface() {}
+
+
+void OrchestratorInterface::sendRequestToProvider(std::string data, 
+				std::string provider_uri, std::string method) {
+	sendRequest(data, provider_uri, method);
 }
 
-OrchestratorInterface::~OrchestratorInterface()
-{
-}
+int OrchestratorInterface::sendOrchestrationRequest(
+				std::string requestForm, 
+				ArrowheadDataExt *config) {
 
-// Overload Sensor-handler callback functionality here!
-size_t OrchestratorInterface::httpResponseCallback(char *ptr, size_t size)
-{
-	return CallbackOrchestrationResponse(ptr, size);
-}
-
-size_t OrchestratorInterface::callback_GET_http(char *ptr, size_t size){
-	const char *p = ptr;
-	return callbackRequest(p, size);
-}
-
-size_t OrchestratorInterface::callbackRequest(const char *ptr, size_t size){
-	return size;
-}
-
-size_t OrchestratorInterface::httpsResponseCallback(char *ptr, size_t size)
-{
-	return CallbackOrchestrationResponse(ptr, size);
-}
-
-
-void OrchestratorInterface::sendRequestToProvider(std::string data, std::string provider_uri, std::string method){
-	SendRequest(data, provider_uri, method);
-}
-
-int OrchestratorInterface::sendOrchestrationRequest(string requestForm, Arrowhead_Data_ext *config)
-{
 	if(config->SECURE_ARROWHEAD_INTERFACE)
           return SendHttpsRequest(requestForm, config->ACCESS_URI_HTTPS, "POST");
 	else
-          return SendRequest(requestForm, config->ACCESS_URI, "POST");
+          return sendRequest(requestForm, config->ACCESS_URI, "POST");
 }
 
 
 bool OrchestratorInterface::getOrchetrationRequestForm(
-				json_object *&request_form, Arrowhead_Data_ext &config){
+				json_object *&request_form, ArrowheadDataExt &config) {
+
 	//TODO change these to a actual json implementation
     // change return path to handle json
     // cascade throe sensorHandler, OrchestraIntreface, http...
@@ -161,7 +140,33 @@ bool OrchestratorInterface::getOrchetrationRequestForm(
 	return true;
 }
 
-size_t OrchestratorInterface::CallbackOrchestrationResponse(char *ptr, size_t size) {
+///////////////
+// Callbacks //
+///////////////
+
+// Overload Sensor-handler callback functionality here!
+size_t OrchestratorInterface::httpResponseCallback(char *ptr, size_t size) {
+	return CallbackOrchestrationResponse(ptr, size);
+}
+
+size_t OrchestratorInterface::callbackGETHttp(char *ptr, size_t size){
+	const char *p = ptr;
+	return callbackRequest(p, size);
+}
+
+size_t OrchestratorInterface::callbackRequest(const char *ptr, size_t size){
+	return size;
+}
+
+size_t OrchestratorInterface::httpsResponseCallback(char *ptr, size_t size)
+{
+	return CallbackOrchestrationResponse(ptr, size);
+}
+
+
+size_t OrchestratorInterface::CallbackOrchestrationResponse(char *ptr, 
+				size_t size) {
+
 //
 //Expected Response -- example
 //{
@@ -190,61 +195,76 @@ size_t OrchestratorInterface::CallbackOrchestrationResponse(char *ptr, size_t si
 //  ]
 //}
 //
-     printf("Orchestration response: %s\n", ptr);
+    printf("Orchestration response: %s\n", ptr);
 
-     std::string token;
-     std::string signature;
-     string sIPAddress;
+    std::string token;
+    std::string signature;
+    std::string sIPAddress;
 	uint32_t uPort;
-	string sInterface;
-	string sURI;
+	std::string sInterface;
+	std::string sURI;
 
-     struct json_object *obj = json_tokener_parse(ptr);
-     if(obj == NULL){
-          fprintf(stderr, "Error: could not parse orchestration response\n");
-          return 1;
-     }
+    struct json_object *obj = json_tokener_parse(ptr);
+    if(obj == NULL){
+         fprintf(stderr, "Error: could not parse orchestration response\n");
+         return 1;
+    }
 
-     struct json_object *jResponseArray;
-     if(!json_object_object_get_ex(obj, "response", &jResponseArray)){
-          fprintf(stderr, "Error: could not parse response\n");
-          return 1;
-     }
+    struct json_object *jResponseArray;
+    if(!json_object_object_get_ex(obj, "response", &jResponseArray)){
+         fprintf(stderr, "Error: could not parse response\n");
+         return 1;
+    }
 
-     struct json_object *jResponse = json_object_array_get_idx(jResponseArray, 0);
-     struct json_object *jProv2;
+    struct json_object *jResponse = json_object_array_get_idx(jResponseArray, 0);
+    struct json_object *jProv2;
 
-     if(!json_object_object_get_ex(jResponse, "provider", &jProv2)){
-          fprintf(stderr, "Error: could not parse provider section\n");
-          return 1;
-     }
+    if(!json_object_object_get_ex(jResponse, "provider", &jProv2)){
+         fprintf(stderr, "Error: could not parse provider section\n");
+         return 1;
+    }
 
-     struct json_object *jAddr;
-     struct json_object *jPort;
-     struct json_object *jService;
-     struct json_object *jIntf;
-     struct json_object *jIntf0;
-     struct json_object *jUri;
-     struct json_object *jToken;
-     struct json_object *jSignature;
+    struct json_object *jAddr;
+    struct json_object *jPort;
+    struct json_object *jService;
+    struct json_object *jIntf;
+    struct json_object *jIntf0;
+    struct json_object *jUri;
+    struct json_object *jToken;
+    struct json_object *jSignature;
 
-     if(!json_object_object_get_ex(jProv2,    "address",    &jAddr))    {fprintf(stderr, "Error: could not find address\n");    return 1;}
-     if(!json_object_object_get_ex(jProv2,    "port",       &jPort))    {fprintf(stderr, "Error: could not find port\n");       return 1;}
-     if(!json_object_object_get_ex(jResponse, "service",    &jService)) {fprintf(stderr, "Error: could not find service\n");    return 1;}
-     if(!json_object_object_get_ex(jService,  "interfaces", &jIntf))    {fprintf(stderr, "Error: could not find interface\n");  return 1;}
-     if(!json_object_object_get_ex(jResponse,  "serviceURI", &jUri))     {fprintf(stderr, "Error: could not find serviceURI\n"); return 1;}
+	if(!json_object_object_get_ex(jProv2,    "address",    &jAddr)) {
+		fprintf(stderr, "Error: could not find address\n");
+		return 1;
+	}
+    if(!json_object_object_get_ex(jProv2,    "port",       &jPort)) {
+		fprintf(stderr, "Error: could not find port\n");
+		return 1;
+	}
+    if(!json_object_object_get_ex(jResponse, "service",    &jService)) {
+		fprintf(stderr, "Error: could not find service\n");
+		return 1;
+	}
+    if(!json_object_object_get_ex(jService,  "interfaces", &jIntf)) {
+		fprintf(stderr, "Error: could not find interface\n");
+		return 1;
+	}
+    if(!json_object_object_get_ex(jResponse,  "serviceURI", &jUri)) {
+		fprintf(stderr, "Error: could not find serviceURI\n");
+		return 1;
+	}
 
-     jIntf0 = json_object_array_get_idx(jIntf, 0);
+    jIntf0 = json_object_array_get_idx(jIntf, 0);
 
-     if(jIntf0 == NULL){
-          fprintf(stderr, "Error: could not find interface\n");
-          return 1;
-     }
+    if(jIntf0 == NULL){
+         fprintf(stderr, "Error: could not find interface\n");
+         return 1;
+    }
 
-	sIPAddress = string(json_object_get_string(jAddr));
+	sIPAddress = std::string(json_object_get_string(jAddr));
 	uPort      = json_object_get_int(jPort);
-	sInterface = string(json_object_get_string(jIntf0));
-     sURI       = string(json_object_get_string(jUri));
+	sInterface = std::string(json_object_get_string(jIntf0));
+    sURI       = std::string(json_object_get_string(jUri));
 
 	 /*
 	 if(config.SECURE_PROVIDER_INTERFACE){
@@ -265,8 +285,13 @@ size_t OrchestratorInterface::CallbackOrchestrationResponse(char *ptr, size_t si
      }
      else{
 	 */
-           target_uri= "http://" + sIPAddress + ":" + std::to_string(uPort) + "/" + sURI;
+    target_uri= "http://" + sIPAddress + ":" + std::to_string(uPort) + "/" + sURI;
     // }
 	return size;
 }
+
+////////////////////
+// Callbacks ends //
+////////////////////
+
 }

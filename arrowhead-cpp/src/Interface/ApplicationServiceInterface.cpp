@@ -1,24 +1,25 @@
 
-#include "ApplicationServiceInterface.hpp"
+#include "ApplicationServiceInterface.h"
 #include <fstream>
 #include <algorithm>
+#include <json-c/json.h>
 
 namespace arrowhead{
 
-ApplicationServiceInterface::ApplicationServiceInterface( )
-{
+ApplicationServiceInterface::ApplicationServiceInterface() {}
 
-}
-
-
-ApplicationServiceInterface::~ApplicationServiceInterface()
-{
+ApplicationServiceInterface::~ApplicationServiceInterface() {
 	deinit();
 }
 
-bool ApplicationServiceInterface::registerSensor(Arrowhead_Data_ext &config, std::string base_name){
+bool ApplicationServiceInterface::registerSensor(ArrowheadDataExt &config, 
+				std::string base_name) {
 
-	printf("\nREGISTRATION (%s, %s)\n\n", config.SECURE_PROVIDER_INTERFACE ? "Secure Provider" : "Insecure Provider", config.SECURE_ARROWHEAD_INTERFACE ? "Secure AHInterface" : "Insecure AHInterface");
+	printf("\nREGISTRATION (%s, %s)\n\n",
+					config.SECURE_PROVIDER_INTERFACE ? 
+					"Secure Provider" : "Insecure Provider", 
+					config.SECURE_ARROWHEAD_INTERFACE ? 
+					"Secure AHInterface" : "Insecure AHInterface");
 
 	
 	///////////
@@ -26,12 +27,14 @@ bool ApplicationServiceInterface::registerSensor(Arrowhead_Data_ext &config, std
 	///////////
 	if(config.SECURE_PROVIDER_INTERFACE){
 		std::ifstream ifs(config.PUBLIC_KEY_PATH.c_str());
-		std::string pubkeyContent( (std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()) );
+		std::string pubkeyContent( (std::istreambuf_iterator<char>(ifs)), 
+						(std::istreambuf_iterator<char>()) );
 
 		pubkeyContent.erase(0, pubkeyContent.find("\n") + 1);
 		pubkeyContent = pubkeyContent.substr(0, pubkeyContent.size()-25);
 
-        pubkeyContent.erase(std::remove(pubkeyContent.begin(), pubkeyContent.end(), '\n'), pubkeyContent.end());
+        pubkeyContent.erase(std::remove(pubkeyContent.begin(), 
+						pubkeyContent.end(), '\n'), pubkeyContent.end());
 
         config.AUTHENTICATION_INFO = pubkeyContent;
 	}
@@ -43,8 +46,13 @@ bool ApplicationServiceInterface::registerSensor(Arrowhead_Data_ext &config, std
 	// return int for error checking
 	int returnValue = registerToServiceRegistry(config);
 
-	printf("%s Post sent (SenML baseName = %s)\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", base_name.c_str());
-	printf("%s Post return value: %d\n", config.SECURE_ARROWHEAD_INTERFACE? "HTTPs" : "HTTP", returnValue);
+	printf("%s Post sent (SenML baseName = %s)\n", 
+					config.SECURE_ARROWHEAD_INTERFACE ? 
+					"HTTPs" : "HTTP", base_name.c_str());
+
+	printf("%s Post return value: %d\n",
+					config.SECURE_ARROWHEAD_INTERFACE ? 
+					"HTTPs" : "HTTP", returnValue);
 
 	if (returnValue == 201 /*Created*/){
           sensorIsRegistered = true;
@@ -82,36 +90,52 @@ bool ApplicationServiceInterface::registerSensor(Arrowhead_Data_ext &config, std
 //////////////////////////
 
 // HTTP_Handler overload
-int ApplicationServiceInterface::httpGETCallback(const char *Id, string *pData_str)
-{
-	return callbackServerHttpGET(Id, pData_str);
+int ApplicationServiceInterface::httpGETCallback(const char *Id,
+				std::string *data_str) {
+
+	return callbackServerHttpGET(Id, data_str);
 }
 
-int ApplicationServiceInterface::callbackServerHttpGET(const char *Id, string *pData_str)
-{
-	*pData_str = "5678";
+int ApplicationServiceInterface::callbackServerHttpGET(const char *Id,
+				std::string *data_str) {
+
+	*data_str = "5678";
 	return 1;
 }
 
 // HTTP_Hander overload POST
-int ApplicationServiceInterface::httpPOSTCallback(const char *url, const char *payload){
+int ApplicationServiceInterface::httpPOSTCallback(const char *url, 
+				const char *payload) {
+
 	return callbackServerHttpPOST(url, payload);
 }
 
-int ApplicationServiceInterface::callbackServerHttpPOST(const char *url, const char *payload){
+int ApplicationServiceInterface::callbackServerHttpPOST(const char *url, 
+				const char *payload) {
+
 	printf("POST callback to application: %s\n", payload);
 	return 1;
 }
 
 // HTTPs_Handler overload
-int ApplicationServiceInterface::httpsGETCallback(const char *Id, string *pData_str, string _sToken, string _sSignature, string _clientDistName)
-{
-	return Callback_Server_HTTPs_GET(Id, pData_str, _sToken, _sSignature, _clientDistName);
+int ApplicationServiceInterface::httpsGETCallback(const char *Id, 
+				std::string *data_str,
+				std::string _sToken, 
+				std::string _sSignature, 
+				std::string _client_dist_name) {
+
+	return callbackServerHttpsGET(Id, data_str, _sToken, 
+					_sSignature, _client_dist_name);
 }
 
-int ApplicationServiceInterface::Callback_Server_HTTPs_GET(const char *Id, string *pData_str, string _sToken, string _sSignature, string _clientDistName)
-{
-	*pData_str = "5678";
+int ApplicationServiceInterface::callbackServerHttpsGET(
+				const char *Id, 
+				std::string *data_str, 
+				std::string _sToken, 
+				std::string _sSignature, 
+				std::string _client_dist_name) {
+
+	*data_str = "5678";
 	return 1;
 }
 ////////////////////
@@ -120,8 +144,9 @@ int ApplicationServiceInterface::Callback_Server_HTTPs_GET(const char *Id, strin
 
 
 
-bool ApplicationServiceInterface::initApplicationServiceInterface(Arrowhead_Data_ext &config)
-{
+bool ApplicationServiceInterface::initApplicationServiceInterface(
+				ArrowheadDataExt &config) {
+
 	if(config.THIS_ADDRESS.size() != 0){
 		return createServer(config.THIS_ADDRESS, config.THIS_PORT);
 	}
@@ -134,12 +159,13 @@ bool ApplicationServiceInterface::initApplicationServiceInterface(Arrowhead_Data
 
 bool ApplicationServiceInterface::createServer(std::string ip, int port){
 	// https is not in use
-	URI      = "http://"  + ip + ":" + to_string(port);
-	//HTTPs_URI = "https://" + ip + ":" + to_string(port+1);
+	URI      = "http://"  + ip + ":" + std::to_string(port);
+	//HTTPs_URI = "https://" + ip + ":" + std::to_string(port+1);
 
 
 	if( MakeServer(port) ) {
-		printf("Error: Unable to start HTTP Server (%s:%d)!\n", ip.c_str(), port);
+		printf("Error: Unable to start HTTP Server (%s:%d)!\n",
+						ip.c_str(), port);
 		return false;
     }
 
@@ -163,7 +189,7 @@ int ApplicationServiceInterface::deinit( )
 }
 
 // creates a json of some of the params in config
-inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
+inline const char *GetHttpPayload(ArrowheadDataExt &config)
 {
 
 //Expected content, example:
@@ -216,7 +242,8 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
 	json_object_object_add(serviceMetadata, "security", jstring);
     }
 
-    json_object_object_add(providedService, "serviceMetadata", serviceMetadata);
+    json_object_object_add(providedService, "serviceMetadata",
+					serviceMetadata);
 
 /*
 *   Provider section
@@ -224,7 +251,10 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
     jstring = json_object_new_string(config.THIS_SYSTEM_NAME.c_str());
     json_object_object_add(provider, "systemName", jstring);
 
-    jstring = json_object_new_string( config.THIS_ADDRESS.size() != 0 ? config.THIS_ADDRESS.c_str() : config.THIS_ADDRESS6.c_str());
+    jstring = json_object_new_string( config.THIS_ADDRESS.size() != 0 ?
+					config.THIS_ADDRESS.c_str() : 
+					config.THIS_ADDRESS6.c_str());
+
     json_object_object_add(provider, "address", jstring);
 
     if(config.AUTHENTICATION_INFO.size() != 0){
@@ -259,19 +289,27 @@ inline const char *GetHttpPayload(Arrowhead_Data_ext &config)
     return json_object_to_json_string(jobj);
 }
 
-int ApplicationServiceInterface::registerToServiceRegistry(Arrowhead_Data_ext &config)
-{
+int ApplicationServiceInterface::registerToServiceRegistry(
+				ArrowheadDataExt &config) {
+	
 	if(config.SECURE_ARROWHEAD_INTERFACE)
-          return SendHttpsRequest(GetHttpPayload(config), config.ACCESS_URI_HTTPS + "register", "POST");
-     else
-          return SendRequest(GetHttpPayload(config), config.ACCESS_URI + "register", "POST");
+    	return SendHttpsRequest(GetHttpPayload(config), 
+						  config.ACCESS_URI_HTTPS + "register", "POST");
+     
+	else
+        return sendRequest(GetHttpPayload(config), 
+						  config.ACCESS_URI + "register", "POST");
 }
 
-int ApplicationServiceInterface::unregisterFromServiceRegistry(	Arrowhead_Data_ext &config)
-{
-     if(config.SECURE_ARROWHEAD_INTERFACE)
-          return SendHttpsRequest(GetHttpPayload(config), config.ACCESS_URI_HTTPS + "remove", "PUT");
-     else
-          return SendRequest(GetHttpPayload(config), config.ACCESS_URI + "remove", "PUT");
+int ApplicationServiceInterface::unregisterFromServiceRegistry(	
+									ArrowheadDataExt &config) {
+
+	if(config.SECURE_ARROWHEAD_INTERFACE)
+    	return SendHttpsRequest(GetHttpPayload(config), 
+						  config.ACCESS_URI_HTTPS + "remove", "PUT");
+
+	else
+    	return sendRequest(GetHttpPayload(config), 
+						  config.ACCESS_URI + "remove", "PUT");
 }
 }

@@ -3,8 +3,8 @@
 #include "../../comon/messages.hpp"
 
 #pragma warning(disable:4996) 
-#include "arrowhead/publisher.h" 
-#include "arrowhead/consumer.h" 
+#include "arrowhead/Publisher.h" 
+#include "arrowhead/Consumer.h" 
 
 using namespace arrowhead;
 
@@ -31,10 +31,13 @@ int main(int argc, char **argv) {
 	ros::NodeHandle nh("~");
 	// service
 	nh.param<std::string>("SERVICE_DEFINITION_CONSUMER",
-					consumer.config.SERVICE_DEFINITION,"IndoorTemperature_providerExample");
-	nh.param<std::string>("UNIT_CONSUMER", consumer.config.UNIT, "NOT SPIFFED");
+					consumer.config.SERVICE_DEFINITION,
+					"IndoorTemperature_providerExample");
+	nh.param<std::string>("UNIT_CONSUMER", consumer.config.UNIT, 
+					"NOT SPIFFED");
 	nh.param<std::string>("SERVICE_DEFINITION_PUBLISHER",
-					publisher.config.SERVICE_DEFINITION,"IndoorTemperature_providerExample");
+					publisher.config.SERVICE_DEFINITION,
+					"IndoorTemperature_providerExample");
 	nh.param<std::string>("UNIT_PUBLISHER", publisher.config.UNIT, 
 					"NOT SPIFFED");	
 	// target
@@ -159,7 +162,8 @@ int main(int argc, char **argv) {
 		rescived_pub.publish(convert.temperature);
 		
 		sensor_msgs::Temperature farenhite;
-		farenhite.temperature = ((Converter::temperature.temperature * 1.8) + 32);
+		farenhite.temperature = 
+				((Converter::temperature.temperature * 1.8) + 32);
 		tf_pub.publish(farenhite);
 
 	} 

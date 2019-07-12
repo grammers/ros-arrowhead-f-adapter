@@ -38,24 +38,11 @@ add_executable(consumer_publisher
 	src/consumer_publisher.cpp
 	../comon/messages.cpp
 )
-#set_source_files_properties(src/Interface/ini/iniparser.c PROPERTIES LANGUAGE CXX)
-#set_source_files_properties(src/Interface/ini/dictionary.c PROPERTIES LANGUAGE CXX)
 
 target_link_libraries(consumer_publisher 
 	${catkin_LIBRARIES}
 	${PROJECT_LINK_LIBS}
-	#		curl
-	#	microhttpd
-	#crypto
-	#pthread
 	json-c
-	#gnutls
-	
 )
-# tests
-#catkin_add_gtest(consumer_publisher_client-test test/htest.cpp)
-#if(TARGET consumer_publisher_client-test)
-#		target_link_libraries(consumer_publisher_client-test ${catkin_LIBRARIES})
-#endif()
 
 # %EndTag(FULLTEXT)%
