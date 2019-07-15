@@ -1,2 +1,99 @@
 # ros-arrowhead-f-adapter
-A adapter to run ROS as a legacy node in arrowhead framework
+A adapter to run ROS as a legacy node in arrowhead framework.
+These is a example for how you can run ROS ass a legacy devise for
+Arrowhead framework.
+Three examples haw bean implemented.
+These examples arr created sow they can be run together ass a big
+example.
+Together do they cover all four service types: provider, consumer,
+publisher and subscriber.
+
+The development and testing have been dune on ubuntu 18 and ROS melodic.
+The code is written in c++ because that is the language that ROS supports.
+There fore is a c++ client library for arrowhead needed.
+The one used is the one in folder arrowhead-cpp.
+
+
+## Pre-requests
+[ROS](http://wiki.ros.org/ROS/Installation).  
+[Arrowhead core](https://github.com/arrowhead-f/core-java)
+
+## The examples
+The examples are sending a temperature from provider to subscriber thru
+consumer_publisher.
+In consumer_publisher is the temperature converted from Celsius to
+Fahrenheit.
+In all steps are a ROS massages published (sensor_msgs/Temperature) containing the temperature and a time stamp.
+Between the different nodes are the messages sent using Arrowhead framework.
+The examples name describe wot type of Arrowhead node it is.
+
+### Run
+First have do you have to have arrowhead core systems running.
+Depending on your system and installation may you start them in different
+ways.
+One way is to `cd` to the core system {root folder}/scripts and run a start up
+script.
+You all sow need to configure the data base with the system configuration
+you uses.
+For the examples.
+
+> mysql -u arrowhead -p  
+> arrowhead #the password   
+> use arrowhead;
+> select * from arrowhead_systems;
+
+Select a not used `id` (ex. 1).
+
+> insert into arrowhead_system (id, address, port, system_name) value (1, ''130.240.5.68'', 8492, ''temperature_consumer_demo'');
+
+> select * from arrowhead_service;  
+> select * from intra_cloud_authorization;
+
+Note the `id` of ''temperature_consumer_demo'', ''temperature_provider_demo'', ''temperature_subscriber_demo'', ''temperature_c'', and ''temperature_f''.
+If they do not aper in the tables try to run the system once.
+Presume that the `id` are (in some order) 1, 2, 3, 4 and 5.
+Check for free `id` in intra_cloud_autherization, Presume 6 and 7 are free.
+Then run
+
+> insert into intra_cloud_authorization value(6, 1, 2, 4);  
+> insert into intra_cloud_authorization value(7, 1, 3, 5);
+
+and to exit.
+
+> exit;
+
+
+The nodes can be run one by one using.
+
+> roslaunch provider provider.launch  
+> roslaunch consumer_provider consumer_provider.launch  
+> roslaunch subscriber subscriber.launch  
+
+Or they can be run as one.  
+
+> roslaunch provider system.launch  
+
+Launch parameters are set in the file you actually lunches.
+
+#### Outprint
+To see the propagation thru the system.
+
+> rostopic echo temperature_provider  
+> rostopic echo temperature_consumer  
+> rostopic echo temperature_publisher  
+> rostopic echo temperature_subscriber
+
+
+
+## Installation
+
+## Usages
+The connection between ROS and Arrowhead framework are weak.
+Sow it is no problem to develop the ROS system and Arrowhead framework
+system separately and only include both where they interact.
+All that is needed is initialise bout ass you do normally and writ the code
+you desire for the connection.
+
+Implementation in other languages should be as easy (these is not tested).
+ROS all sow supports python sow all that is needed is a python arrowhead
+framework library.
