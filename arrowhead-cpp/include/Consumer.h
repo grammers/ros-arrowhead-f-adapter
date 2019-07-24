@@ -3,6 +3,7 @@
 #include "ArrowheadDataExt.h"
 #include "OrchestratorInterface.h"
 
+
 /*
  * These class is a access point to arrowhead framework
  * Use these when you desire a Consumer.
@@ -19,7 +20,8 @@ namespace arrowhead{
 
 	// for callbacks
 	using f_void_f = void(*)(const char*, const char*);
-	
+
+
 	class Consumer : OrchestratorInterface{
 	public:
 		Consumer();

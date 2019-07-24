@@ -29,12 +29,12 @@ int main(int argc, char* argv[]){
 	ros::init(argc, argv, "subscriber");
 	ros::NodeHandle n;
 
-	// crate a ROS subscriber that listens for a temperature measurement
+	// crate a ROS publisher that publish the received temperature measurement
 	ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>(
 					"temperature_subscriber", 10);
 
 	// prams setted in launch
-	// stored in a arrowhead struck named Arrowhead_Data_ext
+	// stored in a arrowhead struck named ArrowheadDataExt
 	// mainly used to configure the precumer
 	ros::NodeHandle nh("~");
 	nh.param<std::string>("ACCESS_URI", subscriber.config.ACCESS_URI, 
@@ -71,7 +71,8 @@ int main(int argc, char* argv[]){
 	// Set up the arrowhead part
 	// param is the baseName, used to verify that the correct messages are sent. 
 	// a pointer to the callback function for POST msgs
-	subscriber.init(subscriber.config.THIS_SYSTEM_NAME, Converter::parce);
+	// the callback function has to be static void(const char*, const char*)
+	subscriber.init(subscriber.config.THIS_SYSTEM_NAME, Converter::pars);
 	
 	// to reserve msgs mast it be define first
 	// should not be don her. 
@@ -85,6 +86,8 @@ int main(int argc, char* argv[]){
 	while (ros::ok()) {
 		ros::spinOnce();
 		loop_sleep.sleep();
+		
+		// ROS publish the temperature that are received
 		temperature_pub.publish(convert.temperature);
 	}
 

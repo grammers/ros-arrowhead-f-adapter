@@ -14,14 +14,14 @@ Publisher publisher;
 // class that convert json msgs form arrowhead to ros msgs
 Converter convert;
 
+
 int main(int argc, char **argv) {
 	//ros setup
 	ros::init(argc, argv, "consumer_publisher"); 
 	ros::NodeHandle n;
 
-	// declare a publisher used for debugging and observation set megs type to
-	// std_msgs::Float32, publish on topic "client_demo" and use buffer of size
-	// 10
+	// create 2 publishers to publish the received temperature and the some
+	// in Fahrenheit
 	ros::Publisher rescived_pub =
 			n.advertise<sensor_msgs::Temperature>("temperature_consumer", 10);
 	ros::Publisher tf_pub = 
@@ -86,6 +86,8 @@ int main(int argc, char **argv) {
 	nh.param<bool>("EXTERNAL_SERVICE_REQUEST",
 					consumer.config.EXTERNAL_SERVICE_REQUEST, false);
 
+
+	// copy the params that should be the some.
 	publisher.config.AUTHENTICATION_INFO = consumer.config.AUTHENTICATION_INFO;
 	publisher.config.THIS_PORT = consumer.config.THIS_PORT;
 	publisher.config.THIS_ADDRESS = consumer.config.THIS_ADDRESS;
@@ -121,7 +123,10 @@ int main(int argc, char **argv) {
 	convert.init("sensor_id", publisher.config.UNIT,
 					publisher.config.THIS_SYSTEM_NAME);
 
+	// set a frequency for request in Hz 
+	// warning: it in not exact no grantees, on actual frequency
 	ros::Rate loop_rate(0.3);
+
 	// there is a race condition
 	// these loops are to wait out other nods to initialise
 	// and thus eliminate the effect of the race condition
@@ -129,43 +134,44 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "retry connecting in a moment\n");
 		loop_rate.sleep();
 	}
-	
-	while(!consumer.init(Converter::parce)){
+
+	// take a pointer to a callback function
+	// the function has to be a
+	// static void(const char*, const char*)
+	while(!consumer.init(Converter::pars)){
 		fprintf(stderr, "retry connecting in a moment\n");
 		loop_rate.sleep();
 	}
-
+	
 
 	// to reserve msgs mast it be define first should not be don her. 
-	// But good
-	// for testing TODO set it to whit for first update form sensor
+	// But good for testing 
+	// TODO set it to whit for first update form sensor
 	convert.set(4, 1);
 	
-	// set a frequency for request in Hz 
-	// warning: it in not exact no grantees, on actual frequency
 
-	// loops call to provider
 	while(ros::ok()) {
-		// sleep until it is time for next request
-		ros::spinOnce(); 
-		loop_rate.sleep();
 
 		// get temperature reading from provider
 		consumer.request();
 
-		// arrowhead ask provider for data
+		// convert to Fahrenheit and convert to json and publish
 		convert.set(((Converter::temperature.temperature * 1.8)+32),
 						Converter::temperature.header.stamp.sec); 
 		publisher.publish(convert.getJsonMsgs());
 
-		// Publish data for debug
+		// ROS Publish data for debug
 		rescived_pub.publish(convert.temperature);
 		
+		// ROS publish Fahrenheit temperature
 		sensor_msgs::Temperature farenhite;
 		farenhite.temperature = 
 				((Converter::temperature.temperature * 1.8) + 32);
 		tf_pub.publish(farenhite);
 
+		// sleep until it is time for next request
+		ros::spinOnce(); 
+		loop_rate.sleep();
 	} 
 	return 1;
 }

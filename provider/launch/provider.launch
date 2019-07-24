@@ -15,6 +15,20 @@
 	<arg name="SECURE_ARROWHEAD_INTERFACE" default="false"/>
 	<arg name="SECURE_PROVIDER_INTERFACE" default="false"/>
 
+	<arg name="OR_URI" default="http://localhost:8440/orchestrator/orchestration"/>
+	<arg name="OR_URI_HTTPS" default="https://localhost:8441/orchestrator/orchestration"/>
+	<arg name="SERVICE_DEFINITION_CONSUMER" default="terget name"/>
+	<arg name="TARGET_SYSTEM_NAME" default="target name"/>
+	<arg name="TARGET_ADDRESS" default="ip to target"/>
+	<arg name="TARGET_PORT" default="1234"/>
+	<arg name="OVERRIDE_STORE" default="true"/>
+	<arg name="MATCHMAKING" default="true"/>
+	<arg name="METADATA_SEARCH" default="false"/>
+	<arg name="PING_PROVIDERS" default="false"/>
+	<arg name="ONLY_PREFERRED" default="true"/>
+	<arg name="EXTERNAL_SERVICE_REQUEST" default="false"/>
+	<arg name="REAL" default="false"/>
+	
 	<!-- service -->
 	<node pkg="provider" type="provider" name="provider">
 		<param name="PRIVATE_KEY_PATH" value="Absolute_path_to_private_key"/>
@@ -32,6 +46,20 @@
 		<param name="THIS_PORT" value="$(arg THIS_PORT)"/>
 		<param name="SECURE_ARROWHEAD_INTERFACE" value="$(arg SECURE_ARROWHEAD_INTERFACE)"/>
 		<param name="SECURE_PROVIDER_INTERFACE" value="$(arg SECURE_PROVIDER_INTERFACE)"/>
+
+		<param name="OR_URI" value="$(arg OR_URI)"/>
+		<param name="OR_URI_HTTPS" value="$(arg OR_URI)"/>
+		<param name="SERVICE_DEFINITION_CONSUMER" value="$(arg SERVICE_DEFINITION_CONSUMER)"/>
+		<param name="TARGET_SYSTEM_NAME" value="$(arg TARGET_SYSTEM_NAME)"/>
+		<param name="TARGET_ADDRESS" value="$(arg TARGET_ADDRESS)"/>
+		<param name="TARGET_PORT" value="$(arg TARGET_PORT)"/>
+		<param name="OVERRIDE_STORE" value="$(arg OVERRIDE_STORE)"/>
+		<param name="MATCHMAKING" value="$(arg MATCHMAKING)"/>
+		<param name="METADATA_SEARCH" value="$(arg METADATA_SEARCH)"/>
+		<param name="PING_PROVIDERS" value="$(arg PING_PROVIDERS)"/>
+		<param name="ONLY_PREFERRED" value="$(arg ONLY_PREFERRED)"/>
+		<param name="EXTERNAL_SERVICE_REQUEST" value="$(arg EXTERNAL_SERVICE_REQUEST)"/>
+		<param name="REAL" value="$(arg REAL)"/>
 	</node>
 
 

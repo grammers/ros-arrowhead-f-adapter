@@ -86,6 +86,86 @@ To see the propagation thru the system.
 
 
 ## Installation
+ubuntu 18.04 server
+### Arrowhead framework core
+
+> sudo apt install openssl libgnutls28-dev libgnutlsxx28 libssl1.1 libssl1.0-dev libcurl3 libcurl3-gnutls libcurl4-gnutls-dev libcrypto++-dev libcrypto++-utils libcrypto++6 libgpg-error-dev automake texinfo g++ libjson-c-dev mysql-server maven openjdk-11-jdk-headless make cmake
+> wget https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-latest.tar.gz
+> tar -xvzf libmicrohttpd-latest.tar.gz
+> cd libmicrohttpd-0.9.65
+> ./configure --with-gnutls
+> sudo make install
+> cd /usr/lib
+> sudo ln -s /usr/local/lib/libmicrohttpd.so.12.54.0 libmicrohttpd.so.12
+
+> sudo /etc/init.d/mysql stop  
+> sudo mkdir -p /var/run/mysqld && sudo chown mysql /var/run/mysqld  
+
+Start mysql    
+> sudo mysqld_safe --skip-grant-tables &  
+```
+mysql -u root
+use mysql;
+update user set authentication_string=PASSWORD("root") where User='root';
+update user set plugin="mysql_native_password" where User='root';
+flush privileges;
+quit;
+```
+> sudo killall mysqld  
+> sudo /etc/init.d/mysql start  
+
+Decide where you want arrowhead core to be stored.
+For example: `mkdir arrowhead`, `cd arrrowhead`.
+
+> git clone https://github.com/arrowhead-f/core-java.git  
+> cd core-java  
+> mvn package  
+> mvn install
+> sudo dpkq -i target/\*.deb  
+```
+Detached
+user arrowhead
+pw arrowhead
+mysql pw root # you set erlier
+```
+> cd scripts  
+> sudo chmod +x start_insecure_coresystem.sh
+> ./start_insecure_coresystem.sh
+
+> cd ..
+> git clone https://github.com/grammers/client-cpp.git
+> cd client-cpp
+> cmake CMakeLists.txt
+> sudo make install
+
+For ROS follow [there guide](http://wiki.ros.org/ROS/Installation).
+
+// > sudo apt install ros-melodic-catkin  
+> sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'  
+> wget http://packages.ros.org/ros.key -O - | sudo apt-key add -  
+> sudo apt update
+> sudo apt install python-catkin-tool  
+
+
+
+> source /opt/ros/melodic/setup.bash
+> mkdir -p ~/catkin_ws/src  
+> cd ~/catkin_ws  
+> catkin init  
+> source devel/setup.bash
+To simplfie future use you might like to add ''source
+~/catkin_ws/devel/setup.bash` to your `.bashrc`.
+
+> echo "source ~/catkin_ws/devel/setup.bash" >> .bashrc
+
+If you wana lern more about ROS can you continue the turoriol you started
+in last step.
+Observe you are to use `catkin build` instead of `catkin make`.
+
+> cd catkin_ws/src  
+> git clone https://github.com/grammers/ros-arrowhead-f-adapter.git  
+> catkin build
+
 
 ## Usages
 The connection between ROS and Arrowhead framework are weak.

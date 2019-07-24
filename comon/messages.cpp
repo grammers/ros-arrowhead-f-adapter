@@ -25,8 +25,10 @@ void Converter::init(std::string sensor_id, std::string unit, std::string baseNa
 // 		"Unit": "Celsius"
 // 	}
 
-void Converter::parce(const char *url, const char *ptr){
+void Converter::pars(const char *url, const char *ptr){
 	printf("\nin side parce\n");
+	
+
 	// parsing temperature from json SneML response	
 	std::string str(ptr);
 	struct json_object *obj;

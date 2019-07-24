@@ -6,6 +6,7 @@ namespace arrowhead{
 	Consumer::Consumer(){}
 	Consumer::~Consumer(){}
 
+
 	bool Consumer::init(f_void_f callback) {
 		json_object *request_form;
 		if(!getOrchetrationRequestForm(request_form, config)){

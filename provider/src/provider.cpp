@@ -5,6 +5,7 @@
 #include "sensor_msgs/Temperature.h" 
 #include "../../comon/messages.hpp" 
 #include "arrowhead/Provider.h"
+#include "arrowhead/Consumer.h"
 
 #include <sstream> 
 #include <string> 
@@ -24,18 +25,19 @@ using namespace arrowhead;
 // create instances of classes that are used
 Converter convert; 
 Provider provider;
-
+Consumer real_data;
+bool REAL;
 
 int main(int argc, char* argv[]){
 	// init ROS
 	ros::init(argc, argv, "provider"); ros::NodeHandle n;
 
-	// crate a ROS subscriber that listens for a temperature measurement
+	// crate a ROS publisher that publisher the temperature measurement
 	ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>(
 					"temperature_provider", 10);
 
 	// prams setted in launch stored in a provider struck named
-	// Arrowhead_Data_ext mainly used to configure the precumer
+	// ArrowheadiDataExt mainly used to configure the precumer
 	ros::NodeHandle nh("~"); nh.param<std::string>("ACCESS_URI",
 					provider.config.ACCESS_URI,
 					"http://provider.tmit.bme.hu:8442/serviceregistry/");
@@ -68,14 +70,49 @@ int main(int argc, char* argv[]){
 					provider.config.SECURE_ARROWHEAD_INTERFACE, false);
 	nh.param<bool>("SECURE_PROVIDER_INTERFACE",
 					provider.config.SECURE_PROVIDER_INTERFACE, false);
+	nh.param<bool>("REAL", REAL, false);
 	
+	nh.param<std::string>("OR_URI", real_data.config.ACCESS_URI, "a name");
+	nh.param<std::string>("OR_URI_HTTPS", real_data.config.ACCESS_URI_HTTPS, "a name");
+	nh.param<std::string>("SERVICE_DEFINITION_CONSUMER", real_data.config.SERVICE_DEFINITION, "a name");
+	nh.param<std::string>("TARGET_SYSTEM_NAME", real_data.config.TARGET_SYSTEM_NAME, "providers name");
+	nh.param<std::string>("TARGET_ADDRESS", real_data.config.TARGET_ADDRESS, "ip to target");
+	nh.param<int>("TARGET_PORT", real_data.config.TARGET_PORT, 1234);
+	nh.param<bool>("OVERRIDE_STORE", real_data.config.OVERRIDE_STORE, true);
+	nh.param<bool>("MATCHMAKING", real_data.config.MATCHMAKING, true);
+	nh.param<bool>("METADATA_SEARCH", real_data.config.METADATA_SEARCH, false);
+	nh.param<bool>("PING_PROVIDERS", real_data.config.PING_PROVIDERS, false);
+	nh.param<bool>("ONLY_PREFERRED", real_data.config.ONLY_PREFERRED, true);
+	nh.param<bool>("EXTERNAL_SERVICE_REQUEST", real_data.config.EXTERNAL_SERVICE_REQUEST, false);
+	
+	
+	real_data.config.UNIT = provider.config.UNIT;
+	real_data.config.THIS_ADDRESS = provider.config.THIS_ADDRESS;
+	real_data.config.THIS_ADDRESS6 = provider.config.THIS_ADDRESS6;
+	real_data.config.THIS_PORT= 8498;
+	real_data.config.THIS_SYSTEM_NAME = "real_resever";
+	real_data.config.INTERFACE = provider.config.INTERFACE;
+	real_data.config.SECURITY = provider.config.SECURITY;
+	real_data.config.SECURE_PROVIDER_INTERFACE = provider.config.SECURE_PROVIDER_INTERFACE;
+	real_data.config.SECURE_ARROWHEAD_INTERFACE = provider.config.SECURE_ARROWHEAD_INTERFACE;
+
 	// Print the configure parameters
 	provider.config.print();
+	printf("\n");
+	if(REAL) real_data.config.print();
+
+	// start running publish latest data every 5s
+	ros::Rate loop_sleep(0.2);
+	if(REAL){
+		while(!real_data.init(Converter::pars)){
+			fprintf(stderr, "retry connecting to real sensor in a moment\n");
+			loop_sleep.sleep();
+		}
+	}
+
 	
 	// Set up the provider part param is the baseName, used to verify
 	// that the correct messages are sent. 
-	// a pointer to the callback
-	// function for POST msgs
 	provider.init(provider.config.THIS_SYSTEM_NAME);
 	printf("it is init");
 
@@ -87,21 +124,33 @@ int main(int argc, char* argv[]){
 	convert.init("sensor_id", provider.config.UNIT,
 					provider.config.THIS_SYSTEM_NAME);
 
+	Converter::temperature.temperature = 0;
+	Converter::temperature.header.stamp.sec = std::time(0);
 	
-	double t;
-	// start running publish latest data every 5s
-	ros::Rate loop_sleep(0.2);
-	while (ros::ok()) {
+	double t; // demo counter instead of real sensor
 
-		Converter::temperature.temperature = t;
-		Converter::temperature.header.stamp.sec = std::time(0);
+	while (ros::ok()) {
+		// convert current ros msgs to json msgs
 		convert.updateMsgs();
+		// update the messages that will be return on request
 		provider.setMsgs(convert.getJsonMsgs());
 
+		if(REAL){
+			real_data.request();
+		}
+		else {
+			// set new temperature
+			Converter::temperature.temperature = t;
+			Converter::temperature.header.stamp.sec = std::time(0);
+			t++;
+		}
+
+		// ROS publish the temperature
 		temperature_pub.publish(convert.temperature); 
+
+		// sleep until next
 		ros::spinOnce();
 		loop_sleep.sleep(); 
-		t++;
 	}
 
 	return 0;

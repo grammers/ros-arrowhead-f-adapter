@@ -1,6 +1,5 @@
 #pragma once
 #include "sensor_msgs/Temperature.h"
-//#include <ros/ros.h>
 #include "json-c/json.h"
 
 class Converter {
@@ -19,8 +18,8 @@ public:
 	// @ baseName identification name for the procomer
 	void init(std::string sensor_id, std::string unit, std::string baseName);
 
-	// parse returning msgs ("pte") from provider to ROS msgs
-	static void parce(const char* url, const char* ptr);
+	// parse returning msgs ("ptr") from provider to ROS msgs
+	static void pars(const char* url, const char* ptr);
 	
 	// Create a new msgs
 	void set(double temperature, int t_stamp);
