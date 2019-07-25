@@ -4,13 +4,13 @@
 
 
 	<!-- consumer -->
-	<arg name="SERVICE_DEFINITION_CONSUMER" default="temperature_c"/>
+	<arg name="SERVICE_NAME_CONSUMER" default="temperature_c"/>
 	<arg name="UNIT_CONSUMER" default="Celsius"/>
 	<arg name="TARGET_SYSTEM_NAME_CONSUMER" default="temperature_provider_demo"/>
 	<arg name="TARGET_ADDRESS_CONSUMER" default="130.240.5.68"/>
 	<arg name="TARGET_PORT_CONSUMER" default="8490"/>
 	<!-- publisher -->
-	<arg name="SERVICE_DEFINITION_PUBLISHER" default="temperature_f"/>
+	<arg name="SERVICE_NAME_PUBLISHER" default="temperature_f"/>
 	<arg name="UNIT_PUBLISHER" default="Fahrenheit"/>
 	<arg name="TARGET_SYSTEM_NAME_PUBLISHER" default="temperature_subscriber_demo"/>
 	<arg name="TARGET_ADDRESS_PUBLISHER" default="130.240.5.68"/>
@@ -40,13 +40,13 @@
 		<param name="PRIVATE_KEY_PATH" value="Absolute_path_to_private_key"/>
 		<param name="PUBLIC_KEY_PATH" value="Absolute_path_to_public_key"/>
 		<!-- consumer -->
-		<param name="SERVICE_DEFINITION_CONSUMER" value="$(arg SERVICE_DEFINITION_CONSUMER)"/>
+		<param name="SERVICE_NAME_CONSUMER" value="$(arg SERVICE_NAME_CONSUMER)"/>
 		<param name="UNIT_CONSUMER" value="$(arg UNIT_CONSUMER)"/>
 		<param name="TARGET_SYSTEM_NAME_CONSUMER" value="$(arg TARGET_SYSTEM_NAME_CONSUMER)"/>
 		<param name="TARGET_ADDRESS_CONSUMER" value="$(arg TARGET_ADDRESS_CONSUMER)"/>
 		<param name="TARGET_PORT_CONSUMER" value="$(arg TARGET_PORT_CONSUMER)"/>
 		<!-- publisher -->
-		<param name="SERVICE_DEFINITION_PUBLISHER" value="$(arg SERVICE_DEFINITION_PUBLISHER)"/>
+		<param name="SERVICE_NAME_PUBLISHER" value="$(arg SERVICE_NAME_PUBLISHER)"/>
 		<param name="UNIT_PUBLISHER" value="$(arg UNIT_PUBLISHER)"/>
 		<param name="TARGET_SYSTEM_NAME_PUBLISHER" value="$(arg TARGET_SYSTEM_NAME_PUBLISHER)"/>
 		<param name="TARGET_ADDRESS_PUBLISHER" value="$(arg TARGET_ADDRESS_PUBLISHER)"/>

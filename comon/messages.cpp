@@ -21,7 +21,7 @@ void Converter::init(std::string sensor_id, std::string unit, std::string baseNa
 // 			"ID": "this_is_the_sensor_id",
 // 			"Temperature":39.0,
 // 			"Time_stamp": "1561633848"}],
-// 		"BaseName": "100",
+// 		"ServiceName": "100",
 // 		"Unit": "Celsius"
 // 	}
 
@@ -73,7 +73,7 @@ void Converter::set(double temp, int time){
 	json_object_object_add(arr_cont,"Time_stamp", json_object_new_int(time));
 	json_object_array_add(arr_obj, arr_cont);
 	json_object_object_add(obj,"Entity", arr_obj);
-	json_object_object_add(obj,"BaseName", json_object_new_string(identety.c_str()));
+	json_object_object_add(obj,"ServiceName", json_object_new_string(identety.c_str()));
 	json_object_object_add(obj,"Unit", json_object_new_string(data_unit.c_str()));
 
 	return;

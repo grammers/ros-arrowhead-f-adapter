@@ -43,7 +43,7 @@
 		<arg name="THIS_ADDRESS" value="$(arg address)"/>
 		<arg name="THIS_PORT" value="$(arg provider_port)"/>
 		<arg name="THIS_SYSTEM_NAME" value="$(arg provider_system_name)"/>
-		<arg name="SERVICE_DEFINITION" value="$(arg service_name_c)"/>
+		<arg name="SERVICE_NAME" value="$(arg service_name_c)"/>
 		<arg name="SERVICE_URI" value="$(arg service_uri)"/>
 		<arg name="UNIT" value="$(arg unit_provider)"/> 
 		<arg name="INTERFACE" value="$(arg interface)"/>
@@ -59,7 +59,7 @@
 		<arg name="THIS_ADDRESS" value="$(arg address)"/>
 		<arg name="SERVICE_URI" value="$(arg service_uri)"/>
 		<arg name="THIS_SYSTEM_NAME" value="$(arg subscriber_system_name)"/>
-		<arg name="SERVICE_DEFINITION" value="$(arg service_name_f)"/>
+		<arg name="SERVICE_NAME" value="$(arg service_name_f)"/>
 		<arg name="INTERFACE" value="$(arg interface)"/>
 		<arg name="UNIT" value="$(arg unit_subscriber)"/>
 		<arg name="SECURITY" value="$(arg security)"/>
@@ -71,13 +71,13 @@
 	<!-- consumer_publisher -->
 	<include file="$(find consumer_publisher)/launch/consumer_publisher.launch">
 		<!-- consumer -->
-		<arg name="SERVICE_DEFINITION_CONSUMER" value="$(arg service_name_c)"/>
+		<arg name="SERVICE_NAME_CONSUMER" value="$(arg service_name_c)"/>
 		<arg name="UNIT_CONSUMER" value="$(arg unit_provider)"/>
 		<arg name="TARGET_SYSTEM_NAME_CONSUMER" value="$(arg provider_system_name)"/>
 		<arg name="TARGET_ADDRESS_CONSUMER" value="$(arg address)"/>
 		<arg name="TARGET_PORT_CONSUMER" value="$(arg provider_port)"/>
 		<!-- publisher -->
-		<arg name="SERVICE_DEFINITION_PUBLISHER" value="$(arg service_name_f)"/>
+		<arg name="SERVICE_NAME_PUBLISHER" value="$(arg service_name_f)"/>
 		<arg name="UNIT_PUBLISHER" value="$(arg unit_subscriber)"/>
 		<arg name="TARGET_SYSTEM_NAME_PUBLISHER" value="$(arg subscriber_system_name)"/>
 		<arg name="TARGET_ADDRESS_PUBLISHER" value="$(arg address)"/>

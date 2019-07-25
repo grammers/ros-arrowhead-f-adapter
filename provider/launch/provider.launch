@@ -8,7 +8,7 @@
 	<arg name="THIS_ADDRESS6" default="[fe80::45a5:38c:f4d4:8ede]"/>
 	<arg name="SERVICE_URI" default="Custom_url"/>
 	<arg name="THIS_SYSTEM_NAME" default="temperature_provider_demo"/>
-	<arg name="SERVICE_DEFINITION" default="temperature_c"/>
+	<arg name="SERVICE_NAME" default="temperature_c"/>
 	<arg name="INTERFACE" default="JSON"/>
 	<arg name="SECURITY" default="Token"/>
 	<arg name="THIS_PORT" default="8490"/>
@@ -17,7 +17,7 @@
 
 	<arg name="OR_URI" default="http://localhost:8440/orchestrator/orchestration"/>
 	<arg name="OR_URI_HTTPS" default="https://localhost:8441/orchestrator/orchestration"/>
-	<arg name="SERVICE_DEFINITION_CONSUMER" default="terget name"/>
+	<arg name="SERVICE_NAME_CONSUMER" default="terget name"/>
 	<arg name="TARGET_SYSTEM_NAME" default="target name"/>
 	<arg name="TARGET_ADDRESS" default="ip to target"/>
 	<arg name="TARGET_PORT" default="1234"/>
@@ -39,7 +39,7 @@
 		<param name="THIS_ADDRESS6" value="$(arg THIS_ADDRESS6)"/>
 		<param name="SERVICE_URI" value="$(arg SERVICE_URI)"/>
 		<param name="THIS_SYSTEM_NAME" value="$(arg THIS_SYSTEM_NAME)"/>
-		<param name="SERVICE_DEFINITION" value="$(arg SERVICE_DEFINITION)"/>
+		<param name="SERVICE_NAME" value="$(arg SERVICE_NAME)"/>
 		<param name="INTERFACE" value="$(arg INTERFACE)"/>
 		<param name="UNIT" value="$(arg UNIT)"/>
 		<param name="SECURITY" value="$(arg SECURITY)"/>
@@ -49,7 +49,7 @@
 
 		<param name="OR_URI" value="$(arg OR_URI)"/>
 		<param name="OR_URI_HTTPS" value="$(arg OR_URI)"/>
-		<param name="SERVICE_DEFINITION_CONSUMER" value="$(arg SERVICE_DEFINITION_CONSUMER)"/>
+		<param name="SERVICE_NAME_CONSUMER" value="$(arg SERVICE_NAME_CONSUMER)"/>
 		<param name="TARGET_SYSTEM_NAME" value="$(arg TARGET_SYSTEM_NAME)"/>
 		<param name="TARGET_ADDRESS" value="$(arg TARGET_ADDRESS)"/>
 		<param name="TARGET_PORT" value="$(arg TARGET_PORT)"/>

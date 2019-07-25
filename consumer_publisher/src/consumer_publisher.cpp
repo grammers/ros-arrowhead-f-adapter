@@ -30,13 +30,13 @@ int main(int argc, char **argv) {
 	//prams
 	ros::NodeHandle nh("~");
 	// service
-	nh.param<std::string>("SERVICE_DEFINITION_CONSUMER",
-					consumer.config.SERVICE_DEFINITION,
+	nh.param<std::string>("SERVICE_NAME_CONSUMER",
+					consumer.config.SERVICE_NAME,
 					"IndoorTemperature_providerExample");
 	nh.param<std::string>("UNIT_CONSUMER", consumer.config.UNIT, 
 					"NOT SPIFFED");
-	nh.param<std::string>("SERVICE_DEFINITION_PUBLISHER",
-					publisher.config.SERVICE_DEFINITION,
+	nh.param<std::string>("SERVICE_NAME_PUBLISHER",
+					publisher.config.SERVICE_NAME,
 					"IndoorTemperature_providerExample");
 	nh.param<std::string>("UNIT_PUBLISHER", publisher.config.UNIT, 
 					"NOT SPIFFED");	
@@ -119,9 +119,9 @@ int main(int argc, char **argv) {
 	// param @ sensor_id identification name 
 	// (suggest, use same as service id in arrowhead database) 
 	// @ unit the unit that the data are sent in 
-	// @ baseName must be some as above
+	// @ ServiceName must be some as above
 	convert.init("sensor_id", publisher.config.UNIT,
-					publisher.config.THIS_SYSTEM_NAME);
+					publisher.config.SERVICE_NAME);
 
 	// set a frequency for request in Hz 
 	// warning: it in not exact no grantees, on actual frequency
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 	// these loops are to wait out other nods to initialise
 	// and thus eliminate the effect of the race condition
 	while(!publisher.init()){
-		fprintf(stderr, "retry connecting in a moment\n");
+		fprintf(stderr, "retry connecting to subscriber in a moment\n");
 		loop_rate.sleep();
 	}
 
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 	// the function has to be a
 	// static void(const char*, const char*)
 	while(!consumer.init(Converter::pars)){
-		fprintf(stderr, "retry connecting in a moment\n");
+		fprintf(stderr, "retry connecting to provider in a moment\n");
 		loop_rate.sleep();
 	}
 	

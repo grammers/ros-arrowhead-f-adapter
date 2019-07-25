@@ -26,7 +26,7 @@ using namespace arrowhead;
 Converter convert; 
 Provider provider;
 Consumer real_data;
-bool REAL;
+bool REAL; // use real sensor
 
 int main(int argc, char* argv[]){
 	// init ROS
@@ -53,8 +53,8 @@ int main(int argc, char* argv[]){
 	nh.param<std::string>("THIS_SYSTEM_NAME",
 					provider.config.THIS_SYSTEM_NAME,
 					"SecureTemperatureSensor");
-	nh.param<std::string>("SERVICE_DEFINITION",
-					provider.config.SERVICE_DEFINITION,
+	nh.param<std::string>("SERVICE_NAME",
+					provider.config.SERVICE_NAME,
 					"IndoorTemperature_ProviderExample");
 	nh.param<std::string>("INTERFACE", provider.config.INTERFACE,
 					"JSON"); nh.param<std::string>("PRIVATE_KEY_PATH",
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]){
 	
 	nh.param<std::string>("OR_URI", real_data.config.ACCESS_URI, "a name");
 	nh.param<std::string>("OR_URI_HTTPS", real_data.config.ACCESS_URI_HTTPS, "a name");
-	nh.param<std::string>("SERVICE_DEFINITION_CONSUMER", real_data.config.SERVICE_DEFINITION, "a name");
+	nh.param<std::string>("SERVICE_NAME_CONSUMER", real_data.config.SERVICE_NAME, "a name");
 	nh.param<std::string>("TARGET_SYSTEM_NAME", real_data.config.TARGET_SYSTEM_NAME, "providers name");
 	nh.param<std::string>("TARGET_ADDRESS", real_data.config.TARGET_ADDRESS, "ip to target");
 	nh.param<int>("TARGET_PORT", real_data.config.TARGET_PORT, 1234);
@@ -101,8 +101,10 @@ int main(int argc, char* argv[]){
 	printf("\n");
 	if(REAL) real_data.config.print();
 
-	// start running publish latest data every 5s
+	// update rate 5s (inaccurate)
 	ros::Rate loop_sleep(0.2);
+
+	// loop to eliminate race condition
 	if(REAL){
 		while(!real_data.init(Converter::pars)){
 			fprintf(stderr, "retry connecting to real sensor in a moment\n");
@@ -111,18 +113,17 @@ int main(int argc, char* argv[]){
 	}
 
 	
-	// Set up the provider part param is the baseName, used to verify
-	// that the correct messages are sent. 
-	provider.init(provider.config.THIS_SYSTEM_NAME);
-	printf("it is init");
+	// init the provider now when the parameters are set.
+	provider.init();
+	printf("The provider it is init\n");
 
 	// Set up the message 
 	// param @ sensor_id identification name 
 	// (suggest, use same as service id in provider database) 
 	// @ unit the unit that the data are sent in 
-	// @ baseName must be some as above
+	// @ serviseName must be some as above
 	convert.init("sensor_id", provider.config.UNIT,
-					provider.config.THIS_SYSTEM_NAME);
+					provider.config.SERVICE_NAME);
 
 	Converter::temperature.temperature = 0;
 	Converter::temperature.header.stamp.sec = std::time(0);
@@ -136,10 +137,11 @@ int main(int argc, char* argv[]){
 		provider.setMsgs(convert.getJsonMsgs());
 
 		if(REAL){
+			// send request to real sensor
 			real_data.request();
 		}
 		else {
-			// set new temperature
+			// set new temperature demo
 			Converter::temperature.temperature = t;
 			Converter::temperature.header.stamp.sec = std::time(0);
 			t++;

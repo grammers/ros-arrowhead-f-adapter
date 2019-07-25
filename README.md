@@ -3,20 +3,20 @@ A adapter to run ROS as a legacy node in arrowhead framework.
 These is a example for how you can run ROS ass a legacy devise for
 Arrowhead framework.
 Three examples haw bean implemented.
-These examples arr created sow they can be run together ass a big
+These examples are created sow they can be run together ass a big
 example.
 Together do they cover all four service types: provider, consumer,
 publisher and subscriber.
 
-The development and testing have been dune on ubuntu 18 and ROS melodic.
-The code is written in c++ because that is the language that ROS supports.
+The development and testing have been dune on ubuntu 18.04 and ROS melodic.
+The code is written in c++ because it is the language that ROS supports.
 There fore is a c++ client library for arrowhead needed.
-The one used is the one in folder arrowhead-cpp.
 
 
 ## Pre-requests
 [ROS](http://wiki.ros.org/ROS/Installation).  
-[Arrowhead core](https://github.com/arrowhead-f/core-java)
+[Arrowhead core](https://github.com/arrowhead-f/core-java)  
+[client-cpp](https://github.com/grammers/client-cpp)
 
 ## The examples
 The examples are sending a temperature from provider to subscriber thru
@@ -28,7 +28,7 @@ Between the different nodes are the messages sent using Arrowhead framework.
 The examples name describe wot type of Arrowhead node it is.
 
 ### Run
-First have do you have to have arrowhead core systems running.
+First do you have to have arrowhead core systems running.
 Depending on your system and installation may you start them in different
 ways.
 One way is to `cd` to the core system {root folder}/scripts and run a start up
@@ -39,7 +39,7 @@ For the examples.
 
 > mysql -u arrowhead -p  
 > arrowhead #the password   
-> use arrowhead;
+> use arrowhead;  
 > select * from arrowhead_systems;
 
 Select a not used `id` (ex. 1).
@@ -86,17 +86,17 @@ To see the propagation thru the system.
 
 
 ## Installation
-ubuntu 18.04 server
+Preformed on ubuntu 18.04 server but should work on most systems.
 ### Arrowhead framework core
 
-> sudo apt install openssl libgnutls28-dev libgnutlsxx28 libssl1.1 libssl1.0-dev libcurl3 libcurl3-gnutls libcurl4-gnutls-dev libcrypto++-dev libcrypto++-utils libcrypto++6 libgpg-error-dev automake texinfo g++ libjson-c-dev mysql-server maven openjdk-11-jdk-headless make cmake
-> wget https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-latest.tar.gz
-> tar -xvzf libmicrohttpd-latest.tar.gz
-> cd libmicrohttpd-0.9.65
-> ./configure --with-gnutls
-> sudo make install
-> cd /usr/lib
-> sudo ln -s /usr/local/lib/libmicrohttpd.so.12.54.0 libmicrohttpd.so.12
+> sudo apt install openssl libgnutls28-dev libgnutlsxx28 libssl1.1 libssl1.0-dev libcurl3 libcurl3-gnutls libcurl4-gnutls-dev libcrypto++-dev libcrypto++-utils libcrypto++6 libgpg-error-dev automake texinfo g++ libjson-c-dev mysql-server maven openjdk-11-jdk-headless make cmake   
+> wget https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-latest.tar.gz  
+> tar -xvzf libmicrohttpd-latest.tar.gz  
+> cd libmicrohttpd-0.9.65  
+> ./configure --with-gnutls  
+> sudo make install  
+> cd /usr/lib  
+> sudo ln -s /usr/local/lib/libmicrohttpd.so.12.54.0 libmicrohttpd.so.12  
 
 > sudo /etc/init.d/mysql stop  
 > sudo mkdir -p /var/run/mysqld && sudo chown mysql /var/run/mysqld  
@@ -120,7 +120,7 @@ For example: `mkdir arrowhead`, `cd arrrowhead`.
 > git clone https://github.com/arrowhead-f/core-java.git  
 > cd core-java  
 > mvn package  
-> mvn install
+> mvn install  
 > sudo dpkq -i target/\*.deb  
 ```
 Detached
@@ -129,31 +129,31 @@ pw arrowhead
 mysql pw root # you set erlier
 ```
 > cd scripts  
-> sudo chmod +x start_insecure_coresystem.sh
+> sudo chmod +x start_insecure_coresystem.sh  
 > ./start_insecure_coresystem.sh
 
-> cd ..
-> git clone https://github.com/grammers/client-cpp.git
-> cd client-cpp
-> cmake CMakeLists.txt
-> sudo make install
+> cd ..  
+> git clone https://github.com/grammers/client-cpp.git  
+> cd client-cpp  
+> cmake CMakeLists.txt  
+> sudo make install  
 
 For ROS follow [there guide](http://wiki.ros.org/ROS/Installation).
 
-// > sudo apt install ros-melodic-catkin  
 > sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'  
 > wget http://packages.ros.org/ros.key -O - | sudo apt-key add -  
-> sudo apt update
+> sudo apt update  
 > sudo apt install python-catkin-tool  
 
 
 
-> source /opt/ros/melodic/setup.bash
+> source /opt/ros/melodic/setup.bash  
 > mkdir -p ~/catkin_ws/src  
 > cd ~/catkin_ws  
 > catkin init  
 > source devel/setup.bash
-To simplfie future use you might like to add ''source
+
+To simplify future use you might like to add `source
 ~/catkin_ws/devel/setup.bash` to your `.bashrc`.
 
 > echo "source ~/catkin_ws/devel/setup.bash" >> .bashrc

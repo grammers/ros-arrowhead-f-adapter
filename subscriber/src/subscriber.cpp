@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
 					"this_is_the_custom_url");
 	nh.param<std::string>("THIS_SYSTEM_NAME", subscriber.config.THIS_SYSTEM_NAME, 
 					"SecureTemperatureSensor");
-	nh.param<std::string>("SERVICE_DEFINITION", subscriber.config.SERVICE_DEFINITION, 
+	nh.param<std::string>("SERVICE_NAME", subscriber.config.SERVICE_NAME, 
 					"IndoorTemperature_ProviderExample");
 	nh.param<std::string>("INTERFACE", subscriber.config.INTERFACE, "JSON");
 	nh.param<std::string>("PRIVATE_KEY_PATH", subscriber.config.PRIVATE_KEY_PATH, 
@@ -69,10 +69,9 @@ int main(int argc, char* argv[]){
 	subscriber.config.print();
 	
 	// Set up the arrowhead part
-	// param is the baseName, used to verify that the correct messages are sent. 
 	// a pointer to the callback function for POST msgs
 	// the callback function has to be static void(const char*, const char*)
-	subscriber.init(subscriber.config.THIS_SYSTEM_NAME, Converter::pars);
+	subscriber.init(Converter::pars);
 	
 	// to reserve msgs mast it be define first
 	// should not be don her. 
