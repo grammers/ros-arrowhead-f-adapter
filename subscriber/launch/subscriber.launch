@@ -3,7 +3,6 @@
 <launch>
 	
 	<arg name="ACCESS_URI" default="http://localhost:8442/serviceregistry/"/>
-	<arg name="ACCESS_URI_HTTPS" default="https://0.0.0.0:8443/serviceregistry/"/>
 	<arg name="THIS_ADDRESS" default="130.240.5.68"/>
 	<arg name="SERVICE_URI" default="Custom_url"/>
 	<arg name="THIS_SYSTEM_NAME" default="temperature_subscriber_demo"/>
@@ -14,16 +13,13 @@
 	<arg name="THIS_PORT" default="8494"/>
 	<arg name="SECURE_ARROWHEAD_INTERFACE" default="false"/>
 	<arg name="SECURE_PROVIDER_INTERFACE" default="false"/>
-	<arg name="THIS_ADDRESS6" default="[fe80::45a5:38c:f4d4:8ede]"/>
 
 
 	<!-- service -->
 	<node pkg="subscriber" type="subscriber" name="subscriber">
 		<param name="PRIVATE_KEY_PATH" value="Absolute_path_to_private_key"/>
 		<param name="PUBLIC_KEY_PATH" value="Absolute_path_to_public_key"/>
-		<param name="THIS_ADDRESS6" value="$(arg THIS_ADDRESS6)"/>
 		<param name="ACCESS_URI" value="$(arg ACCESS_URI)"/>
-		<param name="ACCESS_URI_HTTPS" value="$(arg ACCESS_URI_HTTPS)"/>
 		<param name="THIS_ADDRESS" value="$(arg THIS_ADDRESS)"/>
 		<param name="SERVICE_URI" value="$(arg SERVICE_URI)"/>
 		<param name="THIS_SYSTEM_NAME" value="$(arg THIS_SYSTEM_NAME)"/>

@@ -59,8 +59,6 @@ int main(int argc, char **argv) {
 	nh.param<int>("THIS_PORT", consumer.config.THIS_PORT, 8454);
 	nh.param<std::string>("THIS_ADDRESS", consumer.config.THIS_ADDRESS,
 					"10.0.0.40");
-	nh.param<std::string>("THIS_ADDRESS6", consumer.config.THIS_ADDRESS6,
-					"[fe80::1a57:58d9:c43:6319]");
 	nh.param<std::string>("THIS_SYSTEM_NAME", consumer.config.THIS_SYSTEM_NAME,
 					"client1");
 	// service some
@@ -75,8 +73,6 @@ int main(int argc, char **argv) {
 	// core some
 	nh.param<std::string>("ACCESS_URI", consumer.config.ACCESS_URI
 					,"http://arrowhead.tmit.bme.hu:8440/orchestrator/orchestration");
-	nh.param<std::string>("ACCESS_URI_HTTPS", consumer.config.ACCESS_URI_HTTPS
-					,"https://arrowhead.tmit.bme.hu:8441/orchestrator/orchestration");
 	// orchestrator
 	nh.param<bool>("OVERRIDE_STORE", consumer.config.OVERRIDE_STORE, true);
 	nh.param<bool>("MATCHMAKING", consumer.config.MATCHMAKING, true);
@@ -91,7 +87,6 @@ int main(int argc, char **argv) {
 	publisher.config.AUTHENTICATION_INFO = consumer.config.AUTHENTICATION_INFO;
 	publisher.config.THIS_PORT = consumer.config.THIS_PORT;
 	publisher.config.THIS_ADDRESS = consumer.config.THIS_ADDRESS;
-	publisher.config.THIS_ADDRESS6 = consumer.config.THIS_ADDRESS6;
 	publisher.config.THIS_SYSTEM_NAME = consumer.config.THIS_SYSTEM_NAME;
 	publisher.config.INTERFACE = consumer.config.INTERFACE;
 	publisher.config.SECURITY = consumer.config.SECURITY;
@@ -100,7 +95,6 @@ int main(int argc, char **argv) {
 	publisher.config.SECURE_ARROWHEAD_INTERFACE =
 			consumer.config.SECURE_ARROWHEAD_INTERFACE;
 	publisher.config.ACCESS_URI = consumer.config.ACCESS_URI;
-	publisher.config.ACCESS_URI_HTTPS = consumer.config.ACCESS_URI_HTTPS;
 	publisher.config.OVERRIDE_STORE = consumer.config.OVERRIDE_STORE;
 	publisher.config.MATCHMAKING = consumer.config.MATCHMAKING;
 	publisher.config.PING_PROVIDERS = consumer.config.PING_PROVIDERS;

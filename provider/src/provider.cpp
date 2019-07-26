@@ -41,13 +41,8 @@ int main(int argc, char* argv[]){
 	ros::NodeHandle nh("~"); nh.param<std::string>("ACCESS_URI",
 					provider.config.ACCESS_URI,
 					"http://provider.tmit.bme.hu:8442/serviceregistry/");
-	nh.param<std::string>("ACCESS_URI_HTTPS",
-					provider.config.ACCESS_URI_HTTPS,
-					"https://provider.tmit.bme.hu:8443/serviceregistry/");
 	nh.param<std::string>("THIS_ADDRESS", provider.config.THIS_ADDRESS,
 					"10.0.0.40");
-	nh.param<std::string>("THIS_ADDRESS6", provider.config.THIS_ADDRESS6,
-							"[fe80::1a57:58d9:c43e:6319]");
 	nh.param<std::string>("SERVICE_URI", provider.config.SERVICE_URI,
 					"this_is_the_custom_url");
 	nh.param<std::string>("THIS_SYSTEM_NAME",
@@ -73,7 +68,6 @@ int main(int argc, char* argv[]){
 	nh.param<bool>("REAL", REAL, false);
 	
 	nh.param<std::string>("OR_URI", real_data.config.ACCESS_URI, "a name");
-	nh.param<std::string>("OR_URI_HTTPS", real_data.config.ACCESS_URI_HTTPS, "a name");
 	nh.param<std::string>("SERVICE_NAME_CONSUMER", real_data.config.SERVICE_NAME, "a name");
 	nh.param<std::string>("TARGET_SYSTEM_NAME", real_data.config.TARGET_SYSTEM_NAME, "providers name");
 	nh.param<std::string>("TARGET_ADDRESS", real_data.config.TARGET_ADDRESS, "ip to target");
@@ -88,7 +82,6 @@ int main(int argc, char* argv[]){
 	
 	real_data.config.UNIT = provider.config.UNIT;
 	real_data.config.THIS_ADDRESS = provider.config.THIS_ADDRESS;
-	real_data.config.THIS_ADDRESS6 = provider.config.THIS_ADDRESS6;
 	real_data.config.THIS_PORT= 8498;
 	real_data.config.THIS_SYSTEM_NAME = "real_resever";
 	real_data.config.INTERFACE = provider.config.INTERFACE;

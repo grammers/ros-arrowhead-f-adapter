@@ -39,13 +39,8 @@ int main(int argc, char* argv[]){
 	ros::NodeHandle nh("~");
 	nh.param<std::string>("ACCESS_URI", subscriber.config.ACCESS_URI, 
 					"http://arrowhead.tmit.bme.hu:8442/serviceregistry/");
-	nh.param<std::string>("ACCESS_URI_HTTPS", 
-					subscriber.config.ACCESS_URI_HTTPS, 
-					"https://arrowhead.tmit.bme.hu:8443/serviceregistry/");
 	nh.param<std::string>("THIS_ADDRESS", subscriber.config.THIS_ADDRESS, 
 					"10.0.0.40");
-	nh.param<std::string>("THIS_ADDRESS6", subscriber.config.THIS_ADDRESS6, 
-					"[fe80::1a57:58d9:c43e:6319]");
 	nh.param<std::string>("SERVICE_URI", subscriber.config.SERVICE_URI, 
 					"this_is_the_custom_url");
 	nh.param<std::string>("THIS_SYSTEM_NAME", subscriber.config.THIS_SYSTEM_NAME, 
