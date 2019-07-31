@@ -14,6 +14,17 @@ Publisher publisher;
 // class that convert json msgs form arrowhead to ros msgs
 Converter convert;
 
+// callback when consumer returns with data
+void callback(const char* url, const char* msgs) {
+	// pars msgs to ros msgs
+	convert.pars(url, msgs);
+		
+	// convert to Fahrenheit and convert to json and publish
+	convert.set(((convert.temperature.temperature * 1.8)+32),
+					convert.temperature.header.stamp.sec); 
+	publisher.publish(convert.getJsonMsgs());
+}
+
 
 int main(int argc, char **argv) {
 	//ros setup
@@ -132,7 +143,7 @@ int main(int argc, char **argv) {
 	// take a pointer to a callback function
 	// the function has to be a
 	// static void(const char*, const char*)
-	while(!consumer.init(Converter::pars)){
+	while(!consumer.init(callback)){
 		fprintf(stderr, "retry connecting to provider in a moment\n");
 		loop_rate.sleep();
 	}
@@ -149,10 +160,6 @@ int main(int argc, char **argv) {
 		// get temperature reading from provider
 		consumer.request();
 
-		// convert to Fahrenheit and convert to json and publish
-		convert.set(((Converter::temperature.temperature * 1.8)+32),
-						Converter::temperature.header.stamp.sec); 
-		publisher.publish(convert.getJsonMsgs());
 
 		// ROS Publish data for debug
 		rescived_pub.publish(convert.temperature);
@@ -160,7 +167,7 @@ int main(int argc, char **argv) {
 		// ROS publish Fahrenheit temperature
 		sensor_msgs::Temperature farenhite;
 		farenhite.temperature = 
-				((Converter::temperature.temperature * 1.8) + 32);
+				((convert.temperature.temperature * 1.8) + 32);
 		tf_pub.publish(farenhite);
 
 		// sleep until it is time for next request

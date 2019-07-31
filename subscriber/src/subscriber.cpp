@@ -23,6 +23,16 @@ using namespace arrowhead;
 Converter convert;
 Subscriber subscriber;
 
+ros::Publisher temperature_pub;
+
+// callback when a published msgs are reserved
+void callback(const char* url, const char* msgs) {
+	// pars the msgs to ros msgs
+	convert.pars(url, msgs);
+
+	// ROS publish the temperature that are received
+	temperature_pub.publish(convert.temperature);
+}
 
 int main(int argc, char* argv[]){
 	// init ROS
@@ -30,7 +40,7 @@ int main(int argc, char* argv[]){
 	ros::NodeHandle n;
 
 	// crate a ROS publisher that publish the received temperature measurement
-	ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>(
+	temperature_pub = n.advertise<sensor_msgs::Temperature>(
 					"temperature_subscriber", 10);
 
 	// prams setted in launch
@@ -65,24 +75,12 @@ int main(int argc, char* argv[]){
 	
 	// Set up the arrowhead part
 	// a pointer to the callback function for POST msgs
-	// the callback function has to be static void(const char*, const char*)
-	subscriber.init(Converter::pars);
-	
-	// to reserve msgs mast it be define first
-	// should not be don her. 
-	// But good for testing
-	// TODO set it to whit for first update form sensor
-	convert.set(404, 1);
+	// the callback function has to be void(const char*, const char*)
+	subscriber.init(callback);
     
 	// start running
-	// publish latest data every 5s
-	ros::Rate loop_sleep(0.2);
 	while (ros::ok()) {
-		ros::spinOnce();
-		loop_sleep.sleep();
-		
-		// ROS publish the temperature that are received
-		temperature_pub.publish(convert.temperature);
+		ros::spin();
 	}
 
 	return 0;

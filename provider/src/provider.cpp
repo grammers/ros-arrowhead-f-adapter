@@ -28,6 +28,13 @@ Provider provider;
 Consumer real_data;
 bool REAL; // use real sensor
 
+
+// callback from real sensor
+void callback(const char* url, const char* msgs) {
+	// pars the msgs to ros msgs
+	convert.pars(url, msgs);
+}
+
 int main(int argc, char* argv[]){
 	// init ROS
 	ros::init(argc, argv, "provider"); ros::NodeHandle n;
@@ -99,7 +106,7 @@ int main(int argc, char* argv[]){
 
 	// loop to eliminate race condition
 	if(REAL){
-		while(!real_data.init(Converter::pars)){
+		while(!real_data.init(callback)){
 			fprintf(stderr, "retry connecting to real sensor in a moment\n");
 			loop_sleep.sleep();
 		}
@@ -118,8 +125,8 @@ int main(int argc, char* argv[]){
 	convert.init("sensor_id", provider.config.UNIT,
 					provider.config.SERVICE_NAME);
 
-	Converter::temperature.temperature = 0;
-	Converter::temperature.header.stamp.sec = std::time(0);
+	convert.temperature.temperature = 0;
+	convert.temperature.header.stamp.sec = std::time(0);
 	
 	double t; // demo counter instead of real sensor
 
@@ -135,8 +142,8 @@ int main(int argc, char* argv[]){
 		}
 		else {
 			// set new temperature demo
-			Converter::temperature.temperature = t;
-			Converter::temperature.header.stamp.sec = std::time(0);
+			convert.temperature.temperature = t;
+			convert.temperature.header.stamp.sec = std::time(0);
 			t++;
 		}
 

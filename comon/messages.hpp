@@ -9,7 +9,7 @@ public:
 	~Converter();
 
 	// the message reserved in ROS msgs format
-	static sensor_msgs::Temperature temperature;
+	sensor_msgs::Temperature temperature;
 	
 	// a set up to set private variables for msgs building
 	// param
@@ -19,7 +19,7 @@ public:
 	void init(std::string sensor_id, std::string unit, std::string baseName);
 
 	// parse returning msgs ("ptr") from provider to ROS msgs
-	static void pars(const char* url, const char* ptr);
+	void pars(const char* url, const char* ptr);
 	
 	// Create a new msgs
 	void set(double temperature, int t_stamp);

@@ -1,6 +1,5 @@
 #include "messages.hpp"
-
-sensor_msgs::Temperature Converter::temperature;
+#include "arrowhead/ErrorPrevention.h"
 
 Converter::Converter(){
 }
@@ -26,8 +25,9 @@ void Converter::init(std::string sensor_id, std::string unit, std::string baseNa
 // 	}
 
 void Converter::pars(const char *url, const char *ptr){
-	printf("\nin side parce\n");
-	
+	if (arrowhead::ErrorPrevention::correctService(ptr, identety)) 
+		return;
+
 
 	// parsing temperature from json SneML response	
 	std::string str(ptr);
