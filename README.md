@@ -14,7 +14,7 @@ There fore is a c++ client library for arrowhead needed.
 
 
 ## Pre-requests
-[ROS](http://wiki.ros.org/ROS/Installation).  
+[ROS](http://wiki.ros.org/ROS/Installation)  
 [Arrowhead core](https://github.com/arrowhead-f/core-java)  
 [client-cpp](https://github.com/grammers/client-cpp)
 
@@ -40,19 +40,19 @@ For the examples.
 > mysql -u arrowhead -p  
 > arrowhead #the password   
 > use arrowhead;  
-> select * from arrowhead_systems;
+> select \* from arrowhead_systems;
 
 Select a not used `id` (ex. 1).
 
 > insert into arrowhead_system (id, address, port, system_name) value (1, ''130.240.5.68'', 8492, ''temperature_consumer_demo'');
 
-> select * from arrowhead_service;  
-> select * from intra_cloud_authorization;
+> select \* from arrowhead_service;  
+> select \* from intra_cloud_authorization;
 
 Note the `id` of ''temperature_consumer_demo'', ''temperature_provider_demo'', ''temperature_subscriber_demo'', ''temperature_c'', and ''temperature_f''.
 If they do not aper in the tables try to run the system once.
 Presume that the `id` are (in some order) 1, 2, 3, 4 and 5.
-Check for free `id` in intra_cloud_autherization, Presume 6 and 7 are free.
+Check for free `id` in intra_cloud_authorization, Presume 6 and 7 are free.
 Then run
 
 > insert into intra_cloud_authorization value(6, 1, 2, 4);  
@@ -83,6 +83,15 @@ To see the propagation thru the system.
 > rostopic echo temperature_publisher  
 > rostopic echo temperature_subscriber
 
+#### RUN all
+To run all nods and open a `tmux` window with the fore topics echoing, run
+`./deploy_system.sh`.
+To install `tmux` run `sudo apt install tmux`.
+The appearing window will have fore columns.
+Etch column will echo one topic.
+The echoed topics are, from right, `temperature_provider`,
+`temperature_consumer`, `temperature_publisher` and
+`temperature_subscriber`.
 
 
 ## Installation
@@ -138,7 +147,7 @@ mysql pw root # you set erlier
 > cmake CMakeLists.txt  
 > sudo make install  
 
-For ROS follow [there guide](http://wiki.ros.org/ROS/Installation).
+For ROS follow [these guide](http://wiki.ros.org/ROS/Installation).
 
 > sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'  
 > wget http://packages.ros.org/ros.key -O - | sudo apt-key add -  
