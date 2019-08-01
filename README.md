@@ -1,15 +1,15 @@
-# ros-arrowhead-f-adapter
+# ROS-arrowhead-f-adapter
 A adapter to run ROS as a legacy node in arrowhead framework.
-These is a example for how you can run ROS ass a legacy devise for
+These is an example for how you can run ROS ass a legacy devise for
 Arrowhead framework.
-Three examples haw bean implemented.
+Three examples haw been implemented.
 These examples are created sow they can be run together ass a big
 example.
 Together do they cover all four service types: provider, consumer,
 publisher and subscriber.
 
 The development and testing have been dune on ubuntu 18.04 and ROS melodic.
-The code is written in c++ because it is the language that ROS supports.
+The code is written in c++.
 There fore is a c++ client library for arrowhead needed.
 
 
@@ -23,17 +23,17 @@ The examples are sending a temperature from provider to subscriber thru
 consumer_publisher.
 In consumer_publisher is the temperature converted from Celsius to
 Fahrenheit.
-In all steps are a ROS massages published (sensor_msgs/Temperature) containing the temperature and a time stamp.
+In all steps are a ROS massages published (`sensor_msgs/Temperature`) containing the temperature and a time stamp.
 Between the different nodes are the messages sent using Arrowhead framework.
-The examples name describe wot type of Arrowhead node it is.
+The examples name describe what type of Arrowhead node it is.
 
 ### Run
 First do you have to have arrowhead core systems running.
-Depending on your system and installation may you start them in different
+Depending on your system and installation, may you start them in different
 ways.
-One way is to `cd` to the core system {root folder}/scripts and run a start up
+One way is to `cd` to the core system `{root folder}/scripts` and run a start up
 script.
-You all sow need to configure the data base with the system configuration
+You also need to configure the data base with the system configuration
 you uses.
 For the examples.
 
@@ -50,8 +50,8 @@ Select a not used `id` (ex. 1).
 > select \* from intra_cloud_authorization;
 
 Note the `id` of ''temperature_consumer_demo'', ''temperature_provider_demo'', ''temperature_subscriber_demo'', ''temperature_c'', and ''temperature_f''.
-If they do not aper in the tables try to run the system once.
-Presume that the `id` are (in some order) 1, 2, 3, 4 and 5.
+If they aren't there, try to run the system once.
+Presume that the `id` are (in the some order) 1, 2, 3, 4 and 5.
 Check for free `id` in intra_cloud_authorization, Presume 6 and 7 are free.
 Then run
 
@@ -84,7 +84,7 @@ To see the propagation thru the system.
 > rostopic echo temperature_subscriber
 
 #### RUN all
-To run all nods and open a `tmux` window with the fore topics echoing, run
+To run all nods and open a `tmux` window with the four topics echoing, run
 `./deploy_system.sh`.
 To install `tmux` run `sudo apt install tmux`.
 The appearing window will have fore columns.
@@ -96,16 +96,30 @@ The echoed topics are, from left, `temperature_provider`,
 
 ## Installation
 Preformed on ubuntu 18.04 server but should work on most systems.
+ROS is probably the limiting factor for installing in different os.
+
 ### Arrowhead framework core
+There are some prerequisites. 
 
 > sudo apt install openssl libgnutls28-dev libgnutlsxx28 libssl1.1 libssl1.0-dev libcurl3 libcurl3-gnutls libcurl4-gnutls-dev libcrypto++-dev libcrypto++-utils libcrypto++6 libgpg-error-dev automake texinfo g++ libjson-c-dev mysql-server maven openjdk-11-jdk-headless make cmake   
+
+You will also need `microhttod`.
+
 > wget https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-latest.tar.gz  
 > tar -xvzf libmicrohttpd-latest.tar.gz  
 > cd libmicrohttpd-0.9.65  
+
+Or what the latest version is when you install.
+
 > ./configure --with-gnutls  
 > sudo make install  
+
+And ad it to your build path.
+
 > cd /usr/lib  
 > sudo ln -s /usr/local/lib/libmicrohttpd.so.12.54.0 libmicrohttpd.so.12  
+
+Now is it time to configure the data base.
 
 > sudo /etc/init.d/mysql stop  
 > sudo mkdir -p /var/run/mysqld && sudo chown mysql /var/run/mysqld  
@@ -123,6 +137,8 @@ quit;
 > sudo killall mysqld  
 > sudo /etc/init.d/mysql start  
 
+Other password and user name can be used, but you will have to modify
+arrowhead core there after.
 Decide where you want arrowhead core to be stored.
 For example: `mkdir arrowhead`, `cd arrrowhead`.
 
@@ -130,16 +146,24 @@ For example: `mkdir arrowhead`, `cd arrrowhead`.
 > cd core-java  
 > mvn package  
 > mvn install  
-> sudo dpkq -i target/\*.deb  
+> sudo dpkq -i target/\*.deb 
+
+You will reserve a prompt.
+Use the following settings.
+
 ```
 Detached
 user arrowhead
 pw arrowhead
 mysql pw root # you set erlier
 ```
+And start arrowhead core.
+
 > cd scripts  
 > sudo chmod +x start_insecure_coresystem.sh  
 > ./start_insecure_coresystem.sh
+
+Time to install the cpp library.
 
 > cd ..  
 > git clone https://github.com/grammers/client-cpp.git  
@@ -147,14 +171,15 @@ mysql pw root # you set erlier
 > cmake CMakeLists.txt  
 > sudo make install  
 
-For ROS follow [these guide](http://wiki.ros.org/ROS/Installation).
+For installation of ROS follow [these guide](http://wiki.ros.org/ROS/Installation).
+And for some additional tools and setup follow instructions below.
 
 > sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'  
 > wget http://packages.ros.org/ros.key -O - | sudo apt-key add -  
 > sudo apt update  
 > sudo apt install python-catkin-tool  
 
-
+And setup the workspace.
 
 > source /opt/ros/melodic/setup.bash  
 > mkdir -p ~/catkin_ws/src  
@@ -162,7 +187,7 @@ For ROS follow [these guide](http://wiki.ros.org/ROS/Installation).
 > catkin init  
 > source devel/setup.bash
 
-To simplify future use you might like to add `source
+To simplify future use you might want to add `source
 ~/catkin_ws/devel/setup.bash` to your `.bashrc`.
 
 > echo "source ~/catkin_ws/devel/setup.bash" >> .bashrc
@@ -184,5 +209,5 @@ All that is needed is initialise bout ass you do normally and writ the code
 you desire for the connection.
 
 Implementation in other languages should be as easy (these is not tested).
-ROS all sow supports python sow all that is needed is a python arrowhead
+ROS also supports python sow all that is needed is a python arrowhead
 framework library.
