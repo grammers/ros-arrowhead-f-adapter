@@ -89,7 +89,7 @@ To run all nods and open a `tmux` window with the fore topics echoing, run
 To install `tmux` run `sudo apt install tmux`.
 The appearing window will have fore columns.
 Etch column will echo one topic.
-The echoed topics are, from right, `temperature_provider`,
+The echoed topics are, from left, `temperature_provider`,
 `temperature_consumer`, `temperature_publisher` and
 `temperature_subscriber`.
 
@@ -167,7 +167,7 @@ To simplify future use you might like to add `source
 
 > echo "source ~/catkin_ws/devel/setup.bash" >> .bashrc
 
-If you wana lern more about ROS can you continue the turoriol you started
+If you want to learn more about ROS can you continue the tutorial you started
 in last step.
 Observe you are to use `catkin build` instead of `catkin make`.
 

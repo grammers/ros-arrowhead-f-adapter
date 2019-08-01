@@ -1,6 +1,4 @@
 
-#pragma warning(disable:4996)
-
 #include "ros/ros.h"
 #include "sensor_msgs/Temperature.h" 
 #include "../../comon/messages.hpp" 

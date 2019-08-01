@@ -2,7 +2,6 @@
 #include "sensor_msgs/Temperature.h" 
 #include "../../comon/messages.hpp"
 
-#pragma warning(disable:4996) 
 #include "arrowhead/Publisher.h" 
 #include "arrowhead/Consumer.h" 
 
