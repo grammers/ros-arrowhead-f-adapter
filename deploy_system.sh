@@ -16,5 +16,5 @@ tmux send-key -t 0 "rostopic echo temperature_provider" C-m
 tmux send-key -t 1 "rostopic echo temperature_consumer" C-m
 tmux send-key -t 2 "rostopic echo temperature_publisher" C-m
 tmux send-key -t 3 "rostopic echo temperature_subscriber" C-m
-tmux attach
+tmux attach -t ros
 

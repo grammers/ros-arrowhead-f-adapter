@@ -35,7 +35,8 @@ void callback(const char* url, const char* msgs) {
 
 int main(int argc, char* argv[]){
 	// init ROS
-	ros::init(argc, argv, "provider"); ros::NodeHandle n;
+	ros::init(argc, argv, "provider");
+	ros::NodeHandle n;
 
 	// crate a ROS publisher that publisher the temperature measurement
 	ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>(
